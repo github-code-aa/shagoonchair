@@ -2,9 +2,11 @@
 export interface Props {
   title: string;
   description?: string;
+  canonical?: string;
 }
 
-const { title, description = "Premium chairs and tables for modern living" } = Astro.props;
+const { title, description = "Premium chairs and tables in Mumbai - Shagoon Seating Chair offers quality furniture for modern living spaces", canonical } = Astro.props;
+const canonicalURL = canonical || Astro.url.href;
 ---
 
 <!DOCTYPE html>
@@ -13,12 +15,82 @@ const { title, description = "Premium chairs and tables for modern living" } = A
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="keywords" content="furniture Mumbai, chairs tables, office furniture, dining sets, premium furniture, modern furniture, custom furniture, Shagoon Seating Chair" />
+    <meta name="author" content="Shagoon Seating Chair" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="en_IN" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    
+    <!-- Geo tags -->
+    <meta name="geo.region" content="IN-MH" />
+    <meta name="geo.placename" content="Mumbai" />
+    <meta name="geo.position" content="19.0760;72.8777" />
+    <meta name="ICBM" content="19.0760, 72.8777" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+    
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FurnitureStore",
+      "name": "Shagoon Seating Chair",
+      "description": "Premium furniture store specializing in chairs and tables in Mumbai",
+      "url": "https://shagoonseating.com",
+      "telephone": "+91 98765 43210",
+      "email": "info@shagoonseating.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Mumbai",
+        "addressRegion": "Maharashtra",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 19.0760,
+        "longitude": 72.8777
+      },
+      "openingHours": "Mo-Sa 09:00-19:00, Su 11:00-17:00",
+      "priceRange": "₹₹₹",
+      "paymentAccepted": "Cash, Credit Card, Debit Card",
+      "serviceType": ["Furniture Sales", "Custom Furniture", "Furniture Consultation"],
+      "makesOffer": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Premium Chairs",
+            "category": "Furniture"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Premium Tables",
+            "category": "Furniture"
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <slot />

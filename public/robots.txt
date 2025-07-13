@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Disallow admin or private pages (none currently)
+# Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://shagoonseating.com/sitemap.xml
+
+# Crawl-delay for bots (optional)
+Crawl-delay: 1

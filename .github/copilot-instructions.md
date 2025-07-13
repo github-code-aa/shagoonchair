@@ -1,8 +1,8 @@
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
 
-# Shagoon Furniture - Astro Website Project
+# Shagoon Seating Chair - Astro Website Project
 
-This is an Astro-based website for Shagoon Furniture, a premium furniture company specializing in chairs and tables.
+This is an Astro-based website for Shagoon Seating Chair, a premium furniture company specializing in chairs and tables.
 
 ## Project Structure
 - Built with Astro framework for fast, static site generation
