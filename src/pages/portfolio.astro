@@ -739,6 +739,62 @@ import Footer from "../components/Footer.astro";
     </section>
 
     <Footer />
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalProductName">Product Name</h2>
+                <span class="close-btn" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-images">
+                    <div class="main-image">
+                        <div id="modalMainImage" class="modal-main-image"></div>
+                    </div>
+                    <div class="thumbnail-images">
+                        <div class="thumbnail active" data-image="1"></div>
+                        <div class="thumbnail" data-image="2"></div>
+                        <div class="thumbnail" data-image="3"></div>
+                    </div>
+                </div>
+                <div class="modal-details">
+                    <div class="modal-price" id="modalPrice">₹0</div>
+                    <div class="modal-description" id="modalDescription">
+                        <p>Product description will appear here...</p>
+                    </div>
+                    <div class="modal-features">
+                        <h4>Key Features:</h4>
+                        <ul id="modalFeatures">
+                            <li>Feature 1</li>
+                            <li>Feature 2</li>
+                            <li>Feature 3</li>
+                        </ul>
+                    </div>
+                    <div class="modal-specifications">
+                        <h4>Specifications:</h4>
+                        <div class="spec-grid" id="modalSpecs">
+                            <div class="spec-item">
+                                <span class="spec-label">Material:</span>
+                                <span class="spec-value">Premium Wood</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Dimensions:</span>
+                                <span class="spec-value">L x W x H</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-tags" id="modalTags">
+                        <!-- Tags will be populated here -->
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-primary">Contact for Price</button>
+                        <button class="btn btn-secondary">Add to Wishlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </Layout>
 
 <style>
@@ -1173,19 +1229,491 @@ import Footer from "../components/Footer.astro";
     .fade-in-up:nth-child(2) {
         animation-delay: 0.3s;
     }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: var(--border-radius);
+        width: 90%;
+        max-width: 1000px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+        from { 
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to { 
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--background-alt);
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+    }
+
+    .close-btn {
+        font-size: 2rem;
+        color: var(--text-light);
+        cursor: pointer;
+        line-height: 1;
+        transition: var(--transition);
+    }
+
+    .close-btn:hover {
+        color: var(--primary-color);
+        transform: scale(1.1);
+    }
+
+    .modal-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    /* Modal Images */
+    .modal-images {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .modal-main-image {
+        background: var(--background-alt);
+        border-radius: var(--border-radius);
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .modal-main-image svg {
+        width: 100%;
+        height: 100%;
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    .thumbnail-images {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        background: var(--background-alt);
+        border-radius: var(--border-radius);
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .thumbnail:hover,
+    .thumbnail.active {
+        border-color: var(--accent-color);
+        transform: scale(1.05);
+    }
+
+    .thumbnail svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Modal Details */
+    .modal-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .modal-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+
+    .modal-description {
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+
+    .modal-features h4,
+    .modal-specifications h4 {
+        color: var(--primary-color);
+        margin-bottom: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .modal-features ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .modal-features li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-color);
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .modal-features li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--accent-color);
+        font-weight: bold;
+    }
+
+    .modal-features li:last-child {
+        border-bottom: none;
+    }
+
+    .spec-grid {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .spec-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .spec-item:last-child {
+        border-bottom: none;
+    }
+
+    .spec-label {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .spec-value {
+        color: var(--text-light);
+    }
+
+    .modal-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .modal-tag {
+        background: var(--background-alt);
+        color: var(--text-color);
+        padding: 0.375rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .modal-actions .btn {
+        flex: 1;
+        text-align: center;
+    }
+
+    /* Mobile responsiveness for modal */
+    @media (max-width: 768px) {
+        .modal-content {
+            width: 95%;
+            margin: 1rem;
+        }
+
+        .modal-body {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+        }
+
+        .modal-price {
+            font-size: 1.5rem;
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+
+        .thumbnail {
+            width: 60px;
+            height: 60px;
+        }
+    }
 </style>
 
 <script>
+    // Product data for modal
+    const productData = {
+        "Executive Office Chair": {
+            price: "₹45,000",
+            description: "Our Executive Office Chair combines luxury and functionality, featuring premium leather upholstery and advanced ergonomic design. Perfect for long work sessions, this chair provides exceptional lumbar support and adjustable features to ensure maximum comfort throughout your workday.",
+            features: [
+                "Premium genuine leather upholstery",
+                "Advanced lumbar support system",
+                "Height-adjustable seat with gas lift",
+                "360-degree swivel with smooth casters",
+                "Padded armrests with soft-touch finish",
+                "Weight capacity up to 150kg"
+            ],
+            specifications: {
+                "Material": "Genuine Leather & Steel Frame",
+                "Dimensions": "65cm (W) x 70cm (D) x 110-120cm (H)",
+                "Seat Height": "45-55cm (Adjustable)",
+                "Weight": "25kg",
+                "Warranty": "5 Years",
+                "Assembly": "Required"
+            },
+            tags: ["Ergonomic", "Leather", "Executive", "Adjustable"],
+            images: [
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="100" y="80" width="100" height="120" rx="15" fill="var(--accent-color)" opacity="0.6"/>
+                        <rect x="80" y="60" width="140" height="25" rx="12" fill="var(--secondary-color)" opacity="0.8"/>
+                        <rect x="90" y="200" width="25" height="50" rx="8" fill="var(--primary-color)"/>
+                        <rect x="185" y="200" width="25" height="50" rx="8" fill="var(--primary-color)"/>
+                    </svg>`
+                },
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="100" y="80" width="100" height="120" rx="15" fill="var(--primary-color)" opacity="0.7"/>
+                        <rect x="80" y="60" width="140" height="25" rx="12" fill="var(--accent-color)" opacity="0.9"/>
+                        <rect x="90" y="200" width="25" height="50" rx="8" fill="var(--secondary-color)"/>
+                        <rect x="185" y="200" width="25" height="50" rx="8" fill="var(--secondary-color)"/>
+                    </svg>`
+                },
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="100" y="80" width="100" height="120" rx="15" fill="var(--secondary-color)" opacity="0.8"/>
+                        <rect x="80" y="60" width="140" height="25" rx="12" fill="var(--primary-color)" opacity="0.6"/>
+                        <rect x="90" y="200" width="25" height="50" rx="8" fill="var(--accent-color)"/>
+                        <rect x="185" y="200" width="25" height="50" rx="8" fill="var(--accent-color)"/>
+                    </svg>`
+                }
+            ]
+        },
+        "Modern Dining Chair": {
+            price: "₹12,500",
+            description: "Sleek and contemporary, our Modern Dining Chair brings style and comfort to any dining space. Crafted with premium materials and featuring clean lines, this chair complements both modern and traditional decor while providing exceptional seating comfort.",
+            features: [
+                "Contemporary minimalist design",
+                "High-density foam cushioning",
+                "Durable fabric upholstery",
+                "Solid wood frame construction",
+                "Easy-to-clean surface",
+                "Stackable design for storage"
+            ],
+            specifications: {
+                "Material": "Fabric & Solid Wood",
+                "Dimensions": "45cm (W) x 50cm (D) x 85cm (H)",
+                "Seat Height": "45cm",
+                "Weight": "6kg",
+                "Warranty": "3 Years",
+                "Assembly": "Minimal Required"
+            },
+            tags: ["Modern", "Comfort", "Dining", "Minimalist"],
+            images: [
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="110" y="90" width="80" height="100" rx="12" fill="var(--primary-color)" opacity="0.5"/>
+                        <rect x="95" y="70" width="110" height="20" rx="10" fill="var(--accent-color)" opacity="0.7"/>
+                        <rect x="105" y="190" width="20" height="45" rx="6" fill="var(--secondary-color)"/>
+                        <rect x="175" y="190" width="20" height="45" rx="6" fill="var(--secondary-color)"/>
+                    </svg>`
+                },
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="110" y="90" width="80" height="100" rx="12" fill="var(--accent-color)" opacity="0.6"/>
+                        <rect x="95" y="70" width="110" height="20" rx="10" fill="var(--secondary-color)" opacity="0.8"/>
+                        <rect x="105" y="190" width="20" height="45" rx="6" fill="var(--primary-color)"/>
+                        <rect x="175" y="190" width="20" height="45" rx="6" fill="var(--primary-color)"/>
+                    </svg>`
+                },
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="110" y="90" width="80" height="100" rx="12" fill="var(--secondary-color)" opacity="0.7"/>
+                        <rect x="95" y="70" width="110" height="20" rx="10" fill="var(--primary-color)" opacity="0.5"/>
+                        <rect x="105" y="190" width="20" height="45" rx="6" fill="var(--accent-color)"/>
+                        <rect x="175" y="190" width="20" height="45" rx="6" fill="var(--accent-color)"/>
+                    </svg>`
+                }
+            ]
+        },
+        "Vintage Armchair": {
+            price: "₹28,000",
+            description: "Step back in time with our elegant Vintage Armchair, featuring classic design elements and rich wood finish. This timeless piece combines old-world charm with modern comfort, making it a perfect statement piece for any sophisticated living space.",
+            features: [
+                "Classic vintage design aesthetic",
+                "Rich mahogany wood finish",
+                "Hand-carved decorative elements",
+                "Premium fabric cushioning",
+                "Solid hardwood construction",
+                "Antique brass hardware accents"
+            ],
+            specifications: {
+                "Material": "Mahogany Wood & Premium Fabric",
+                "Dimensions": "70cm (W) x 75cm (D) x 95cm (H)",
+                "Seat Height": "42cm",
+                "Weight": "18kg",
+                "Warranty": "5 Years",
+                "Assembly": "Professional Recommended"
+            },
+            tags: ["Vintage", "Wood", "Classic", "Handcrafted"],
+            images: [
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="105" y="85" width="90" height="110" rx="18" fill="var(--secondary-color)" opacity="0.6"/>
+                        <rect x="85" y="65" width="130" height="22" rx="11" fill="var(--primary-color)" opacity="0.8"/>
+                        <rect x="95" y="195" width="22" height="50" rx="7" fill="var(--accent-color)"/>
+                        <rect x="183" y="195" width="22" height="50" rx="7" fill="var(--accent-color)"/>
+                    </svg>`
+                },
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="105" y="85" width="90" height="110" rx="18" fill="var(--primary-color)" opacity="0.7"/>
+                        <rect x="85" y="65" width="130" height="22" rx="11" fill="var(--accent-color)" opacity="0.9"/>
+                        <rect x="95" y="195" width="22" height="50" rx="7" fill="var(--secondary-color)"/>
+                        <rect x="183" y="195" width="22" height="50" rx="7" fill="var(--secondary-color)"/>
+                    </svg>`
+                },
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <rect x="105" y="85" width="90" height="110" rx="18" fill="var(--accent-color)" opacity="0.8"/>
+                        <rect x="85" y="65" width="130" height="22" rx="11" fill="var(--secondary-color)" opacity="0.6"/>
+                        <rect x="95" y="195" width="22" height="50" rx="7" fill="var(--primary-color)"/>
+                        <rect x="183" y="195" width="22" height="50" rx="7" fill="var(--primary-color)"/>
+                    </svg>`
+                }
+            ]
+        },
+        "Royal Dining Table": {
+            price: "₹75,000",
+            description: "Our Royal Dining Table is a masterpiece of craftsmanship, featuring solid wood construction and elegant design. Perfect for hosting family gatherings and dinner parties, this table combines durability with timeless style to create memorable dining experiences.",
+            features: [
+                "Solid wood construction for durability",
+                "Seats 6-8 people comfortably",
+                "Hand-finished surface with protective coating",
+                "Elegant pedestal base design",
+                "Scratch and stain resistant",
+                "Traditional joinery techniques"
+            ],
+            specifications: {
+                "Material": "Solid Teak Wood",
+                "Dimensions": "180cm (L) x 90cm (W) x 75cm (H)",
+                "Seating Capacity": "6-8 People",
+                "Weight": "65kg",
+                "Warranty": "10 Years",
+                "Assembly": "Professional Required"
+            },
+            tags: ["Solid Wood", "Large", "Dining", "Traditional"],
+            images: [
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <ellipse cx="150" cy="120" rx="120" ry="18" fill="var(--secondary-color)" opacity="0.8"/>
+                        <rect x="70" y="120" width="18" height="70" rx="9" fill="var(--primary-color)"/>
+                        <rect x="212" y="120" width="18" height="70" rx="9" fill="var(--primary-color)"/>
+                        <rect x="140" y="120" width="20" height="70" rx="10" fill="var(--primary-color)"/>
+                    </svg>`
+                },
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <ellipse cx="150" cy="120" rx="120" ry="18" fill="var(--primary-color)" opacity="0.7"/>
+                        <rect x="70" y="120" width="18" height="70" rx="9" fill="var(--accent-color)"/>
+                        <rect x="212" y="120" width="18" height="70" rx="9" fill="var(--accent-color)"/>
+                        <rect x="140" y="120" width="20" height="70" rx="10" fill="var(--accent-color)"/>
+                    </svg>`
+                },
+                {
+                    svg: `<svg width="100%" height="100%" viewBox="0 0 300 250" fill="none">
+                        <ellipse cx="150" cy="120" rx="120" ry="18" fill="var(--accent-color)" opacity="0.8"/>
+                        <rect x="70" y="120" width="18" height="70" rx="9" fill="var(--secondary-color)"/>
+                        <rect x="212" y="120" width="18" height="70" rx="9" fill="var(--secondary-color)"/>
+                        <rect x="140" y="120" width="20" height="70" rx="10" fill="var(--secondary-color)"/>
+                    </svg>`
+                }
+            ]
+        }
+    };
+
     // Portfolio filtering functionality
     document.addEventListener("DOMContentLoaded", () => {
         const filterBtns = document.querySelectorAll(".filter-btn");
         const productCards = document.querySelectorAll(".product-card");
+        const modal = document.getElementById("productModal");
+        const closeModal = document.getElementById("closeModal");
 
+        // Filter functionality
         filterBtns.forEach((btn) => {
             btn.addEventListener("click", () => {
-                // Remove active class from all buttons
                 filterBtns.forEach((b) => b.classList.remove("active"));
-                // Add active class to clicked button
                 btn.classList.add("active");
 
                 const filterValue = btn.getAttribute("data-filter");
@@ -1194,8 +1722,7 @@ import Footer from "../components/Footer.astro";
                     if (filterValue === "all") {
                         card.classList.remove("hidden");
                     } else if (filterValue) {
-                        const categoriesAttr =
-                            card.getAttribute("data-category");
+                        const categoriesAttr = card.getAttribute("data-category");
                         if (categoriesAttr) {
                             const categories = categoriesAttr.split(" ");
                             if (categories.includes(filterValue)) {
@@ -1209,7 +1736,96 @@ import Footer from "../components/Footer.astro";
             });
         });
 
-        // Quick view functionality (placeholder)
+        // Modal functionality
+        function openProductModal(productName: string) {
+            const product = productData[productName as keyof typeof productData];
+            if (!product) return;
+
+            // Populate modal content
+            const modalProductName = document.getElementById("modalProductName");
+            const modalPrice = document.getElementById("modalPrice");
+            const modalDescription = document.getElementById("modalDescription");
+            
+            if (modalProductName) modalProductName.textContent = productName;
+            if (modalPrice) modalPrice.textContent = product.price;
+            if (modalDescription) modalDescription.innerHTML = `<p>${product.description}</p>`;
+
+            // Populate features
+            const featuresList = document.getElementById("modalFeatures");
+            if (featuresList) {
+                featuresList.innerHTML = product.features.map((feature: string) => `<li>${feature}</li>`).join("");
+            }
+
+            // Populate specifications
+            const specsList = document.getElementById("modalSpecs");
+            if (specsList) {
+                specsList.innerHTML = Object.entries(product.specifications)
+                    .map(([label, value]) => `
+                        <div class="spec-item">
+                            <span class="spec-label">${label}:</span>
+                            <span class="spec-value">${value}</span>
+                        </div>
+                    `).join("");
+            }
+
+            // Populate tags
+            const tagsContainer = document.getElementById("modalTags");
+            if (tagsContainer) {
+                tagsContainer.innerHTML = product.tags
+                    .map((tag: string) => `<span class="modal-tag">${tag}</span>`).join("");
+            }
+
+            // Set main image (first image)
+            const mainImage = document.getElementById("modalMainImage");
+            if (mainImage) {
+                mainImage.innerHTML = product.images[0].svg;
+            }
+
+            // Setup thumbnails
+            if (modal) {
+                const thumbnails = modal.querySelectorAll(".thumbnail");
+                thumbnails.forEach((thumb, index) => {
+                    const thumbElement = thumb as HTMLElement;
+                    if (product.images[index]) {
+                        thumbElement.innerHTML = product.images[index].svg;
+                        thumbElement.style.display = "flex";
+                        
+                        thumbElement.onclick = () => {
+                            // Update main image
+                            if (mainImage) {
+                                mainImage.innerHTML = product.images[index].svg;
+                            }
+                            
+                            // Update active thumbnail
+                            thumbnails.forEach(t => t.classList.remove("active"));
+                            thumbElement.classList.add("active");
+                        };
+                    } else {
+                        thumbElement.style.display = "none";
+                    }
+                });
+
+                // Reset first thumbnail as active
+                if (thumbnails[0]) {
+                    thumbnails[0].classList.add("active");
+                }
+            }
+
+            // Show modal
+            if (modal) {
+                modal.classList.add("show");
+                document.body.style.overflow = "hidden";
+            }
+        }
+
+        function closeProductModal() {
+            if (modal) {
+                modal.classList.remove("show");
+                document.body.style.overflow = "auto";
+            }
+        }
+
+        // Quick view functionality
         const quickViewBtns = document.querySelectorAll(".quick-view-btn");
         quickViewBtns.forEach((btn) => {
             btn.addEventListener("click", (e) => {
@@ -1217,14 +1833,31 @@ import Footer from "../components/Footer.astro";
                 const productCard = btn.closest(".product-card");
                 if (productCard) {
                     const productNameElement = productCard.querySelector("h3");
-                    const productName = productNameElement
-                        ? productNameElement.textContent
-                        : "Unknown Product";
-                    alert(
-                        `Quick view for: ${productName}\n\nThis would open a detailed product modal in a real application.`,
-                    );
+                    const productName = productNameElement ? productNameElement.textContent : "Unknown Product";
+                    openProductModal(productName);
                 }
             });
+        });
+
+        // Close modal events
+        if (closeModal) {
+            closeModal.addEventListener("click", closeProductModal);
+        }
+        
+        if (modal) {
+            modal.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    closeProductModal();
+                }
+            });
+        }
+
+        // ESC key to close modal
+        document.addEventListener("keydown", (e) => {
+            const currentModal = document.getElementById("productModal");
+            if (e.key === "Escape" && currentModal && currentModal.classList.contains("show")) {
+                closeProductModal();
+            }
         });
     });
 
