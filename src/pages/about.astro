@@ -1,0 +1,438 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="About Us - Shagoon Furniture" description="Learn about Shagoon Furniture's commitment to crafting premium chairs and tables. Our story, values, and dedication to quality craftsmanship.">
+  <Navigation />
+  
+  <!-- Hero Section -->
+  <section class="about-hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title fade-in-up">Our Story</h1>
+        <p class="hero-description fade-in-up">
+          Crafting exceptional furniture for over two decades, where traditional craftsmanship meets modern design.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Story -->
+  <section class="section our-story">
+    <div class="container">
+      <div class="grid grid-2">
+        <div class="story-content">
+          <h2>Founded on Quality & Passion</h2>
+          <p>
+            Shagoon Furniture was born from a simple belief: that furniture should be more than just functional—it should inspire, comfort, and reflect the unique personality of those who use it.
+          </p>
+          <p>
+            Since our founding in 2001, we have dedicated ourselves to creating premium chairs and tables that stand the test of time. Our journey began in a small workshop with a team of passionate craftsmen who shared a vision of bringing exceptional furniture to modern homes and offices.
+          </p>
+          <p>
+            Today, we continue to honor that vision by combining traditional woodworking techniques with contemporary design principles, ensuring every piece we create is both beautiful and built to last.
+          </p>
+        </div>
+        <div class="story-image">
+          <div class="image-placeholder">
+            <svg width="100%" height="300" viewBox="0 0 400 300" fill="none">
+              <!-- Workshop illustration -->
+              <rect x="50" y="200" width="300" height="80" fill="var(--secondary-color)" opacity="0.3"/>
+              <rect x="80" y="150" width="60" height="50" rx="5" fill="var(--accent-color)" opacity="0.6"/>
+              <rect x="160" y="140" width="80" height="60" rx="5" fill="var(--primary-color)" opacity="0.4"/>
+              <rect x="260" y="160" width="60" height="40" rx="5" fill="var(--accent-color)" opacity="0.6"/>
+              <!-- Tools -->
+              <line x1="100" y1="120" x2="120" y2="140" stroke="var(--primary-color)" stroke-width="3"/>
+              <line x1="180" y1="110" x2="200" y2="130" stroke="var(--secondary-color)" stroke-width="3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section class="section section-alt values">
+    <div class="container">
+      <div class="section-header text-center mb-4">
+        <h2>Our Values</h2>
+        <p>The principles that guide everything we do</p>
+      </div>
+      
+      <div class="grid grid-3">
+        <div class="value-card card">
+          <div class="value-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <h3>Quality Craftsmanship</h3>
+          <p>Every piece is meticulously crafted by skilled artisans using time-honored techniques and the finest materials available.</p>
+        </div>
+        
+        <div class="value-card card">
+          <div class="value-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>
+            </svg>
+          </div>
+          <h3>Sustainability</h3>
+          <p>We source our materials responsibly and use eco-friendly processes, ensuring our beautiful furniture doesn't come at the planet's expense.</p>
+        </div>
+        
+        <div class="value-card card">
+          <div class="value-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.5 6L12 10.5 8.5 8 12 5.5 15.5 8zM8.5 16L12 13.5 15.5 16 12 18.5 8.5 16z"/>
+            </svg>
+          </div>
+          <h3>Innovation</h3>
+          <p>We continuously evolve our designs and techniques, embracing new technologies while respecting traditional craftsmanship methods.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="section team">
+    <div class="container">
+      <div class="section-header text-center mb-4">
+        <h2>Meet Our Team</h2>
+        <p>The passionate individuals behind Shagoon Furniture</p>
+      </div>
+      
+      <div class="grid grid-3">
+        <div class="team-member card">
+          <div class="member-image">
+            <div class="image-placeholder">
+              <svg width="100%" height="200" viewBox="0 0 200 200" fill="none">
+                <circle cx="100" cy="80" r="40" fill="var(--accent-color)" opacity="0.3"/>
+                <rect x="70" y="120" width="60" height="80" rx="30" fill="var(--primary-color)" opacity="0.2"/>
+              </svg>
+            </div>
+          </div>
+          <div class="member-info">
+            <h3>Rajesh Sharma</h3>
+            <p class="member-role">Founder & Master Craftsman</p>
+            <p class="member-description">
+              With over 30 years of experience in furniture making, Rajesh leads our design team and ensures every piece meets our exacting standards.
+            </p>
+          </div>
+        </div>
+        
+        <div class="team-member card">
+          <div class="member-image">
+            <div class="image-placeholder">
+              <svg width="100%" height="200" viewBox="0 0 200 200" fill="none">
+                <circle cx="100" cy="80" r="40" fill="var(--secondary-color)" opacity="0.3"/>
+                <rect x="70" y="120" width="60" height="80" rx="30" fill="var(--accent-color)" opacity="0.2"/>
+              </svg>
+            </div>
+          </div>
+          <div class="member-info">
+            <h3>Priya Patel</h3>
+            <p class="member-role">Design Director</p>
+            <p class="member-description">
+              Priya brings contemporary vision to our traditional craft, creating pieces that perfectly balance modern aesthetics with timeless appeal.
+            </p>
+          </div>
+        </div>
+        
+        <div class="team-member card">
+          <div class="member-image">
+            <div class="image-placeholder">
+              <svg width="100%" height="200" viewBox="0 0 200 200" fill="none">
+                <circle cx="100" cy="80" r="40" fill="var(--primary-color)" opacity="0.3"/>
+                <rect x="70" y="120" width="60" height="80" rx="30" fill="var(--secondary-color)" opacity="0.2"/>
+              </svg>
+            </div>
+          </div>
+          <div class="member-info">
+            <h3>Amit Kumar</h3>
+            <p class="member-role">Quality Assurance Manager</p>
+            <p class="member-description">
+              Amit ensures that every piece that leaves our workshop meets the highest standards of quality and durability our customers expect.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process Section -->
+  <section class="section section-alt process">
+    <div class="container">
+      <div class="section-header text-center mb-4">
+        <h2>Our Crafting Process</h2>
+        <p>From concept to completion, every step is carefully executed</p>
+      </div>
+      
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Design & Planning</h3>
+            <p>Our designers work closely with our craftsmen to create detailed plans that balance aesthetics, functionality, and structural integrity.</p>
+          </div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Material Selection</h3>
+            <p>We carefully select premium woods and materials, ensuring they meet our standards for quality, sustainability, and durability.</p>
+          </div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Precision Crafting</h3>
+            <p>Our skilled artisans use a combination of traditional techniques and modern tools to bring each design to life with meticulous attention to detail.</p>
+          </div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Quality Inspection</h3>
+            <p>Every piece undergoes rigorous quality checks to ensure it meets our exacting standards before it reaches your home or office.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section cta">
+    <div class="container">
+      <div class="cta-content text-center">
+        <h2>Ready to Experience Our Craftsmanship?</h2>
+        <p class="mb-3">
+          Discover furniture that combines traditional craftsmanship with modern design. 
+          Let us help you create spaces that inspire.
+        </p>
+        <div class="cta-buttons">
+          <a href="/portfolio" class="btn btn-primary">View Our Collection</a>
+          <a href="/contact" class="btn btn-secondary">Get In Touch</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  /* Add spacing for fixed navbar */
+  .about-hero {
+    padding-top: 100px;
+  }
+
+  /* Hero Section */
+  .about-hero {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 100px 0 4rem;
+    text-align: center;
+  }
+
+  .hero-title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .hero-description {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Our Story Section */
+  .our-story {
+    padding: 4rem 0;
+  }
+
+  .story-content h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .story-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .story-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-placeholder {
+    background: var(--background-alt);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Values Section */
+  .value-card {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .value-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+
+  .value-card h3 {
+    margin-bottom: 1rem;
+  }
+
+  /* Team Section */
+  .team-member {
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .member-image {
+    margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    background: var(--background-alt);
+  }
+
+  .member-info h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  .member-role {
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .member-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* Process Section */
+  .process-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .process-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+  }
+
+  .step-number {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .step-content h3 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+  }
+
+  .step-content p {
+    margin: 0;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  /* CTA Section */
+  .cta {
+    background: var(--background-alt);
+  }
+
+  .cta-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .about-hero {
+      padding: 80px 0 3rem;
+    }
+
+    .process-step {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .step-number {
+      align-self: center;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .process-steps {
+      gap: 1rem;
+    }
+
+    .process-step {
+      padding: 1rem;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+  }
+
+  /* Animation delays */
+  .fade-in-up:nth-child(1) { animation-delay: 0.1s; }
+  .fade-in-up:nth-child(2) { animation-delay: 0.3s; }
+</style>

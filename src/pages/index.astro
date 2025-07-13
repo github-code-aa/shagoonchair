@@ -1,16 +1,346 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Shagoon Furniture - Premium Chairs & Tables" description="Discover our exquisite collection of premium chairs and tables. Combining comfort, style, and craftsmanship for modern living spaces.">
+  <Navigation />
+  
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="container">
+        <div class="hero-text">
+          <h1 class="hero-title fade-in-up">
+            Premium Furniture for <span class="highlight">Modern Living</span>
+          </h1>
+          <p class="hero-description fade-in-up">
+            Discover our exquisite collection of chairs and tables that combine comfort, 
+            style, and exceptional craftsmanship. Transform your space with furniture 
+            that tells your story.
+          </p>
+          <div class="hero-buttons fade-in-up">
+            <a href="/portfolio" class="btn btn-primary">Explore Collection</a>
+            <a href="/about" class="btn btn-secondary">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="image-placeholder">
+        <svg width="400" height="300" viewBox="0 0 400 300" fill="none">
+          <!-- Modern Chair Illustration -->
+          <rect x="150" y="100" width="100" height="120" rx="10" fill="var(--accent-color)" opacity="0.8"/>
+          <rect x="130" y="80" width="140" height="20" rx="10" fill="var(--secondary-color)"/>
+          <rect x="140" y="220" width="20" height="60" rx="5" fill="var(--primary-color)"/>
+          <rect x="240" y="220" width="20" height="60" rx="5" fill="var(--primary-color)"/>
+          <!-- Table -->
+          <ellipse cx="320" cy="200" rx="60" ry="8" fill="var(--secondary-color)"/>
+          <rect x="315" y="200" width="10" height="50" rx="5" fill="var(--primary-color)"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section features">
+    <div class="container">
+      <div class="section-header text-center mb-4">
+        <h2>Why Choose Shagoon Furniture?</h2>
+        <p>We craft furniture that doesn't just fill your space—it elevates it</p>
+      </div>
+      
+      <div class="grid grid-3">
+        <div class="feature-card card">
+          <div class="feature-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <h3>Premium Quality</h3>
+          <p>Handcrafted using the finest materials and traditional techniques, ensuring each piece stands the test of time.</p>
+        </div>
+        
+        <div class="feature-card card">
+          <div class="feature-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <h3>Modern Design</h3>
+          <p>Contemporary aesthetics that seamlessly blend with any interior style, from minimalist to luxurious.</p>
+        </div>
+        
+        <div class="feature-card card">
+          <div class="feature-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <h3>Comfort First</h3>
+          <p>Ergonomically designed for maximum comfort, because beautiful furniture should feel as good as it looks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Categories -->
+  <section class="section section-alt categories">
+    <div class="container">
+      <div class="section-header text-center mb-4">
+        <h2>Our Collections</h2>
+        <p>Explore our carefully curated furniture collections</p>
+      </div>
+      
+      <div class="grid grid-2">
+        <div class="category-card card">
+          <div class="category-image">
+            <div class="image-placeholder">
+              <svg width="100%" height="200" viewBox="0 0 300 200" fill="none">
+                <rect x="100" y="50" width="100" height="120" rx="15" fill="var(--accent-color)" opacity="0.3"/>
+                <rect x="80" y="30" width="140" height="25" rx="12" fill="var(--secondary-color)" opacity="0.7"/>
+                <rect x="90" y="170" width="25" height="50" rx="8" fill="var(--primary-color)"/>
+                <rect x="185" y="170" width="25" height="50" rx="8" fill="var(--primary-color)"/>
+              </svg>
+            </div>
+          </div>
+          <div class="category-content">
+            <h3>Premium Chairs</h3>
+            <p>From ergonomic office chairs to elegant dining seats, discover comfort redefined.</p>
+            <a href="/portfolio#chairs" class="btn btn-primary">View Chairs</a>
+          </div>
+        </div>
+        
+        <div class="category-card card">
+          <div class="category-image">
+            <div class="image-placeholder">
+              <svg width="100%" height="200" viewBox="0 0 300 200" fill="none">
+                <ellipse cx="150" cy="100" rx="120" ry="15" fill="var(--secondary-color)" opacity="0.7"/>
+                <rect x="70" y="100" width="15" height="60" rx="7" fill="var(--primary-color)"/>
+                <rect x="215" y="100" width="15" height="60" rx="7" fill="var(--primary-color)"/>
+                <rect x="140" y="100" width="20" height="60" rx="10" fill="var(--primary-color)"/>
+              </svg>
+            </div>
+          </div>
+          <div class="category-content">
+            <h3>Elegant Tables</h3>
+            <p>Dining tables, coffee tables, and desks that become the centerpiece of your space.</p>
+            <a href="/portfolio#tables" class="btn btn-primary">View Tables</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section testimonials">
+    <div class="container">
+      <div class="section-header text-center mb-4">
+        <h2>What Our Customers Say</h2>
+        <p>Don't just take our word for it</p>
+      </div>
+      
+      <div class="grid grid-3">
+        <div class="testimonial-card card">
+          <div class="testimonial-content">
+            <div class="rating">
+              ★★★★★
+            </div>
+            <p>"Absolutely love my new dining set! The quality is exceptional and it's become the heart of our home."</p>
+            <div class="testimonial-author">
+              <strong>Sarah Johnson</strong>
+              <span>Interior Designer</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card card">
+          <div class="testimonial-content">
+            <div class="rating">
+              ★★★★★
+            </div>
+            <p>"The office chair I purchased has completely transformed my work-from-home experience. Comfort and style combined perfectly."</p>
+            <div class="testimonial-author">
+              <strong>Michael Chen</strong>
+              <span>Software Developer</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card card">
+          <div class="testimonial-content">
+            <div class="rating">
+              ★★★★★
+            </div>
+            <p>"Professional service and beautiful furniture. The coffee table is a conversation starter every time we have guests."</p>
+            <div class="testimonial-author">
+              <strong>Emily Davis</strong>
+              <span>Marketing Executive</span>
+            </div>
+          </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  /* Add spacing for fixed navbar */
+  .hero {
+    padding-top: 80px;
+  }
+
+  /* Hero Section */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, var(--background-color) 0%, var(--background-alt) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    flex: 1;
+    z-index: 2;
+  }
+
+  .hero-text {
+    max-width: 600px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+
+  .highlight {
+    color: var(--accent-color);
+    position: relative;
+  }
+
+  .hero-description {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--text-light);
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-image {
+    position: absolute;
+    right: -100px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.1;
+    z-index: 1;
+  }
+
+  /* Features Section */
+  .features {
+    background: white;
+  }
+
+  .feature-card {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+
+  /* Categories Section */
+  .category-card {
+    overflow: hidden;
+    transition: var(--transition);
+  }
+
+  .category-image {
+    margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    background: var(--background-alt);
+  }
+
+  .image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background-alt);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+  }
+
+  .category-content h3 {
+    margin-bottom: 1rem;
+  }
+
+  .category-content p {
+    margin-bottom: 1.5rem;
+  }
+
+  /* Testimonials */
+  .testimonial-card {
+    text-align: center;
+  }
+
+  .rating {
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .testimonial-content p {
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+  }
+
+  .testimonial-author strong {
+    display: block;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+  }
+
+  .testimonial-author span {
+    color: var(--text-light);
+    font-size: 0.9rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero {
+      padding-top: 60px;
+      min-height: 80vh;
+    }
+
+    .hero-image {
+      display: none;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn {
+      text-align: center;
+    }
+  }
+
+  /* Animation delays for staggered effect */
+  .fade-in-up:nth-child(1) { animation-delay: 0.1s; }
+  .fade-in-up:nth-child(2) { animation-delay: 0.2s; }
+  .fade-in-up:nth-child(3) { animation-delay: 0.3s; }
+</style>

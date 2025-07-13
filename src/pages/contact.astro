@@ -1,0 +1,642 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Contact Us - Shagoon Furniture" description="Get in touch with Shagoon Furniture. Visit our showroom, call us, or send us a message for personalized furniture solutions.">
+  <Navigation />
+  
+  <!-- Hero Section -->
+  <section class="contact-hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title fade-in-up">Get in Touch</h1>
+        <p class="hero-description fade-in-up">
+          Ready to transform your space? Contact us for personalized furniture solutions 
+          and expert consultation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Information -->
+  <section class="section contact-info-section">
+    <div class="container">
+      <div class="section-header text-center mb-4">
+        <h2>Contact Information</h2>
+        <p>We're here to help you find the perfect furniture for your space</p>
+      </div>
+      
+      <div class="grid grid-3">
+        <div class="contact-info-card card">
+          <div class="info-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+          </div>
+          <h3>Visit Our Showroom</h3>
+          <p><strong>Address:</strong><br>123 Furniture Street<br>Design City, DC 12345</p>
+          <p><strong>Hours:</strong><br>Mon-Sat: 9:00 AM - 7:00 PM<br>Sunday: 11:00 AM - 5:00 PM</p>
+        </div>
+        
+        <div class="contact-info-card card">
+          <div class="info-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+            </svg>
+          </div>
+          <h3>Call Us</h3>
+          <p><strong>Main Number:</strong><br>+1 (555) 123-4567</p>
+          <p><strong>Sales:</strong><br>+1 (555) 123-4568</p>
+          <p><strong>Support:</strong><br>+1 (555) 123-4569</p>
+        </div>
+        
+        <div class="contact-info-card card">
+          <div class="info-icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+          </div>
+          <h3>Email Us</h3>
+          <p><strong>General:</strong><br>info@shagoonfurniture.com</p>
+          <p><strong>Sales:</strong><br>sales@shagoonfurniture.com</p>
+          <p><strong>Support:</strong><br>support@shagoonfurniture.com</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Map Section -->
+  <section class="section section-alt map-section">
+    <div class="container">
+      <div class="section-header text-center mb-4">
+        <h2>Find Our Showroom</h2>
+        <p>Visit us to see our furniture collections in person and get expert advice from our design consultants</p>
+      </div>
+      
+      <div class="map-layout">
+        <!-- Main Map Container -->
+        <div class="map-container">
+          <div class="interactive-map">
+            <!-- Enhanced Map Illustration -->
+            <svg width="100%" height="500" viewBox="0 0 800 500" fill="none">
+              <!-- Background -->
+              <rect width="800" height="500" fill="#f8fafc"/>
+              
+              <!-- Major Roads -->
+              <path d="M0 250 L800 250" stroke="#6b7280" stroke-width="12" opacity="0.8"/>
+              <path d="M400 0 L400 500" stroke="#6b7280" stroke-width="10" opacity="0.8"/>
+              
+              <!-- Secondary Roads -->
+              <path d="M0 150 L800 150" stroke="#9ca3af" stroke-width="6" opacity="0.6"/>
+              <path d="M0 350 L800 350" stroke="#9ca3af" stroke-width="6" opacity="0.6"/>
+              <path d="M200 0 L200 500" stroke="#9ca3af" stroke-width="6" opacity="0.6"/>
+              <path d="M600 0 L600 500" stroke="#9ca3af" stroke-width="6" opacity="0.6"/>
+              
+              <!-- Small Streets -->
+              <path d="M0 100 L800 100" stroke="#d1d5db" stroke-width="3"/>
+              <path d="M0 200 L800 200" stroke="#d1d5db" stroke-width="3"/>
+              <path d="M0 300 L800 300" stroke="#d1d5db" stroke-width="3"/>
+              <path d="M0 400 L800 400" stroke="#d1d5db" stroke-width="3"/>
+              <path d="M100 0 L100 500" stroke="#d1d5db" stroke-width="3"/>
+              <path d="M300 0 L300 500" stroke="#d1d5db" stroke-width="3"/>
+              <path d="M500 0 L500 500" stroke="#d1d5db" stroke-width="3"/>
+              <path d="M700 0 L700 500" stroke="#d1d5db" stroke-width="3"/>
+              
+              <!-- Buildings and Structures -->
+              <rect x="50" y="175" width="80" height="50" fill="#e5e7eb" rx="4"/>
+              <rect x="150" y="180" width="60" height="40" fill="#e5e7eb" rx="4"/>
+              <rect x="520" y="170" width="90" height="60" fill="#e5e7eb" rx="4"/>
+              <rect x="650" y="180" width="70" height="40" fill="#e5e7eb" rx="4"/>
+              
+              <!-- Buildings below main road -->
+              <rect x="80" y="280" width="70" height="45" fill="#e5e7eb" rx="4"/>
+              <rect x="250" y="275" width="85" height="55" fill="#e5e7eb" rx="4"/>
+              <rect x="550" y="285" width="65" height="40" fill="#e5e7eb" rx="4"/>
+              
+              <!-- Parks/Green Areas -->
+              <circle cx="150" cy="120" r="35" fill="#10b981" opacity="0.4"/>
+              <circle cx="650" cy="380" r="40" fill="#10b981" opacity="0.4"/>
+              <circle cx="300" cy="420" r="25" fill="#10b981" opacity="0.4"/>
+              
+              <!-- Mall (Design Center Mall) -->
+              <rect x="460" y="120" width="120" height="80" fill="#fbbf24" rx="8" opacity="0.8"/>
+              <text x="520" y="165" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Design Center</text>
+              <text x="520" y="180" text-anchor="middle" fill="white" font-size="12">Mall</text>
+              
+              <!-- City Art Gallery -->
+              <rect x="460" y="300" width="120" height="60" fill="#8b5cf6" rx="8" opacity="0.8"/>
+              <text x="520" y="335" text-anchor="middle" fill="white" font-size="14" font-weight="bold">City Art</text>
+              <text x="520" y="350" text-anchor="middle" fill="white" font-size="12">Gallery</text>
+              
+              <!-- Metro Station -->
+              <rect x="330" y="230" width="40" height="40" fill="#3b82f6" rx="6"/>
+              <text x="350" y="245" text-anchor="middle" fill="white" font-size="8">M</text>
+              <text x="350" y="255" text-anchor="middle" fill="white" font-size="8">Metro</text>
+              
+              <!-- SHAGOON FURNITURE SHOWROOM (Highlighted) -->
+              <rect x="380" y="270" width="140" height="90" fill="var(--accent-color)" rx="10" stroke="var(--primary-color)" stroke-width="3"/>
+              <rect x="400" y="290" width="100" height="50" fill="var(--secondary-color)" rx="6" opacity="0.9"/>
+              <text x="450" y="315" text-anchor="middle" fill="white" font-size="16" font-weight="bold">SHAGOON</text>
+              <text x="450" y="330" text-anchor="middle" fill="white" font-size="12">FURNITURE</text>
+              
+              <!-- Parking Area -->
+              <rect x="380" y="370" width="140" height="30" fill="var(--background-alt)" rx="4" stroke="var(--border-color)"/>
+              <text x="450" y="388" text-anchor="middle" fill="var(--text-light)" font-size="10">🅿️ Free Parking</text>
+              
+              <!-- Location Pin with Animation Effect -->
+              <circle cx="450" cy="315" r="12" fill="var(--primary-color)"/>
+              <circle cx="450" cy="315" r="20" fill="var(--primary-color)" opacity="0.3">
+                <animate attributeName="r" values="20;30;20" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="450" cy="315" r="6" fill="white"/>
+              
+              <!-- Distance Markers -->
+              <line x1="350" y1="250" x2="380" y2="290" stroke="var(--accent-color)" stroke-width="2" stroke-dasharray="5,5"/>
+              <text x="365" y="270" fill="var(--accent-color)" font-size="10" font-weight="bold">5 min walk</text>
+              
+              <!-- Compass -->
+              <g transform="translate(50, 50)">
+                <circle cx="0" cy="0" r="25" fill="white" stroke="var(--border-color)" stroke-width="2"/>
+                <path d="M0,-20 L5,0 L0,20 L-5,0 Z" fill="var(--primary-color)"/>
+                <text x="0" y="-30" text-anchor="middle" fill="var(--text-color)" font-size="10" font-weight="bold">N</text>
+              </g>
+              
+              <!-- Street Names -->
+              <text x="420" y="245" text-anchor="middle" fill="var(--text-color)" font-size="12" font-weight="bold">Furniture Street</text>
+              <text x="375" y="320" text-anchor="middle" fill="var(--text-color)" font-size="10" transform="rotate(-90 375 320)">Design Ave</text>
+            </svg>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+              <button class="map-control-btn" onclick="openGoogleMaps()" title="Open in Google Maps">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                Google Maps
+              </button>
+              
+              <button class="map-control-btn" onclick="getDirections()" title="Get Directions">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M3 13h8V3h2v10h8l-9 9-9-9z"/>
+                </svg>
+                Directions
+              </button>
+              
+              <button class="map-control-btn" onclick="shareLocation()" title="Share Location">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+                </svg>
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Location Info Panel -->
+        <div class="location-info-panel">
+          <div class="location-details">
+            <h3>📍 Shagoon Furniture Showroom</h3>
+            <p class="address">123 Furniture Street, Design City, DC 12345</p>
+            
+            <div class="info-grid">
+              <div class="info-item">
+                <h4>🕒 Store Hours</h4>
+                <p>Monday - Saturday: 9:00 AM - 7:00 PM<br>Sunday: 11:00 AM - 5:00 PM</p>
+              </div>
+              
+              <div class="info-item">
+                <h4>📞 Contact</h4>
+                <p>Phone: +1 (555) 123-4567<br>Email: showroom@shagoonfurniture.com</p>
+              </div>
+              
+              <div class="info-item">
+                <h4>🚗 Parking</h4>
+                <p>Free parking available<br>Large vehicles welcome</p>
+              </div>
+            </div>
+          </div>
+          
+        
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <Footer />
+</Layout>
+
+<style>
+  /* Add spacing for fixed navbar */
+  .contact-hero {
+    padding-top: 100px;
+  }
+
+  /* Hero Section */
+  .contact-hero {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    color: white;
+    padding: 100px 0 4rem;
+    text-align: center;
+  }
+
+  .hero-title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .hero-description {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Contact Info Cards */
+  .contact-info-card {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .info-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+
+  .contact-info-card h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+  }
+
+  .contact-info-card p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Map Section */
+  .map-section {
+    background: white;
+  }
+
+  .map-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .map-container {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-hover);
+    position: relative;
+    background: white;
+  }
+
+  .interactive-map {
+    position: relative;
+    width: 100%;
+    min-height: 500px;
+  }
+
+  .map-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .map-control-btn {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .map-control-btn:hover {
+    background: var(--accent-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .location-info-panel {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    height: fit-content;
+  }
+
+  .location-details h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+
+  .address {
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .info-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .info-item h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .info-item p {
+    color: var(--text-light);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .directions-panel {
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+  }
+
+  .directions-panel h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+
+  .direction-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .direction-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--background-alt);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+  }
+
+  .direction-option:hover {
+    background: rgba(230, 126, 34, 0.1);
+    transform: translateX(5px);
+  }
+
+  .direction-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .direction-option strong {
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .direction-option p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* FAQ Section */
+  .faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .faq-item {
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+
+  .faq-question {
+    width: 100%;
+    padding: 1.5rem;
+    background: white;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    transition: var(--transition);
+  }
+
+  .faq-question:hover {
+    background: var(--background-alt);
+  }
+
+  .faq-question svg {
+    transition: var(--transition);
+    color: var(--accent-color);
+  }
+
+  .faq-question.active svg {
+    transform: rotate(45deg);
+  }
+
+  .faq-answer {
+    padding: 0 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: var(--background-alt);
+  }
+
+  .faq-answer.active {
+    padding: 1.5rem;
+    max-height: 200px;
+  }
+
+  .faq-answer p {
+    margin: 0;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .map-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .location-info-panel {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .contact-hero {
+      padding: 80px 0 3rem;
+    }
+
+    .map-controls {
+      position: static;
+      flex-direction: row;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .map-control-btn {
+      font-size: 0.8rem;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .interactive-map {
+      min-height: 400px;
+    }
+
+    .faq-question {
+      padding: 1rem;
+      font-size: 1rem;
+    }
+
+    .faq-answer.active {
+      padding: 1rem;
+    }
+
+    .info-grid {
+      gap: 1rem;
+    }
+
+    .direction-option {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .contact-info-card {
+      padding: 1.5rem;
+    }
+
+    .info-icon {
+      width: 60px;
+      height: 60px;
+    }
+
+    .interactive-map {
+      min-height: 350px;
+    }
+
+    .location-info-panel {
+      padding: 1rem;
+    }
+
+    .map-controls {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+
+  /* Animation delays */
+  .fade-in-up:nth-child(1) { animation-delay: 0.1s; }
+  .fade-in-up:nth-child(2) { animation-delay: 0.3s; }
+</style>
+
+<script>
+  // FAQ toggle functionality
+  function toggleFAQ(button: HTMLButtonElement) {
+    const faqItem = button.parentElement;
+    const answer = faqItem?.querySelector('.faq-answer') as HTMLDivElement;
+    const isActive = button.classList.contains('active');
+    
+    // Close all other FAQs
+    document.querySelectorAll('.faq-question').forEach(q => {
+      q.classList.remove('active');
+      const answerEl = q.parentElement?.querySelector('.faq-answer');
+      if (answerEl) {
+        answerEl.classList.remove('active');
+      }
+    });
+    
+    // Toggle current FAQ
+    if (!isActive && answer) {
+      button.classList.add('active');
+      answer.classList.add('active');
+    }
+  }
+
+  // Map functionality
+  function openGoogleMaps() {
+    const address = "123 Furniture Street, Design City, DC 12345";
+    const encodedAddress = encodeURIComponent(address);
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+    window.open(mapUrl, '_blank');
+  }
+
+  function getDirections() {
+    const address = "123 Furniture Street, Design City, DC 12345";
+    const encodedAddress = encodeURIComponent(address);
+    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+    window.open(directionsUrl, '_blank');
+  }
+
+  function shareLocation() {
+    const address = "Shagoon Furniture - 123 Furniture Street, Design City, DC 12345";
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'Shagoon Furniture Showroom',
+        text: 'Visit our furniture showroom',
+        url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+      }).catch(console.error);
+    } else {
+      // Fallback: copy to clipboard
+      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Location link copied to clipboard!');
+      }).catch(() => {
+        alert('Location: ' + address);
+      });
+    }
+  }
+
+  // Make functions available globally
+  (window as any).toggleFAQ = toggleFAQ;
+  (window as any).openGoogleMaps = openGoogleMaps;
+  (window as any).getDirections = getDirections;
+  (window as any).shareLocation = shareLocation;
+</script>
