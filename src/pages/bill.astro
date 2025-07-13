@@ -1,0 +1,247 @@
+---
+// Protected bill page - requires authentication
+import { AUTH_CONFIG } from '../config/auth.js';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing System - Shagoon Seating Chair</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #8b4513 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .bill-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #e67e22;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-text {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .description {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(231, 76, 60, 0.8);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e74c3c;
+            transform: translateY(-2px);
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(46, 204, 113, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .bill-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+
+            .welcome-text {
+                font-size: 2rem;
+            }
+
+            .description {
+                font-size: 1rem;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .logout-btn,
+            .status-indicator {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator">
+        🟢 Authenticated
+    </div>
+    
+    <button class="logout-btn" id="logoutBtn">
+        Logout
+    </button>
+
+    <div class="bill-container">
+        <div class="header">
+            <div class="logo">Shagoon Seating Chair</div>
+            <div class="subtitle">Billing Management System</div>
+        </div>
+        
+        <h1 class="welcome-text">Hello World!</h1>
+        
+        <p class="description">
+            Welcome to the secure billing system. You have successfully authenticated and can now access the billing features.
+        </p>
+        
+        <div class="actions">
+            <a href="/" class="btn btn-primary">
+                Back to Website
+            </a>
+            <a href="/portfolio" class="btn btn-secondary">
+                View Products
+            </a>
+        </div>
+    </div>
+
+    <script define:vars={{ AUTH_CONFIG }}>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== 'true') {
+                // Redirect to login if not authenticated
+                window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+                return;
+            }
+
+            // Add logout button event listener
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logout);
+            }
+        });
+
+        function logout() {
+            // Clear authentication
+            localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+            
+            // Show logout message
+            alert('You have been logged out successfully.');
+            
+            // Redirect to login
+            window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+        }
+
+        // Prevent going back to login page if already authenticated
+        window.addEventListener('popstate', (e) => {
+            if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true') {
+                // Stay on the current page
+                history.pushState(null, '', AUTH_CONFIG.REDIRECT_PATHS.BILL);
+            }
+        });
+
+        // Optional: Clear session on tab close (commented out to maintain persistence)
+        // window.addEventListener('beforeunload', () => {
+        //     localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+        // });
+    </script>
+</body>
+</html>

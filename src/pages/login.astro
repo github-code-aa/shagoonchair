@@ -1,0 +1,229 @@
+---
+// Login page for PIN authentication
+import { AUTH_CONFIG } from '../config/auth.js';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Shagoon Seating Chair</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #8b4513 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .pin-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .pin-input:focus {
+            outline: none;
+            border-color: #e67e22;
+        }
+
+        .login-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+
+        .login-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">Shagoon Seating Chair</div>
+        
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="pin">Enter PIN to access billing system:</label>
+                <input 
+                    type="password" 
+                    id="pin" 
+                    name="pin" 
+                    class="pin-input" 
+                    placeholder="• • • • • •"
+                    maxlength="6"
+                    required
+                    autocomplete="off"
+                >
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginBtn">
+                Access System
+            </button>
+            
+            <div class="error-message" id="errorMessage">
+                Invalid PIN. Please try again.
+            </div>
+            
+            <div class="loading" id="loadingMessage">
+                Authenticating...
+            </div>
+        </form>
+    </div>
+
+    <script define:vars={{ AUTH_CONFIG }}>
+        const CORRECT_PIN = AUTH_CONFIG.CORRECT_PIN;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('loginForm');
+            const pinInput = document.getElementById('pin');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const loadingMessage = document.getElementById('loadingMessage');
+
+            // Check if already authenticated
+            if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true') {
+                window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILL;
+                return;
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const pin = pinInput.value.trim();
+                
+                // Hide previous messages
+                errorMessage.classList.remove('show');
+                
+                if (pin === CORRECT_PIN) {
+                    // Set authentication flag
+                    localStorage.setItem(AUTH_CONFIG.SESSION_KEY, 'true');
+                    
+                    // Show success feedback
+                    loginBtn.textContent = 'Access Granted...';
+                    loginBtn.style.background = '#27ae60';
+                    loginBtn.disabled = true;
+                    
+                    // Redirect to bill page
+                    window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILL;
+                } else {
+                    // Show error
+                    errorMessage.classList.add('show');
+                    pinInput.value = '';
+                    pinInput.focus();
+                }
+            });
+
+            // Focus on pin input
+            pinInput.focus();
+
+            // Only allow numbers
+            pinInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                
+                // Hide error when user starts typing
+                if (errorMessage.classList.contains('show')) {
+                    errorMessage.classList.remove('show');
+                }
+            });
+
+            // Submit on Enter key
+            pinInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
