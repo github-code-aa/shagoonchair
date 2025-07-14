@@ -64,6 +64,7 @@
     ]
   },
   "contactForm": {
+    "isVisible": false,
     "title": "Send us a Message",
     "subtitle": "Have a question or ready to start your furniture journey? Fill out the form below and we'll get back to you shortly.",
     "fields": [

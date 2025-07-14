@@ -169,7 +169,8 @@ const contactData = contactDataRaw as ContactData;
     </section>
 
     <!-- Contact Form Section -->
-    <section class="section contact-form-section">
+
+    {contactData.contactForm.isVisible &&    <section class="section contact-form-section">
         <div class="container">
             <div class="section-header text-center mb-4">
                 <h2>{contactData.contactForm.title}</h2>
@@ -230,7 +231,8 @@ const contactData = contactDataRaw as ContactData;
                 </form>
             </div>
         </div>
-    </section>
+    </section>}
+ 
 
     <!-- FAQ Section -->
     <section class="section section-alt faq-section">

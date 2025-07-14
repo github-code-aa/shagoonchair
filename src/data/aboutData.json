@@ -46,28 +46,7 @@
     "title": "Meet Our Team",
     "subtitle": "The passionate craftspeople behind every piece of furniture",
     "members": [
-      {
-        "name": "Rajesh Kumar",
-        "position": "Master Craftsman & Founder",
-        "description": "With over 25 years of experience in furniture making, Rajesh established Shagoon Seating Chair with a vision to create timeless pieces.",
-        "image": {
-          "svg": "<circle cx=\"150\" cy=\"120\" r=\"60\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><circle cx=\"150\" cy=\"100\" r=\"25\" fill=\"var(--primary-color)\" opacity=\"0.8\"/><rect x=\"120\" y=\"140\" width=\"60\" height=\"40\" rx=\"20\" fill=\"var(--secondary-color)\" opacity=\"0.7\"/>",
-          "viewBox": "0 0 300 200",
-          "width": "100%",
-          "height": "200"
-        }
-      },
-      {
-        "name": "Priya Sharma",
-        "position": "Design Director",
-        "description": "Priya brings contemporary design sensibilities to traditional craftsmanship, ensuring every piece is both beautiful and functional.",
-        "image": {
-          "svg": "<circle cx=\"150\" cy=\"120\" r=\"60\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><circle cx=\"150\" cy=\"100\" r=\"25\" fill=\"var(--accent-color)\" opacity=\"0.8\"/><rect x=\"120\" y=\"140\" width=\"60\" height=\"40\" rx=\"20\" fill=\"var(--primary-color)\" opacity=\"0.7\"/>",
-          "viewBox": "0 0 300 200",
-          "width": "100%",
-          "height": "200"
-        }
-      },
+    
       {
         "name": "Arjun Patel",
         "position": "Quality Assurance Manager",

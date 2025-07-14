@@ -20,6 +20,7 @@ export interface ContactData {
     }>;
   };
   contactForm: {
+    isVisible:boolean;
     title: string;
     subtitle: string;
     fields: Array<{
