@@ -1,6 +1,7 @@
 ---
 // Protected bill page - requires authentication
 import { AUTH_CONFIG } from '../config/auth.js';
+import type { Bill, BillItem } from '../config/database';
 ---
 
 <!DOCTYPE html>
@@ -29,11 +30,349 @@ import { AUTH_CONFIG } from '../config/auth.js';
         .bill-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            padding: 3rem;
+            padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 95%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Menu System */
+        .menu-container {
+            text-align: center;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .menu-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .menu-card h3 {
+            color: #e67e22;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .menu-card p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        /* Content Views */
+        .content-view {
+            text-align: left;
+        }
+
+        .view-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .view-header h2 {
+            color: #e67e22;
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .back-btn, .refresh-btn, .preview-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover, .refresh-btn:hover, .preview-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Bills Table */
+        .bills-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-right: none;
+            border-radius: 6px 0 0 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-box button {
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: none;
+            border-radius: 0 6px 6px 0;
+            background: #e67e22;
+            color: white;
+            cursor: pointer;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filter-controls select {
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .bills-table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            overflow-x: auto;
+        }
+
+        .bills-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bills-table th,
+        .bills-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bills-table th {
+            background: rgba(46, 62, 80, 0.8);
+            font-weight: 600;
+            color: #e67e22;
+        }
+
+        .bills-table td {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .bills-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-paid { background: #27ae60; color: white; }
+        .status-pending { background: #f39c12; color: white; }
+        .status-partial { background: #e74c3c; color: white; }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            margin: 0 0.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn.view { background: #3498db; color: white; }
+        .action-btn.edit { background: #e67e22; color: white; }
+        .action-btn.delete { background: #e74c3c; color: white; }
+
+        /* Bill Form */
+        .bill-form {
+            max-width: 100%;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            color: #e67e22;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Bill Items */
+        .bill-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .bill-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .item-number {
+            color: #e67e22;
+            font-weight: 600;
+        }
+
+        .remove-item {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        /* Totals */
+        .totals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .totals-right {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .total-final {
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            padding-top: 1rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #e67e22;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
         }
 
         .header {
@@ -187,27 +526,223 @@ import { AUTH_CONFIG } from '../config/auth.js';
             <div class="subtitle">Billing Management System</div>
         </div>
         
-        <h1 class="welcome-text">Hello World!</h1>
-        
-        <p class="description">
-            Welcome to the secure billing system. You have successfully authenticated and can now access the billing features.
-        </p>
-        
-        <div class="actions">
-            <a href="/" class="btn btn-primary">
-                Back to Website
-            </a>
-            <a href="/portfolio" class="btn btn-secondary">
-                View Products
-            </a>
+        <!-- Main Menu -->
+        <div id="mainMenu" class="menu-container">
+            <h1 class="welcome-text">Billing System</h1>
+            
+            <p class="description">
+                Choose an option to manage your billing operations
+            </p>
+            
+            <div class="menu-grid">
+                <div class="menu-card" onclick="showAllBills()">
+                    <div class="menu-icon">📋</div>
+                    <h3>View All Bills</h3>
+                    <p>Browse and manage existing bills</p>
+                </div>
+                
+                <div class="menu-card" onclick="showGenerateBill()">
+                    <div class="menu-icon">🧾</div>
+                    <h3>Generate New Bill</h3>
+                    <p>Create a new bill for customers</p>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <a href="/" class="btn btn-secondary">
+                    Back to Website
+                </a>
+                <a href="/portfolio" class="btn btn-secondary">
+                    View Products
+                </a>
+            </div>
+        </div>
+
+        <!-- All Bills View -->
+        <div id="allBillsView" class="content-view" style="display: none;">
+            <div class="view-header">
+                <button class="back-btn" onclick="showMainMenu()">← Back</button>
+                <h2>All Bills</h2>
+                <button class="refresh-btn" onclick="loadAllBills()">🔄 Refresh</button>
+            </div>
+            
+            <div class="bills-controls">
+                <div class="search-box">
+                    <input type="text" id="billSearch" placeholder="Search bills by customer name or bill number...">
+                    <button onclick="searchBills()">🔍</button>
+                </div>
+                
+                <div class="filter-controls">
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="paid">Paid</option>
+                        <option value="pending">Pending</option>
+                        <option value="partial">Partial</option>
+                    </select>
+                    
+                    <select id="paymentFilter">
+                        <option value="">All Payments</option>
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="upi">UPI</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="bills-table-container">
+                <table class="bills-table">
+                    <thead>
+                        <tr>
+                            <th>Bill #</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billsTableBody">
+                        <tr>
+                            <td colspan="8" class="loading">Loading bills...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination" id="billsPagination">
+                <!-- Pagination will be generated dynamically -->
+            </div>
+        </div>
+
+        <!-- Generate Bill View -->
+        <div id="generateBillView" class="content-view" style="display: none;">
+            <div class="view-header">
+                <button class="back-btn" onclick="showMainMenu()">← Back</button>
+                <h2>Generate New Bill</h2>
+                <button class="preview-btn" onclick="previewBill()" style="display: none;">👁️ Preview</button>
+            </div>
+            
+            <form id="billForm" class="bill-form">
+                <!-- Customer Information -->
+                <div class="form-section">
+                    <h3>Customer Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="customerName">Customer Name *</label>
+                            <input type="text" id="customerName" name="customerName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="customerPhone">Phone Number *</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="customerEmail">Email</label>
+                            <input type="email" id="customerEmail" name="customerEmail">
+                        </div>
+                        
+                        <div class="form-group form-group-full">
+                            <label for="customerAddress">Address</label>
+                            <textarea id="customerAddress" name="customerAddress" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bill Items -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3>Bill Items</h3>
+                        <button type="button" class="btn btn-primary btn-small" onclick="addBillItem()">+ Add Item</button>
+                    </div>
+                    
+                    <div id="billItems" class="bill-items">
+                        <!-- Items will be added dynamically -->
+                    </div>
+                </div>
+
+                <!-- Totals and Payment -->
+                <div class="form-section">
+                    <h3>Payment Details</h3>
+                    <div class="totals-grid">
+                        <div class="totals-left">
+                            <div class="form-group">
+                                <label for="discountPercentage">Discount %</label>
+                                <input type="number" id="discountPercentage" name="discountPercentage" min="0" max="100" step="0.01" value="0" onchange="calculateTotals()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="taxPercentage">Tax %</label>
+                                <input type="number" id="taxPercentage" name="taxPercentage" min="0" max="100" step="0.01" value="18" onchange="calculateTotals()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="paymentMethod">Payment Method *</label>
+                                <select id="paymentMethod" name="paymentMethod" required>
+                                    <option value="">Select Payment Method</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="card">Card</option>
+                                    <option value="upi">UPI</option>
+                                    <option value="bank_transfer">Bank Transfer</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="paymentStatus">Payment Status *</label>
+                                <select id="paymentStatus" name="paymentStatus" required>
+                                    <option value="paid">Paid</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="partial">Partial</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="totals-right">
+                            <div class="total-line">
+                                <span>Subtotal:</span>
+                                <span id="subtotalAmount">₹0.00</span>
+                            </div>
+                            <div class="total-line">
+                                <span>Discount:</span>
+                                <span id="discountAmount">₹0.00</span>
+                            </div>
+                            <div class="total-line">
+                                <span>Tax:</span>
+                                <span id="taxAmount">₹0.00</span>
+                            </div>
+                            <div class="total-line total-final">
+                                <span>Total Amount:</span>
+                                <span id="totalAmount">₹0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="billNotes">Notes</label>
+                        <textarea id="billNotes" name="billNotes" rows="3" placeholder="Additional notes or comments..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+                    <button type="button" class="btn btn-primary" onclick="saveBill()">Save Bill</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script define:vars={{ AUTH_CONFIG }}>
+        // Global variables
+        let bills = [];
+        let currentPage = 1;
+        let itemCounter = 0;
+
         // Check authentication on page load
         document.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== 'true') {
-                // Redirect to login if not authenticated
                 window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
                 return;
             }
@@ -217,31 +752,397 @@ import { AUTH_CONFIG } from '../config/auth.js';
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', logout);
             }
+
+            // Initialize database tables
+            initializeDatabase();
         });
 
+        // Navigation functions
+        function showMainMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('allBillsView').style.display = 'none';
+            document.getElementById('generateBillView').style.display = 'none';
+        }
+
+        function showAllBills() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('allBillsView').style.display = 'block';
+            document.getElementById('generateBillView').style.display = 'none';
+            loadAllBills();
+        }
+
+        function showGenerateBill() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('allBillsView').style.display = 'none';
+            document.getElementById('generateBillView').style.display = 'block';
+            clearForm();
+            addBillItem(); // Add first item by default
+        }
+
+        // Database functions
+        async function initializeDatabase() {
+            try {
+                // Database initialization is handled automatically by the API
+                console.log('Database ready - using SQLite backend');
+            } catch (error) {
+                console.error('Database initialization failed:', error);
+            }
+        }
+
+        // Bill management functions
+        async function loadAllBills() {
+            const tableBody = document.getElementById('billsTableBody');
+            tableBody.innerHTML = '<tr><td colspan="8" class="loading">Loading bills...</td></tr>';
+
+            try {
+                const response = await fetch('/api/bills?action=list');
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                bills = data.bills || [];
+                displayBills(bills);
+            } catch (error) {
+                console.error('Error loading bills:', error);
+                tableBody.innerHTML = '<tr><td colspan="8" class="error">Error loading bills. Please try again.</td></tr>';
+            }
+        }
+
+        function displayBills(billsToShow) {
+            const tableBody = document.getElementById('billsTableBody');
+            
+            if (billsToShow.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="no-data">No bills found</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = billsToShow.map(bill => `
+                <tr>
+                    <td><strong>${bill.bill_number}</strong></td>
+                    <td>${bill.customer_name}</td>
+                    <td>${bill.customer_phone}</td>
+                    <td>₹${bill.total_amount.toFixed(2)}</td>
+                    <td><span class="status-badge status-${bill.payment_status}">${bill.payment_status.toUpperCase()}</span></td>
+                    <td>${bill.payment_method.toUpperCase()}</td>
+                    <td>${new Date(bill.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn view" onclick="viewBill('${bill.bill_number}')">View</button>
+                        <button class="action-btn edit" onclick="editBill('${bill.bill_number}')">Edit</button>
+                        <button class="action-btn delete" onclick="deleteBill('${bill.bill_number}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function searchBills() {
+            const searchTerm = document.getElementById('billSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const paymentFilter = document.getElementById('paymentFilter').value;
+
+            // Build query parameters
+            const params = new URLSearchParams();
+            params.append('action', 'list');
+            
+            if (searchTerm) {
+                params.append('search', searchTerm);
+            }
+            if (statusFilter) {
+                params.append('status', statusFilter);
+            }
+            if (paymentFilter) {
+                params.append('payment', paymentFilter);
+            }
+
+            // Fetch filtered bills
+            fetch(`/api/bills?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    bills = data.bills || [];
+                    displayBills(bills);
+                })
+                .catch(error => {
+                    console.error('Error searching bills:', error);
+                    const tableBody = document.getElementById('billsTableBody');
+                    tableBody.innerHTML = '<tr><td colspan="8" class="error">Error searching bills</td></tr>';
+                });
+        }
+
+        // Bill item management
+        function addBillItem() {
+            itemCounter++;
+            const billItems = document.getElementById('billItems');
+            
+            const itemHtml = `
+                <div class="bill-item" id="item-${itemCounter}">
+                    <div class="item-header">
+                        <span class="item-number">Item #${itemCounter}</span>
+                        <button type="button" class="remove-item" onclick="removeBillItem(${itemCounter})">Remove</button>
+                    </div>
+                    <div class="item-grid">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" name="productName" required onchange="calculateTotals()">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="productCategory" onchange="calculateTotals()">
+                                <option value="Chair">Chair</option>
+                                <option value="Table">Table</option>
+                                <option value="Sofa">Sofa</option>
+                                <option value="Cabinet">Cabinet</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" name="quantity" min="1" value="1" required onchange="calculateItemTotal(${itemCounter}); calculateTotals()">
+                        </div>
+                        <div class="form-group">
+                            <label>Unit Price *</label>
+                            <input type="number" name="unitPrice" min="0" step="0.01" required onchange="calculateItemTotal(${itemCounter}); calculateTotals()">
+                        </div>
+                        <div class="form-group">
+                            <label>Total</label>
+                            <input type="number" name="totalPrice" readonly class="total-field">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label>Description</label>
+                        <input type="text" name="description" placeholder="Optional description...">
+                    </div>
+                </div>
+            `;
+            
+            billItems.insertAdjacentHTML('beforeend', itemHtml);
+            calculateTotals();
+        }
+
+        function removeBillItem(itemId) {
+            const item = document.getElementById(`item-${itemId}`);
+            if (item) {
+                item.remove();
+                calculateTotals();
+            }
+        }
+
+        function calculateItemTotal(itemId) {
+            const item = document.getElementById(`item-${itemId}`);
+            const quantity = parseFloat(item.querySelector('[name="quantity"]').value) || 0;
+            const unitPrice = parseFloat(item.querySelector('[name="unitPrice"]').value) || 0;
+            const totalField = item.querySelector('[name="totalPrice"]');
+            
+            totalField.value = (quantity * unitPrice).toFixed(2);
+        }
+
+        function calculateTotals() {
+            const items = document.querySelectorAll('.bill-item');
+            let subtotal = 0;
+
+            items.forEach(item => {
+                const quantity = parseFloat(item.querySelector('[name="quantity"]').value) || 0;
+                const unitPrice = parseFloat(item.querySelector('[name="unitPrice"]').value) || 0;
+                const itemTotal = quantity * unitPrice;
+                
+                item.querySelector('[name="totalPrice"]').value = itemTotal.toFixed(2);
+                subtotal += itemTotal;
+            });
+
+            const discountPercentage = parseFloat(document.getElementById('discountPercentage').value) || 0;
+            const taxPercentage = parseFloat(document.getElementById('taxPercentage').value) || 0;
+
+            const discountAmount = (subtotal * discountPercentage) / 100;
+            const taxableAmount = subtotal - discountAmount;
+            const taxAmount = (taxableAmount * taxPercentage) / 100;
+            const totalAmount = taxableAmount + taxAmount;
+
+            document.getElementById('subtotalAmount').textContent = `₹${subtotal.toFixed(2)}`;
+            document.getElementById('discountAmount').textContent = `₹${discountAmount.toFixed(2)}`;
+            document.getElementById('taxAmount').textContent = `₹${taxAmount.toFixed(2)}`;
+            document.getElementById('totalAmount').textContent = `₹${totalAmount.toFixed(2)}`;
+        }
+
+        // Form management
+        function clearForm() {
+            document.getElementById('billForm').reset();
+            document.getElementById('billItems').innerHTML = '';
+            itemCounter = 0;
+            calculateTotals();
+        }
+
+        async function saveBill() {
+            const form = document.getElementById('billForm');
+            const formData = new FormData(form);
+            
+            // Validate form
+            if (!form.checkValidity()) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Collect bill items
+            const items = [];
+            const itemElements = document.querySelectorAll('.bill-item');
+            
+            itemElements.forEach(item => {
+                const productName = item.querySelector('[name="productName"]').value;
+                const productCategory = item.querySelector('[name="productCategory"]').value;
+                const quantity = parseInt(item.querySelector('[name="quantity"]').value);
+                const unitPrice = parseFloat(item.querySelector('[name="unitPrice"]').value);
+                const totalPrice = parseFloat(item.querySelector('[name="totalPrice"]').value);
+                const description = item.querySelector('[name="description"]').value;
+
+                if (productName && quantity && unitPrice) {
+                    items.push({
+                        product_name: productName,
+                        product_category: productCategory,
+                        quantity,
+                        unit_price: unitPrice,
+                        total_price: totalPrice,
+                        description
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                alert('Please add at least one item to the bill');
+                return;
+            }
+
+            // Calculate totals
+            const subtotal = items.reduce((sum, item) => sum + item.total_price, 0);
+            const discountPercentage = parseFloat(document.getElementById('discountPercentage').value) || 0;
+            const taxPercentage = parseFloat(document.getElementById('taxPercentage').value) || 0;
+            const discountAmount = (subtotal * discountPercentage) / 100;
+            const taxableAmount = subtotal - discountAmount;
+            const taxAmount = (taxableAmount * taxPercentage) / 100;
+            const totalAmount = taxableAmount + taxAmount;
+
+            const billData = {
+                bill_number: `BILL-${Date.now()}`,
+                customer_name: formData.get('customerName'),
+                customer_phone: formData.get('customerPhone'),
+                customer_email: formData.get('customerEmail'),
+                customer_address: formData.get('customerAddress'),
+                items,
+                subtotal,
+                tax_percentage: taxPercentage,
+                tax_amount: taxAmount,
+                discount_percentage: discountPercentage,
+                discount_amount: discountAmount,
+                total_amount: totalAmount,
+                payment_method: formData.get('paymentMethod'),
+                payment_status: formData.get('paymentStatus'),
+                notes: formData.get('billNotes'),
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch('/api/bills', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(billData)
+                });
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                alert(`Bill ${billData.bill_number} saved successfully!`);
+                clearForm();
+                addBillItem(); // Add first item for next bill
+                
+            } catch (error) {
+                console.error('Error saving bill:', error);
+                alert('Error saving bill. Please try again.');
+            }
+        }
+
+        // Bill actions
+        async function viewBill(billNumber) {
+            try {
+                const response = await fetch(`/api/bills?action=get&billNumber=${billNumber}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                const bill = data.bill;
+                alert(`Bill Details:\n\nBill Number: ${bill.bill_number}\nCustomer: ${bill.customer_name}\nPhone: ${bill.customer_phone}\nTotal Amount: ₹${bill.total_amount}\nPayment Status: ${bill.payment_status}\nPayment Method: ${bill.payment_method}\nDate: ${new Date(bill.created_at).toLocaleDateString()}`);
+                
+                // In real implementation, this would open a detailed view modal
+            } catch (error) {
+                console.error('Error viewing bill:', error);
+                alert('Error loading bill details');
+            }
+        }
+
+        function editBill(billNumber) {
+            // In real implementation, this would populate the form with bill data
+            alert(`Edit functionality for bill ${billNumber} would be implemented here`);
+            // You could add: showGenerateBill(); and populate form fields with existing data
+        }
+
+        async function deleteBill(billNumber) {
+            if (confirm(`Are you sure you want to delete bill ${billNumber}?`)) {
+                try {
+                    const response = await fetch(`/api/bills?billNumber=${billNumber}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    alert(`Bill ${billNumber} deleted successfully`);
+                    loadAllBills(); // Reload the bills list
+                } catch (error) {
+                    console.error('Error deleting bill:', error);
+                    alert('Error deleting bill. Please try again.');
+                }
+            }
+        }
+
+        // Authentication functions
         function logout() {
-            // Clear authentication
             localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-            
-            // Show logout message
             alert('You have been logged out successfully.');
-            
-            // Redirect to login
             window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
         }
 
         // Prevent going back to login page if already authenticated
         window.addEventListener('popstate', (e) => {
             if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true') {
-                // Stay on the current page
                 history.pushState(null, '', AUTH_CONFIG.REDIRECT_PATHS.BILL);
             }
         });
 
-        // Optional: Clear session on tab close (commented out to maintain persistence)
-        // window.addEventListener('beforeunload', () => {
-        //     localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-        // });
+        // Make functions available globally
+        window.showMainMenu = showMainMenu;
+        window.showAllBills = showAllBills;
+        window.showGenerateBill = showGenerateBill;
+        window.loadAllBills = loadAllBills;
+        window.searchBills = searchBills;
+        window.addBillItem = addBillItem;
+        window.removeBillItem = removeBillItem;
+        window.calculateTotals = calculateTotals;
+        window.clearForm = clearForm;
+        window.saveBill = saveBill;
+        window.viewBill = viewBill;
+        window.editBill = editBill;
+        window.deleteBill = deleteBill;
     </script>
 </body>
 </html>
