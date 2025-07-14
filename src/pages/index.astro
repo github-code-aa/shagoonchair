@@ -2,9 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import homeData from '../data/homeData.json';
 ---
 
-<Layout title="Shagoon Seating Chair - Premium Chairs & Tables Mumbai | Modern Furniture" description="Discover Shagoon Seating Chair's exquisite collection of premium chairs and tables in Mumbai. Quality craftsmanship, modern design, and comfort for your home and office furniture needs.">
+<Layout title={homeData.page.title} description={homeData.page.description}>
   <Navigation />
   
   <!-- Hero Section -->
@@ -12,32 +13,22 @@ import Footer from '../components/Footer.astro';
     <div class="hero-content">
       <div class="container">
         <div class="hero-text">
-          <h1 class="hero-title fade-in-up">
-            Premium Chairs & Tables Mumbai | <span class="highlight">Shagoon Seating Chair</span>
-          </h1>
+          <h1 class="hero-title fade-in-up" set:html={homeData.hero.title}></h1>
           <p class="hero-description fade-in-up">
-            Discover Shagoon Seating Chair's exquisite collection of premium furniture in Mumbai. 
-            Our chairs and tables combine comfort, style, and exceptional craftsmanship to 
-            transform your home and office spaces with furniture that tells your story.
+            {homeData.hero.description}
           </p>
           <div class="hero-buttons fade-in-up">
-            <a href="/portfolio" class="btn btn-primary">Explore Collection</a>
-            <a href="/about" class="btn btn-secondary">Learn More</a>
+            {homeData.hero.buttons.map(button => (
+              <a href={button.href} class={`btn btn-${button.type}`}>{button.text}</a>
+            ))}
           </div>
         </div>
       </div>
     </div>
     <div class="hero-image">
       <div class="image-placeholder">
-        <svg width="400" height="300" viewBox="0 0 400 300" fill="none">
-          <!-- Modern Chair Illustration -->
-          <rect x="150" y="100" width="100" height="120" rx="10" fill="var(--accent-color)" opacity="0.8"/>
-          <rect x="130" y="80" width="140" height="20" rx="10" fill="var(--secondary-color)"/>
-          <rect x="140" y="220" width="20" height="60" rx="5" fill="var(--primary-color)"/>
-          <rect x="240" y="220" width="20" height="60" rx="5" fill="var(--primary-color)"/>
-          <!-- Table -->
-          <ellipse cx="320" cy="200" rx="60" ry="8" fill="var(--secondary-color)"/>
-          <rect x="315" y="200" width="10" height="50" rx="5" fill="var(--primary-color)"/>
+        <svg width={homeData.hero.image.width} height={homeData.hero.image.height} viewBox={homeData.hero.image.viewBox} fill="none">
+          <Fragment set:html={homeData.hero.image.svg} />
         </svg>
       </div>
     </div>
@@ -47,40 +38,22 @@ import Footer from '../components/Footer.astro';
   <section class="section features">
     <div class="container">
       <div class="section-header text-center mb-4">
-        <h2>Why Choose Shagoon Seating Chair?</h2>
-        <p>We craft furniture that doesn't just fill your space—it elevates it</p>
+        <h2>{homeData.features.title}</h2>
+        <p>{homeData.features.subtitle}</p>
       </div>
       
       <div class="grid grid-3">
-        <div class="feature-card card">
-          <div class="feature-icon">
-            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
+        {homeData.features.items.map(feature => (
+          <div class="feature-card card">
+            <div class="feature-icon">
+              <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                <Fragment set:html={feature.icon} />
+              </svg>
+            </div>
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
           </div>
-          <h3>Premium Quality</h3>
-          <p>Handcrafted using the finest materials and traditional techniques, ensuring each piece stands the test of time.</p>
-        </div>
-        
-        <div class="feature-card card">
-          <div class="feature-icon">
-            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-          </div>
-          <h3>Modern Design</h3>
-          <p>Contemporary aesthetics that seamlessly blend with any interior style, from minimalist to luxurious.</p>
-        </div>
-        
-        <div class="feature-card card">
-          <div class="feature-icon">
-            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </div>
-          <h3>Comfort First</h3>
-          <p>Ergonomically designed for maximum comfort, because beautiful furniture should feel as good as it looks.</p>
-        </div>
+        ))}
       </div>
     </div>
   </section>
@@ -89,46 +62,27 @@ import Footer from '../components/Footer.astro';
   <section class="section section-alt categories">
     <div class="container">
       <div class="section-header text-center mb-4">
-        <h2>Premium Furniture Collections in Mumbai</h2>
-        <p>Explore our carefully curated furniture collections designed for modern Indian homes and offices</p>
+        <h2>{homeData.categories.title}</h2>
+        <p>{homeData.categories.subtitle}</p>
       </div>
       
       <div class="grid grid-2">
-        <div class="category-card card">
-          <div class="category-image">
-            <div class="image-placeholder">
-              <svg width="100%" height="200" viewBox="0 0 300 200" fill="none">
-                <rect x="100" y="50" width="100" height="120" rx="15" fill="var(--accent-color)" opacity="0.3"/>
-                <rect x="80" y="30" width="140" height="25" rx="12" fill="var(--secondary-color)" opacity="0.7"/>
-                <rect x="90" y="170" width="25" height="50" rx="8" fill="var(--primary-color)"/>
-                <rect x="185" y="170" width="25" height="50" rx="8" fill="var(--primary-color)"/>
-              </svg>
+        {homeData.categories.items.map(category => (
+          <div class="category-card card">
+            <div class="category-image">
+              <div class="image-placeholder">
+                <svg width="100%" height={category.image.height} viewBox={category.image.viewBox} fill="none">
+                  <Fragment set:html={category.image.svg} />
+                </svg>
+              </div>
+            </div>
+            <div class="category-content">
+              <h3>{category.title}</h3>
+              <p>{category.description}</p>
+              <a href={category.href} class="btn btn-primary">{category.buttonText}</a>
             </div>
           </div>
-          <div class="category-content">
-            <h3>Premium Chairs</h3>
-            <p>From ergonomic office chairs to elegant dining seats, discover comfort redefined.</p>
-            <a href="/portfolio#chairs" class="btn btn-primary">View Chairs</a>
-          </div>
-        </div>
-        
-        <div class="category-card card">
-          <div class="category-image">
-            <div class="image-placeholder">
-              <svg width="100%" height="200" viewBox="0 0 300 200" fill="none">
-                <ellipse cx="150" cy="100" rx="120" ry="15" fill="var(--secondary-color)" opacity="0.7"/>
-                <rect x="70" y="100" width="15" height="60" rx="7" fill="var(--primary-color)"/>
-                <rect x="215" y="100" width="15" height="60" rx="7" fill="var(--primary-color)"/>
-                <rect x="140" y="100" width="20" height="60" rx="10" fill="var(--primary-color)"/>
-              </svg>
-            </div>
-          </div>
-          <div class="category-content">
-            <h3>Elegant Tables</h3>
-            <p>Dining tables, coffee tables, and desks that become the centerpiece of your space.</p>
-            <a href="/portfolio#tables" class="btn btn-primary">View Tables</a>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   </section>
@@ -137,48 +91,27 @@ import Footer from '../components/Footer.astro';
   <section class="section testimonials">
     <div class="container">
       <div class="section-header text-center mb-4">
-        <h2>Customer Reviews - Mumbai Furniture Store</h2>
-        <p>Satisfied customers across Mumbai trust Shagoon Seating Chair for premium furniture</p>
+        <h2>{homeData.testimonials.title}</h2>
+        <p>{homeData.testimonials.subtitle}</p>
       </div>
       
       <div class="grid grid-3">
-        <div class="testimonial-card card">
-          <div class="testimonial-content">
-            <div class="rating">
-              ★★★★★
-            </div>
-            <p>"Absolutely love my new dining set from Shagoon Seating Chair! The quality is exceptional and it's become the heart of our Mumbai home."</p>
-            <div class="testimonial-author">
-              <strong>Sarah Johnson</strong>
-              <span>Interior Designer, Mumbai</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="testimonial-card card">
-          <div class="testimonial-content">
-            <div class="rating">
-              ★★★★★
-            </div>
-            <p>"The office chair I purchased from Shagoon Seating Chair has completely transformed my work-from-home experience in Mumbai. Comfort and style combined perfectly."</p>
-            <div class="testimonial-author">
-              <strong>Michael Chen</strong>
-              <span>Software Developer, Mumbai</span>
+        {homeData.testimonials.items.map(testimonial => (
+          <div class="testimonial-card card">
+            <div class="testimonial-content">
+              <div class="rating">
+                {'★'.repeat(testimonial.rating)}
+              </div>
+              <p>"{testimonial.text}"</p>
+              <div class="testimonial-author">
+                <strong>{testimonial.author}</strong>
+                <span>{testimonial.position}</span>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="testimonial-card card">
-          <div class="testimonial-content">
-            <div class="rating">
-              ★★★★★
-            </div>
-            <p>"Professional service and beautiful furniture from Shagoon Seating Chair Mumbai showroom. The coffee table is a conversation starter every time we have guests."</p>
-            <div class="testimonial-author">
-              <strong>Emily Davis</strong>
-              <span>Marketing Executive, Mumbai</span>
-            </div>
-          </div>
+        ))}
+      </div>
+    </div>
   </section>
 
   <Footer />

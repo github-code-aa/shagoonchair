@@ -1,0 +1,304 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Executive Office Chair",
+      "category": ["chairs"],
+      "price": "₹45,000",
+      "shortDescription": "Ergonomic design with premium leather upholstery",
+      "longDescription": "Our Executive Office Chair combines luxury and functionality, featuring premium leather upholstery and advanced ergonomic design. Perfect for long work sessions, this chair provides exceptional lumbar support and adjustable features to ensure maximum comfort throughout your workday.",
+      "features": [
+        "Premium genuine leather upholstery",
+        "Advanced lumbar support system",
+        "Height-adjustable seat with gas lift",
+        "360-degree swivel with smooth casters",
+        "Padded armrests with soft-touch finish",
+        "Weight capacity up to 150kg"
+      ],
+      "specifications": {
+        "Material": "Genuine Leather & Steel Frame",
+        "Dimensions": "65cm (W) x 70cm (D) x 110-120cm (H)",
+        "Seat Height": "45-55cm (Adjustable)",
+        "Weight": "25kg",
+        "Warranty": "5 Years",
+        "Assembly": "Required"
+      },
+      "tags": ["Ergonomic", "Leather", "Executive", "Adjustable"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"100\" y=\"80\" width=\"100\" height=\"120\" rx=\"15\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><rect x=\"80\" y=\"60\" width=\"140\" height=\"25\" rx=\"12\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"90\" y=\"200\" width=\"25\" height=\"50\" rx=\"8\" fill=\"var(--primary-color)\"/><rect x=\"185\" y=\"200\" width=\"25\" height=\"50\" rx=\"8\" fill=\"var(--primary-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"100\" y=\"80\" width=\"100\" height=\"120\" rx=\"15\" fill=\"var(--primary-color)\" opacity=\"0.7\"/><rect x=\"80\" y=\"60\" width=\"140\" height=\"25\" rx=\"12\" fill=\"var(--accent-color)\" opacity=\"0.9\"/><rect x=\"90\" y=\"200\" width=\"25\" height=\"50\" rx=\"8\" fill=\"var(--secondary-color)\"/><rect x=\"185\" y=\"200\" width=\"25\" height=\"50\" rx=\"8\" fill=\"var(--secondary-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"100\" y=\"80\" width=\"100\" height=\"120\" rx=\"15\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"80\" y=\"60\" width=\"140\" height=\"25\" rx=\"12\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><rect x=\"90\" y=\"200\" width=\"25\" height=\"50\" rx=\"8\" fill=\"var(--accent-color)\"/><rect x=\"185\" y=\"200\" width=\"25\" height=\"50\" rx=\"8\" fill=\"var(--accent-color)\"/></svg>"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Modern Dining Chair",
+      "category": ["chairs"],
+      "price": "₹12,500",
+      "shortDescription": "Sleek design with comfortable cushioning",
+      "longDescription": "Sleek and contemporary, our Modern Dining Chair brings style and comfort to any dining space. Crafted with premium materials and featuring clean lines, this chair complements both modern and traditional decor while providing exceptional seating comfort.",
+      "features": [
+        "Contemporary minimalist design",
+        "High-density foam cushioning",
+        "Durable fabric upholstery",
+        "Solid wood frame construction",
+        "Easy-to-clean surface",
+        "Stackable design for storage"
+      ],
+      "specifications": {
+        "Material": "Fabric & Solid Wood",
+        "Dimensions": "45cm (W) x 50cm (D) x 85cm (H)",
+        "Seat Height": "45cm",
+        "Weight": "6kg",
+        "Warranty": "3 Years",
+        "Assembly": "Minimal Required"
+      },
+      "tags": ["Modern", "Comfort", "Dining", "Minimalist"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"110\" y=\"90\" width=\"80\" height=\"100\" rx=\"12\" fill=\"var(--primary-color)\" opacity=\"0.5\"/><rect x=\"95\" y=\"70\" width=\"110\" height=\"20\" rx=\"10\" fill=\"var(--accent-color)\" opacity=\"0.7\"/><rect x=\"105\" y=\"190\" width=\"20\" height=\"45\" rx=\"6\" fill=\"var(--secondary-color)\"/><rect x=\"175\" y=\"190\" width=\"20\" height=\"45\" rx=\"6\" fill=\"var(--secondary-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"110\" y=\"90\" width=\"80\" height=\"100\" rx=\"12\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><rect x=\"95\" y=\"70\" width=\"110\" height=\"20\" rx=\"10\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"105\" y=\"190\" width=\"20\" height=\"45\" rx=\"6\" fill=\"var(--primary-color)\"/><rect x=\"175\" y=\"190\" width=\"20\" height=\"45\" rx=\"6\" fill=\"var(--primary-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"110\" y=\"90\" width=\"80\" height=\"100\" rx=\"12\" fill=\"var(--secondary-color)\" opacity=\"0.7\"/><rect x=\"95\" y=\"70\" width=\"110\" height=\"20\" rx=\"10\" fill=\"var(--primary-color)\" opacity=\"0.5\"/><rect x=\"105\" y=\"190\" width=\"20\" height=\"45\" rx=\"6\" fill=\"var(--accent-color)\"/><rect x=\"175\" y=\"190\" width=\"20\" height=\"45\" rx=\"6\" fill=\"var(--accent-color)\"/></svg>"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Vintage Armchair",
+      "category": ["chairs"],
+      "price": "₹28,000",
+      "shortDescription": "Classic design with rich wood finish",
+      "longDescription": "Step back in time with our elegant Vintage Armchair, featuring classic design elements and rich wood finish. This timeless piece combines old-world charm with modern comfort, making it a perfect statement piece for any sophisticated living space.",
+      "features": [
+        "Classic vintage design aesthetic",
+        "Rich mahogany wood finish",
+        "Hand-carved decorative elements",
+        "Premium fabric cushioning",
+        "Solid hardwood construction",
+        "Antique brass hardware accents"
+      ],
+      "specifications": {
+        "Material": "Mahogany Wood & Premium Fabric",
+        "Dimensions": "70cm (W) x 75cm (D) x 95cm (H)",
+        "Seat Height": "42cm",
+        "Weight": "18kg",
+        "Warranty": "5 Years",
+        "Assembly": "Professional Recommended"
+      },
+      "tags": ["Vintage", "Wood", "Classic", "Handcrafted"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"105\" y=\"85\" width=\"90\" height=\"110\" rx=\"18\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><rect x=\"85\" y=\"65\" width=\"130\" height=\"22\" rx=\"11\" fill=\"var(--primary-color)\" opacity=\"0.8\"/><rect x=\"95\" y=\"195\" width=\"22\" height=\"50\" rx=\"7\" fill=\"var(--accent-color)\"/><rect x=\"183\" y=\"195\" width=\"22\" height=\"50\" rx=\"7\" fill=\"var(--accent-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"105\" y=\"85\" width=\"90\" height=\"110\" rx=\"18\" fill=\"var(--primary-color)\" opacity=\"0.7\"/><rect x=\"85\" y=\"65\" width=\"130\" height=\"22\" rx=\"11\" fill=\"var(--accent-color)\" opacity=\"0.9\"/><rect x=\"95\" y=\"195\" width=\"22\" height=\"50\" rx=\"7\" fill=\"var(--secondary-color)\"/><rect x=\"183\" y=\"195\" width=\"22\" height=\"50\" rx=\"7\" fill=\"var(--secondary-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"105\" y=\"85\" width=\"90\" height=\"110\" rx=\"18\" fill=\"var(--accent-color)\" opacity=\"0.8\"/><rect x=\"85\" y=\"65\" width=\"130\" height=\"22\" rx=\"11\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><rect x=\"95\" y=\"195\" width=\"22\" height=\"50\" rx=\"7\" fill=\"var(--primary-color)\"/><rect x=\"183\" y=\"195\" width=\"22\" height=\"50\" rx=\"7\" fill=\"var(--primary-color)\"/></svg>"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Royal Dining Table",
+      "category": ["tables"],
+      "price": "₹75,000",
+      "shortDescription": "Solid wood table for 6-8 people",
+      "longDescription": "Our Royal Dining Table is a masterpiece of craftsmanship, featuring solid wood construction and elegant design. Perfect for hosting family gatherings and dinner parties, this table combines durability with timeless style to create memorable dining experiences.",
+      "features": [
+        "Solid wood construction for durability",
+        "Seats 6-8 people comfortably",
+        "Hand-finished surface with protective coating",
+        "Elegant pedestal base design",
+        "Scratch and stain resistant",
+        "Traditional joinery techniques"
+      ],
+      "specifications": {
+        "Material": "Solid Teak Wood",
+        "Dimensions": "180cm (L) x 90cm (W) x 75cm (H)",
+        "Seating Capacity": "6-8 People",
+        "Weight": "65kg",
+        "Warranty": "10 Years",
+        "Assembly": "Professional Required"
+      },
+      "tags": ["Solid Wood", "Large", "Dining", "Traditional"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"120\" rx=\"120\" ry=\"18\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"70\" y=\"120\" width=\"18\" height=\"70\" rx=\"9\" fill=\"var(--primary-color)\"/><rect x=\"212\" y=\"120\" width=\"18\" height=\"70\" rx=\"9\" fill=\"var(--primary-color)\"/><rect x=\"140\" y=\"120\" width=\"20\" height=\"70\" rx=\"10\" fill=\"var(--primary-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"120\" rx=\"120\" ry=\"18\" fill=\"var(--primary-color)\" opacity=\"0.7\"/><rect x=\"70\" y=\"120\" width=\"18\" height=\"70\" rx=\"9\" fill=\"var(--accent-color)\"/><rect x=\"212\" y=\"120\" width=\"18\" height=\"70\" rx=\"9\" fill=\"var(--accent-color)\"/><rect x=\"140\" y=\"120\" width=\"20\" height=\"70\" rx=\"10\" fill=\"var(--accent-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"120\" rx=\"120\" ry=\"18\" fill=\"var(--accent-color)\" opacity=\"0.8\"/><rect x=\"70\" y=\"120\" width=\"18\" height=\"70\" rx=\"9\" fill=\"var(--secondary-color)\"/><rect x=\"212\" y=\"120\" width=\"18\" height=\"70\" rx=\"9\" fill=\"var(--secondary-color)\"/><rect x=\"140\" y=\"120\" width=\"20\" height=\"70\" rx=\"10\" fill=\"var(--secondary-color)\"/></svg>"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Modern Coffee Table",
+      "category": ["tables"],
+      "price": "₹22,000",
+      "shortDescription": "Minimalist design with glass top",
+      "longDescription": "Our Modern Coffee Table features a sleek minimalist design with a stunning glass top that creates an airy, open feeling in any living space. The perfect centerpiece for contemporary homes, combining functionality with sophisticated style.",
+      "features": [
+        "Tempered glass top for safety",
+        "Minimalist metal frame design",
+        "Easy to clean and maintain",
+        "Compact size perfect for apartments",
+        "Modern industrial aesthetic",
+        "Scratch-resistant surface"
+      ],
+      "specifications": {
+        "Material": "Tempered Glass & Steel",
+        "Dimensions": "120cm (L) x 60cm (W) x 45cm (H)",
+        "Glass Thickness": "12mm Tempered",
+        "Weight": "25kg",
+        "Warranty": "3 Years",
+        "Assembly": "Required"
+      },
+      "tags": ["Glass", "Modern", "Minimalist", "Contemporary"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"130\" rx=\"80\" ry=\"12\" fill=\"var(--accent-color)\" opacity=\"0.7\"/><rect x=\"100\" y=\"130\" width=\"15\" height=\"55\" rx=\"7\" fill=\"var(--secondary-color)\"/><rect x=\"185\" y=\"130\" width=\"15\" height=\"55\" rx=\"7\" fill=\"var(--secondary-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"130\" rx=\"80\" ry=\"12\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><rect x=\"100\" y=\"130\" width=\"15\" height=\"55\" rx=\"7\" fill=\"var(--accent-color)\"/><rect x=\"185\" y=\"130\" width=\"15\" height=\"55\" rx=\"7\" fill=\"var(--accent-color)\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"130\" rx=\"80\" ry=\"12\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"100\" y=\"130\" width=\"15\" height=\"55\" rx=\"7\" fill=\"var(--primary-color)\"/><rect x=\"185\" y=\"130\" width=\"15\" height=\"55\" rx=\"7\" fill=\"var(--primary-color)\"/></svg>"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Executive Desk",
+      "category": ["tables", "office"],
+      "price": "₹55,000",
+      "shortDescription": "Spacious desk with built-in storage",
+      "longDescription": "Our Executive Desk combines professional aesthetics with practical functionality. Featuring ample workspace and built-in storage solutions, this desk is perfect for executives and professionals who demand both style and efficiency in their workspace.",
+      "features": [
+        "Large workspace surface",
+        "Built-in drawer storage",
+        "Cable management system",
+        "Scratch-resistant finish",
+        "Professional appearance",
+        "Ergonomic height design"
+      ],
+      "specifications": {
+        "Material": "Engineered Wood & Metal",
+        "Dimensions": "160cm (L) x 80cm (W) x 75cm (H)",
+        "Storage": "3 Drawers",
+        "Weight": "45kg",
+        "Warranty": "5 Years",
+        "Assembly": "Required"
+      },
+      "tags": ["Executive", "Storage", "Office", "Professional"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"60\" y=\"110\" width=\"180\" height=\"15\" rx=\"7\" fill=\"var(--primary-color)\" opacity=\"0.7\"/><rect x=\"75\" y=\"125\" width=\"15\" height=\"60\" rx=\"7\" fill=\"var(--secondary-color)\"/><rect x=\"210\" y=\"125\" width=\"15\" height=\"60\" rx=\"7\" fill=\"var(--secondary-color)\"/><rect x=\"80\" y=\"100\" width=\"140\" height=\"8\" rx=\"2\" fill=\"var(--accent-color)\" opacity=\"0.5\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"60\" y=\"110\" width=\"180\" height=\"15\" rx=\"7\" fill=\"var(--accent-color)\" opacity=\"0.8\"/><rect x=\"75\" y=\"125\" width=\"15\" height=\"60\" rx=\"7\" fill=\"var(--primary-color)\"/><rect x=\"210\" y=\"125\" width=\"15\" height=\"60\" rx=\"7\" fill=\"var(--primary-color)\"/><rect x=\"80\" y=\"100\" width=\"140\" height=\"8\" rx=\"2\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"60\" y=\"110\" width=\"180\" height=\"15\" rx=\"7\" fill=\"var(--secondary-color)\" opacity=\"0.7\"/><rect x=\"75\" y=\"125\" width=\"15\" height=\"60\" rx=\"7\" fill=\"var(--accent-color)\"/><rect x=\"210\" y=\"125\" width=\"15\" height=\"60\" rx=\"7\" fill=\"var(--accent-color)\"/><rect x=\"80\" y=\"100\" width=\"140\" height=\"8\" rx=\"2\" fill=\"var(--primary-color)\" opacity=\"0.4\"/></svg>"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Classic Dining Set",
+      "category": ["dining"],
+      "price": "₹85,000",
+      "shortDescription": "Table with 4 matching chairs",
+      "longDescription": "Our Classic Dining Set brings timeless elegance to your dining room. This complete set includes a beautifully crafted table and four matching chairs, perfect for family meals and entertaining guests in style.",
+      "features": [
+        "Complete 5-piece dining set",
+        "Matching table and 4 chairs",
+        "Classic traditional design",
+        "Durable construction",
+        "Comfortable seating",
+        "Easy maintenance finish"
+      ],
+      "specifications": {
+        "Material": "Solid Wood",
+        "Table Dimensions": "120cm (L) x 80cm (W) x 75cm (H)",
+        "Chair Dimensions": "45cm (W) x 50cm (D) x 85cm (H)",
+        "Seating Capacity": "4 People",
+        "Total Weight": "55kg",
+        "Warranty": "5 Years"
+      },
+      "tags": ["Set", "Classic", "Traditional", "Complete"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"120\" rx=\"90\" ry=\"15\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"90\" y=\"120\" width=\"15\" height=\"50\" rx=\"7\" fill=\"var(--primary-color)\"/><rect x=\"195\" y=\"120\" width=\"15\" height=\"50\" rx=\"7\" fill=\"var(--primary-color)\"/><rect x=\"60\" y=\"80\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.5\"/><rect x=\"215\" y=\"80\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.5\"/><rect x=\"135\" y=\"60\" width=\"30\" height=\"25\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.5\"/><rect x=\"135\" y=\"165\" width=\"30\" height=\"25\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.5\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"120\" rx=\"90\" ry=\"15\" fill=\"var(--primary-color)\" opacity=\"0.7\"/><rect x=\"90\" y=\"120\" width=\"15\" height=\"50\" rx=\"7\" fill=\"var(--accent-color)\"/><rect x=\"195\" y=\"120\" width=\"15\" height=\"50\" rx=\"7\" fill=\"var(--accent-color)\"/><rect x=\"60\" y=\"80\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><rect x=\"215\" y=\"80\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><rect x=\"135\" y=\"60\" width=\"30\" height=\"25\" rx=\"5\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><rect x=\"135\" y=\"165\" width=\"30\" height=\"25\" rx=\"5\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"120\" rx=\"90\" ry=\"15\" fill=\"var(--accent-color)\" opacity=\"0.8\"/><rect x=\"90\" y=\"120\" width=\"15\" height=\"50\" rx=\"7\" fill=\"var(--secondary-color)\"/><rect x=\"195\" y=\"120\" width=\"15\" height=\"50\" rx=\"7\" fill=\"var(--secondary-color)\"/><rect x=\"60\" y=\"80\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.5\"/><rect x=\"215\" y=\"80\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.5\"/><rect x=\"135\" y=\"60\" width=\"30\" height=\"25\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.5\"/><rect x=\"135\" y=\"165\" width=\"30\" height=\"25\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.5\"/></svg>"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Contemporary Dining Set",
+      "category": ["dining"],
+      "price": "₹125,000",
+      "shortDescription": "Modern table with 6 stylish chairs",
+      "longDescription": "Our Contemporary Dining Set brings modern sophistication to your dining room. This complete set features a sleek table design and six matching chairs with contemporary styling, perfect for modern homes that value both form and function.",
+      "features": [
+        "Modern contemporary design",
+        "Seats 6 people comfortably", 
+        "Matching table and chairs",
+        "High-quality materials",
+        "Easy maintenance finish",
+        "Professional appearance"
+      ],
+      "specifications": {
+        "Material": "Engineered Wood & Metal",
+        "Table Dimensions": "160cm (L) x 90cm (W) x 75cm (H)",
+        "Chair Dimensions": "50cm (W) x 55cm (D) x 80cm (H)",
+        "Seating Capacity": "6 People",
+        "Total Weight": "75kg",
+        "Warranty": "5 Years"
+      },
+      "tags": ["Contemporary", "6-Seater", "Modern", "Set"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"80\" y=\"115\" width=\"140\" height=\"20\" rx=\"10\" fill=\"var(--primary-color)\" opacity=\"0.7\"/><rect x=\"95\" y=\"135\" width=\"15\" height=\"45\" rx=\"7\" fill=\"var(--secondary-color)\"/><rect x=\"190\" y=\"135\" width=\"15\" height=\"45\" rx=\"7\" fill=\"var(--secondary-color)\"/><rect x=\"50\" y=\"85\" width=\"30\" height=\"40\" rx=\"8\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><rect x=\"220\" y=\"85\" width=\"30\" height=\"40\" rx=\"8\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><rect x=\"125\" y=\"55\" width=\"50\" height=\"30\" rx=\"8\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><rect x=\"125\" y=\"170\" width=\"50\" height=\"30\" rx=\"8\" fill=\"var(--accent-color)\" opacity=\"0.6\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"80\" y=\"115\" width=\"140\" height=\"20\" rx=\"10\" fill=\"var(--accent-color)\" opacity=\"0.8\"/><rect x=\"95\" y=\"135\" width=\"15\" height=\"45\" rx=\"7\" fill=\"var(--primary-color)\"/><rect x=\"190\" y=\"135\" width=\"15\" height=\"45\" rx=\"7\" fill=\"var(--primary-color)\"/><rect x=\"50\" y=\"85\" width=\"30\" height=\"40\" rx=\"8\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><rect x=\"220\" y=\"85\" width=\"30\" height=\"40\" rx=\"8\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><rect x=\"125\" y=\"55\" width=\"50\" height=\"30\" rx=\"8\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><rect x=\"125\" y=\"170\" width=\"50\" height=\"30\" rx=\"8\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><rect x=\"80\" y=\"115\" width=\"140\" height=\"20\" rx=\"10\" fill=\"var(--secondary-color)\" opacity=\"0.7\"/><rect x=\"95\" y=\"135\" width=\"15\" height=\"45\" rx=\"7\" fill=\"var(--accent-color)\"/><rect x=\"190\" y=\"135\" width=\"15\" height=\"45\" rx=\"7\" fill=\"var(--accent-color)\"/><rect x=\"50\" y=\"85\" width=\"30\" height=\"40\" rx=\"8\" fill=\"var(--primary-color)\" opacity=\"0.5\"/><rect x=\"220\" y=\"85\" width=\"30\" height=\"40\" rx=\"8\" fill=\"var(--primary-color)\" opacity=\"0.5\"/><rect x=\"125\" y=\"55\" width=\"50\" height=\"30\" rx=\"8\" fill=\"var(--primary-color)\" opacity=\"0.5\"/><rect x=\"125\" y=\"170\" width=\"50\" height=\"30\" rx=\"8\" fill=\"var(--primary-color)\" opacity=\"0.5\"/></svg>"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Conference Table Set",
+      "category": ["office"],
+      "price": "₹180,000",
+      "shortDescription": "Professional meeting table with 8 chairs",
+      "longDescription": "Our Conference Table Set is designed for professional environments where important decisions are made. This impressive set includes a large conference table and eight matching chairs, perfect for boardrooms and meeting spaces that demand both functionality and prestige.",
+      "features": [
+        "Large conference table design",
+        "Seats 8 people comfortably",
+        "Professional appearance",
+        "Durable construction",
+        "Cable management system",
+        "Matching chair set included"
+      ],
+      "specifications": {
+        "Material": "Premium Wood & Metal",
+        "Table Dimensions": "240cm (L) x 120cm (W) x 75cm (H)",
+        "Chair Dimensions": "60cm (W) x 65cm (D) x 95cm (H)",
+        "Seating Capacity": "8 People",
+        "Total Weight": "120kg",
+        "Warranty": "7 Years"
+      },
+      "tags": ["Conference", "Professional", "8-Seater", "Executive"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"125\" rx=\"110\" ry=\"20\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><rect x=\"80\" y=\"125\" width=\"20\" height=\"55\" rx=\"10\" fill=\"var(--secondary-color)\"/><rect x=\"200\" y=\"125\" width=\"20\" height=\"55\" rx=\"10\" fill=\"var(--secondary-color)\"/><rect x=\"40\" y=\"95\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.4\"/><rect x=\"235\" y=\"95\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.4\"/><rect x=\"120\" y=\"70\" width=\"60\" height=\"25\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.4\"/><rect x=\"120\" y=\"165\" width=\"60\" height=\"25\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.4\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"125\" rx=\"110\" ry=\"20\" fill=\"var(--accent-color)\" opacity=\"0.7\"/><rect x=\"80\" y=\"125\" width=\"20\" height=\"55\" rx=\"10\" fill=\"var(--primary-color)\"/><rect x=\"200\" y=\"125\" width=\"20\" height=\"55\" rx=\"10\" fill=\"var(--primary-color)\"/><rect x=\"40\" y=\"95\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--secondary-color)\" opacity=\"0.5\"/><rect x=\"235\" y=\"95\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--secondary-color)\" opacity=\"0.5\"/><rect x=\"120\" y=\"70\" width=\"60\" height=\"25\" rx=\"5\" fill=\"var(--secondary-color)\" opacity=\"0.5\"/><rect x=\"120\" y=\"165\" width=\"60\" height=\"25\" rx=\"5\" fill=\"var(--secondary-color)\" opacity=\"0.5\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"125\" rx=\"110\" ry=\"20\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"80\" y=\"125\" width=\"20\" height=\"55\" rx=\"10\" fill=\"var(--accent-color)\"/><rect x=\"200\" y=\"125\" width=\"20\" height=\"55\" rx=\"10\" fill=\"var(--accent-color)\"/><rect x=\"40\" y=\"95\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><rect x=\"235\" y=\"95\" width=\"25\" height=\"35\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><rect x=\"120\" y=\"70\" width=\"60\" height=\"25\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><rect x=\"120\" y=\"165\" width=\"60\" height=\"25\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.6\"/></svg>"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Garden Patio Set",
+      "category": ["outdoor"],
+      "price": "₹35,000",
+      "shortDescription": "Weather-resistant outdoor furniture",
+      "longDescription": "Our Garden Patio Set is perfect for outdoor entertaining and relaxation. Made with weather-resistant materials, this set includes a table and two chairs designed to withstand the elements while providing comfort and style for your outdoor space.",
+      "features": [
+        "Weather-resistant materials",
+        "UV protection coating",
+        "Rust-resistant hardware",
+        "Easy to clean surface",
+        "Outdoor durability tested",
+        "Stylish modern design"
+      ],
+      "specifications": {
+        "Material": "Weather-Resistant Composite & Aluminum",
+        "Table Dimensions": "100cm (L) x 60cm (W) x 70cm (H)",
+        "Chair Dimensions": "55cm (W) x 60cm (D) x 85cm (H)",
+        "Seating Capacity": "2 People",
+        "Total Weight": "28kg",
+        "Warranty": "3 Years (Outdoor)"
+      },
+      "tags": ["Outdoor", "Weather-resistant", "Patio", "Modern"],
+      "images": [
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"135\" rx=\"75\" ry=\"12\" fill=\"var(--accent-color)\" opacity=\"0.7\"/><rect x=\"110\" y=\"135\" width=\"16\" height=\"55\" rx=\"8\" fill=\"var(--secondary-color)\"/><rect x=\"174\" y=\"135\" width=\"16\" height=\"55\" rx=\"8\" fill=\"var(--secondary-color)\"/><rect x=\"95\" y=\"75\" width=\"30\" height=\"55\" rx=\"10\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><rect x=\"175\" y=\"75\" width=\"30\" height=\"55\" rx=\"10\" fill=\"var(--primary-color)\" opacity=\"0.6\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"135\" rx=\"75\" ry=\"12\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><rect x=\"110\" y=\"135\" width=\"16\" height=\"55\" rx=\"8\" fill=\"var(--accent-color)\"/><rect x=\"174\" y=\"135\" width=\"16\" height=\"55\" rx=\"8\" fill=\"var(--accent-color)\"/><rect x=\"95\" y=\"75\" width=\"30\" height=\"55\" rx=\"10\" fill=\"var(--secondary-color)\" opacity=\"0.7\"/><rect x=\"175\" y=\"75\" width=\"30\" height=\"55\" rx=\"10\" fill=\"var(--secondary-color)\" opacity=\"0.7\"/></svg>",
+        "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 300 250\" fill=\"none\"><ellipse cx=\"150\" cy=\"135\" rx=\"75\" ry=\"12\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"110\" y=\"135\" width=\"16\" height=\"55\" rx=\"8\" fill=\"var(--primary-color)\"/><rect x=\"174\" y=\"135\" width=\"16\" height=\"55\" rx=\"8\" fill=\"var(--primary-color)\"/><rect x=\"95\" y=\"75\" width=\"30\" height=\"55\" rx=\"10\" fill=\"var(--accent-color)\" opacity=\"0.5\"/><rect x=\"175\" y=\"75\" width=\"30\" height=\"55\" rx=\"10\" fill=\"var(--accent-color)\" opacity=\"0.5\"/></svg>"
+      ]
+    }
+  ]
+}

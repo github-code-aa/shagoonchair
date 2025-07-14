@@ -1,0 +1,79 @@
+{
+  "page": {
+    "title": "Furniture Portfolio - Chairs & Tables Collection Mumbai | Shagoon Seating Chair",
+    "description": "Explore Shagoon Seating Chair's extensive furniture collection in Mumbai. Premium office chairs, dining tables, conference sets, and custom furniture solutions with modern design."
+  },
+  "hero": {
+    "title": "Premium Furniture Collection Mumbai",
+    "description": "Discover Shagoon Seating Chair's furniture collection that transforms Mumbai homes and offices. Each piece is crafted with precision and designed for lasting beauty in the Indian climate."
+  },
+  "filters": [
+    {
+      "label": "All Products",
+      "value": "all",
+      "active": true
+    },
+    {
+      "label": "Chairs",
+      "value": "chairs",
+      "active": false
+    },
+    {
+      "label": "Tables",
+      "value": "tables",
+      "active": false
+    },
+    {
+      "label": "Dining Sets",
+      "value": "dining",
+      "active": false
+    },
+    {
+      "label": "Office",
+      "value": "office",
+      "active": false
+    }
+  ],
+  "features": {
+    "title": "Why Choose Shagoon Seating Chair Mumbai?",
+    "subtitle": "Every piece comes with our commitment to excellence and quality craftsmanship",
+    "items": [
+      {
+        "icon": "<path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/>",
+        "title": "Premium Materials",
+        "description": "Only the finest woods and materials"
+      },
+      {
+        "icon": "<path d=\"M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z\"/>",
+        "title": "Custom Design",
+        "description": "Tailored to your specific needs"
+      },
+      {
+        "icon": "<path d=\"M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z\"/>",
+        "title": "5-Year Warranty",
+        "description": "Peace of mind with every purchase"
+      },
+      {
+        "icon": "<path d=\"M20 6h-2.18c.11-.31.18-.65.18-1a2.996 2.996 0 0 0-5.5-1.65l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z\"/>",
+        "title": "Free Delivery",
+        "description": "Complimentary delivery & setup"
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Transform Your Space?",
+    "description": "Let our Mumbai furniture experts help you choose the perfect pieces for your home or office.",
+    "buttons": [
+      {
+        "text": "Get Consultation",
+        "href": "/contact",
+        "type": "primary"
+      },
+      {
+        "text": "Learn More",
+        "href": "/about",
+        "type": "secondary"
+      }
+    ]
+  }
+}

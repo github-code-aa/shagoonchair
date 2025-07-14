@@ -1,0 +1,115 @@
+{
+  "page": {
+    "title": "About Shagoon Seating Chair Mumbai | Premium Furniture Craftsmen",
+    "description": "Learn about Shagoon Seating Chair's 20+ years of crafting premium chairs and tables in Mumbai. Our story, values, and dedication to quality furniture craftsmanship since 2001."
+  },
+  "hero": {
+    "title": "About Shagoon Seating Chair Mumbai",
+    "description": "Crafting exceptional furniture in Mumbai for over two decades, where traditional Indian craftsmanship meets modern design."
+  },
+  "story": {
+    "title": "Premium Furniture Makers in Mumbai Since 2001",
+    "content": [
+      "Shagoon Seating Chair was born from a simple belief: that furniture should be more than just functional—it should inspire, comfort, and reflect the unique personality of those who use it.",
+      "Since our founding in 2001 in Mumbai, we have dedicated ourselves to creating premium chairs and tables that stand the test of time. Our journey began in a small workshop with a team of passionate craftsmen who shared a vision of bringing exceptional furniture to modern Indian homes and offices.",
+      "Today, we continue to honor that vision by combining traditional woodworking techniques with contemporary design principles, ensuring every piece we create is both beautiful and built to last."
+    ],
+    "image": {
+      "svg": "<rect x=\"50\" y=\"200\" width=\"300\" height=\"80\" fill=\"var(--secondary-color)\" opacity=\"0.3\"/><rect x=\"80\" y=\"150\" width=\"60\" height=\"50\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><rect x=\"160\" y=\"140\" width=\"80\" height=\"60\" rx=\"5\" fill=\"var(--primary-color)\" opacity=\"0.4\"/><rect x=\"260\" y=\"160\" width=\"60\" height=\"40\" rx=\"5\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><line x1=\"100\" y1=\"120\" x2=\"120\" y2=\"140\" stroke=\"var(--primary-color)\" stroke-width=\"3\"/><line x1=\"180\" y1=\"110\" x2=\"200\" y2=\"130\" stroke=\"var(--secondary-color)\" stroke-width=\"3\"/>",
+      "viewBox": "0 0 400 300",
+      "width": "100%",
+      "height": "300"
+    }
+  },
+  "values": {
+    "title": "Our Values",
+    "subtitle": "The principles that guide everything we do",
+    "items": [
+      {
+        "icon": "<path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/>",
+        "title": "Quality Craftsmanship",
+        "description": "Every piece is meticulously crafted by skilled artisans using time-honored techniques and the finest materials available."
+      },
+      {
+        "icon": "<path d=\"M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z\"/>",
+        "title": "Sustainability",
+        "description": "We source our materials responsibly and use eco-friendly processes, ensuring our beautiful furniture doesn't come at the planet's expense."
+      },
+      {
+        "icon": "<path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.5 6L12 10.5 8.5 8 12 5.5 15.5 8zM8.5 16L12 13.5 15.5 16 12 18.5 8.5 16z\"/>",
+        "title": "Innovation",
+        "description": "We continuously evolve our designs and techniques, embracing new technologies while respecting traditional craftsmanship methods."
+      }
+    ]
+  },
+  "team": {
+    "title": "Meet Our Team",
+    "subtitle": "The passionate craftspeople behind every piece of furniture",
+    "members": [
+      {
+        "name": "Rajesh Kumar",
+        "position": "Master Craftsman & Founder",
+        "description": "With over 25 years of experience in furniture making, Rajesh established Shagoon Seating Chair with a vision to create timeless pieces.",
+        "image": {
+          "svg": "<circle cx=\"150\" cy=\"120\" r=\"60\" fill=\"var(--accent-color)\" opacity=\"0.6\"/><circle cx=\"150\" cy=\"100\" r=\"25\" fill=\"var(--primary-color)\" opacity=\"0.8\"/><rect x=\"120\" y=\"140\" width=\"60\" height=\"40\" rx=\"20\" fill=\"var(--secondary-color)\" opacity=\"0.7\"/>",
+          "viewBox": "0 0 300 200",
+          "width": "100%",
+          "height": "200"
+        }
+      },
+      {
+        "name": "Priya Sharma",
+        "position": "Design Director",
+        "description": "Priya brings contemporary design sensibilities to traditional craftsmanship, ensuring every piece is both beautiful and functional.",
+        "image": {
+          "svg": "<circle cx=\"150\" cy=\"120\" r=\"60\" fill=\"var(--secondary-color)\" opacity=\"0.6\"/><circle cx=\"150\" cy=\"100\" r=\"25\" fill=\"var(--accent-color)\" opacity=\"0.8\"/><rect x=\"120\" y=\"140\" width=\"60\" height=\"40\" rx=\"20\" fill=\"var(--primary-color)\" opacity=\"0.7\"/>",
+          "viewBox": "0 0 300 200",
+          "width": "100%",
+          "height": "200"
+        }
+      },
+      {
+        "name": "Arjun Patel",
+        "position": "Quality Assurance Manager",
+        "description": "Arjun ensures that every piece meets our exacting standards before it reaches our customers' homes and offices.",
+        "image": {
+          "svg": "<circle cx=\"150\" cy=\"120\" r=\"60\" fill=\"var(--primary-color)\" opacity=\"0.6\"/><circle cx=\"150\" cy=\"100\" r=\"25\" fill=\"var(--secondary-color)\" opacity=\"0.8\"/><rect x=\"120\" y=\"140\" width=\"60\" height=\"40\" rx=\"20\" fill=\"var(--accent-color)\" opacity=\"0.7\"/>",
+          "viewBox": "0 0 300 200",
+          "width": "100%",
+          "height": "200"
+        }
+      }
+    ]
+  },
+  "process": {
+    "title": "Our Crafting Process",
+    "subtitle": "From concept to completion, every step is carefully executed",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Design & Planning",
+        "description": "Every piece begins with careful design and planning, considering both aesthetics and functionality."
+      },
+      {
+        "number": "02",
+        "title": "Material Selection",
+        "description": "We source only the finest materials, ensuring quality and sustainability in every piece."
+      },
+      {
+        "number": "03",
+        "title": "Expert Craftsmanship",
+        "description": "Our skilled artisans bring each design to life using traditional techniques and modern tools."
+      },
+      {
+        "number": "04",
+        "title": "Quality Control",
+        "description": "Every piece undergoes rigorous quality checks to ensure it meets our exacting standards."
+      },
+      {
+        "number": "05",
+        "title": "Finishing & Delivery",
+        "description": "Final finishing touches are applied before careful packaging and delivery to your door."
+      }
+    ]
+  }
+}

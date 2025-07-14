@@ -2,18 +2,19 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import aboutData from '../data/aboutData.json';
 ---
 
-<Layout title="About Shagoon Seating Chair Mumbai | Premium Furniture Craftsmen" description="Learn about Shagoon Seating Chair's 20+ years of crafting premium chairs and tables in Mumbai. Our story, values, and dedication to quality furniture craftsmanship since 2001.">
+<Layout title={aboutData.page.title} description={aboutData.page.description}>
   <Navigation />
   
   <!-- Hero Section -->
   <section class="about-hero">
     <div class="container">
       <div class="hero-content">
-        <h1 class="hero-title fade-in-up">About Shagoon Seating Chair Mumbai</h1>
+        <h1 class="hero-title fade-in-up">{aboutData.hero.title}</h1>
         <p class="hero-description fade-in-up">
-          Crafting exceptional furniture in Mumbai for over two decades, where traditional Indian craftsmanship meets modern design.
+          {aboutData.hero.description}
         </p>
       </div>
     </div>
@@ -24,28 +25,15 @@ import Footer from '../components/Footer.astro';
     <div class="container">
       <div class="grid grid-2">
         <div class="story-content">
-          <h2>Premium Furniture Makers in Mumbai Since 2001</h2>
-          <p>
-            Shagoon Seating Chair was born from a simple belief: that furniture should be more than just functional—it should inspire, comfort, and reflect the unique personality of those who use it.
-          </p>
-          <p>
-            Since our founding in 2001 in Mumbai, we have dedicated ourselves to creating premium chairs and tables that stand the test of time. Our journey began in a small workshop with a team of passionate craftsmen who shared a vision of bringing exceptional furniture to modern Indian homes and offices.
-          </p>
-          <p>
-            Today, we continue to honor that vision by combining traditional woodworking techniques with contemporary design principles, ensuring every piece we create is both beautiful and built to last.
-          </p>
+          <h2>{aboutData.story.title}</h2>
+          {aboutData.story.content.map(paragraph => (
+            <p>{paragraph}</p>
+          ))}
         </div>
         <div class="story-image">
           <div class="image-placeholder">
-            <svg width="100%" height="300" viewBox="0 0 400 300" fill="none">
-              <!-- Workshop illustration -->
-              <rect x="50" y="200" width="300" height="80" fill="var(--secondary-color)" opacity="0.3"/>
-              <rect x="80" y="150" width="60" height="50" rx="5" fill="var(--accent-color)" opacity="0.6"/>
-              <rect x="160" y="140" width="80" height="60" rx="5" fill="var(--primary-color)" opacity="0.4"/>
-              <rect x="260" y="160" width="60" height="40" rx="5" fill="var(--accent-color)" opacity="0.6"/>
-              <!-- Tools -->
-              <line x1="100" y1="120" x2="120" y2="140" stroke="var(--primary-color)" stroke-width="3"/>
-              <line x1="180" y1="110" x2="200" y2="130" stroke="var(--secondary-color)" stroke-width="3"/>
+            <svg width={aboutData.story.image.width} height={aboutData.story.image.height} viewBox={aboutData.story.image.viewBox} fill="none">
+              <Fragment set:html={aboutData.story.image.svg} />
             </svg>
           </div>
         </div>
@@ -57,40 +45,22 @@ import Footer from '../components/Footer.astro';
   <section class="section section-alt values">
     <div class="container">
       <div class="section-header text-center mb-4">
-        <h2>Our Values</h2>
-        <p>The principles that guide everything we do</p>
+        <h2>{aboutData.values.title}</h2>
+        <p>{aboutData.values.subtitle}</p>
       </div>
       
       <div class="grid grid-3">
-        <div class="value-card card">
-          <div class="value-icon">
-            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
+        {aboutData.values.items.map(value => (
+          <div class="value-card card">
+            <div class="value-icon">
+              <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                <Fragment set:html={value.icon} />
+              </svg>
+            </div>
+            <h3>{value.title}</h3>
+            <p>{value.description}</p>
           </div>
-          <h3>Quality Craftsmanship</h3>
-          <p>Every piece is meticulously crafted by skilled artisans using time-honored techniques and the finest materials available.</p>
-        </div>
-        
-        <div class="value-card card">
-          <div class="value-icon">
-            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>
-            </svg>
-          </div>
-          <h3>Sustainability</h3>
-          <p>We source our materials responsibly and use eco-friendly processes, ensuring our beautiful furniture doesn't come at the planet's expense.</p>
-        </div>
-        
-        <div class="value-card card">
-          <div class="value-icon">
-            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.5 6L12 10.5 8.5 8 12 5.5 15.5 8zM8.5 16L12 13.5 15.5 16 12 18.5 8.5 16z"/>
-            </svg>
-          </div>
-          <h3>Innovation</h3>
-          <p>We continuously evolve our designs and techniques, embracing new technologies while respecting traditional craftsmanship methods.</p>
-        </div>
+        ))}
       </div>
     </div>
   </section>
@@ -99,64 +69,27 @@ import Footer from '../components/Footer.astro';
   <section class="section team">
     <div class="container">
       <div class="section-header text-center mb-4">
-        <h2>Meet Our Team</h2>
-        <p>The passionate individuals behind Shagoon Seating Chair</p>
+        <h2>{aboutData.team.title}</h2>
+        <p>{aboutData.team.subtitle}</p>
       </div>
       
       <div class="grid grid-3">
-        <div class="team-member card">
-          <div class="member-image">
-            <div class="image-placeholder">
-              <svg width="100%" height="200" viewBox="0 0 200 200" fill="none">
-                <circle cx="100" cy="80" r="40" fill="var(--accent-color)" opacity="0.3"/>
-                <rect x="70" y="120" width="60" height="80" rx="30" fill="var(--primary-color)" opacity="0.2"/>
-              </svg>
+        {aboutData.team.members.map(member => (
+          <div class="team-member card">
+            <div class="member-image">
+              <div class="image-placeholder">
+                <svg width={member.image.width} height={member.image.height} viewBox={member.image.viewBox} fill="none">
+                  <Fragment set:html={member.image.svg} />
+                </svg>
+              </div>
+            </div>
+            <div class="member-info">
+              <h3>{member.name}</h3>
+              <h4>{member.position}</h4>
+              <p>{member.description}</p>
             </div>
           </div>
-          <div class="member-info">
-            <h3>Rajesh Sharma</h3>
-            <p class="member-role">Founder & Master Craftsman</p>
-            <p class="member-description">
-              With over 30 years of experience in furniture making, Rajesh leads our design team and ensures every piece meets our exacting standards.
-            </p>
-          </div>
-        </div>
-        
-        <div class="team-member card">
-          <div class="member-image">
-            <div class="image-placeholder">
-              <svg width="100%" height="200" viewBox="0 0 200 200" fill="none">
-                <circle cx="100" cy="80" r="40" fill="var(--secondary-color)" opacity="0.3"/>
-                <rect x="70" y="120" width="60" height="80" rx="30" fill="var(--accent-color)" opacity="0.2"/>
-              </svg>
-            </div>
-          </div>
-          <div class="member-info">
-            <h3>Priya Patel</h3>
-            <p class="member-role">Design Director</p>
-            <p class="member-description">
-              Priya brings contemporary vision to our traditional craft, creating pieces that perfectly balance modern aesthetics with timeless appeal.
-            </p>
-          </div>
-        </div>
-        
-        <div class="team-member card">
-          <div class="member-image">
-            <div class="image-placeholder">
-              <svg width="100%" height="200" viewBox="0 0 200 200" fill="none">
-                <circle cx="100" cy="80" r="40" fill="var(--primary-color)" opacity="0.3"/>
-                <rect x="70" y="120" width="60" height="80" rx="30" fill="var(--secondary-color)" opacity="0.2"/>
-              </svg>
-            </div>
-          </div>
-          <div class="member-info">
-            <h3>Amit Kumar</h3>
-            <p class="member-role">Quality Assurance Manager</p>
-            <p class="member-description">
-              Amit ensures that every piece that leaves our workshop meets the highest standards of quality and durability our customers expect.
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   </section>
@@ -165,59 +98,20 @@ import Footer from '../components/Footer.astro';
   <section class="section section-alt process">
     <div class="container">
       <div class="section-header text-center mb-4">
-        <h2>Our Crafting Process</h2>
-        <p>From concept to completion, every step is carefully executed</p>
+        <h2>{aboutData.process.title}</h2>
+        <p>{aboutData.process.subtitle}</p>
       </div>
       
       <div class="process-steps">
-        <div class="process-step">
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <h3>Design & Planning</h3>
-            <p>Our designers work closely with our craftsmen to create detailed plans that balance aesthetics, functionality, and structural integrity.</p>
+        {aboutData.process.steps.map((step, index) => (
+          <div class="process-step">
+            <div class="step-number">{step.number}</div>
+            <div class="step-content">
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </div>
           </div>
-        </div>
-        
-        <div class="process-step">
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h3>Material Selection</h3>
-            <p>We carefully select premium woods and materials, ensuring they meet our standards for quality, sustainability, and durability.</p>
-          </div>
-        </div>
-        
-        <div class="process-step">
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h3>Precision Crafting</h3>
-            <p>Our skilled artisans use a combination of traditional techniques and modern tools to bring each design to life with meticulous attention to detail.</p>
-          </div>
-        </div>
-        
-        <div class="process-step">
-          <div class="step-number">4</div>
-          <div class="step-content">
-            <h3>Quality Inspection</h3>
-            <p>Every piece undergoes rigorous quality checks to ensure it meets our exacting standards before it reaches your home or office.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="section cta">
-    <div class="container">
-      <div class="cta-content text-center">
-        <h2>Ready to Experience Our Craftsmanship?</h2>
-        <p class="mb-3">
-          Discover furniture that combines traditional craftsmanship with modern design. 
-          Let us help you create spaces that inspire.
-        </p>
-        <div class="cta-buttons">
-          <a href="/portfolio" class="btn btn-primary">View Our Collection</a>
-          <a href="/contact" class="btn btn-secondary">Get In Touch</a>
-        </div>
+        ))}
       </div>
     </div>
   </section>
@@ -318,15 +212,17 @@ import Footer from '../components/Footer.astro';
     margin-bottom: 0.5rem;
   }
 
-  .member-role {
+  .member-info h4 {
     color: var(--accent-color);
     font-weight: 600;
     margin-bottom: 1rem;
+    font-size: 1rem;
   }
 
-  .member-description {
+  .member-info p {
     font-size: 0.95rem;
     line-height: 1.6;
+    margin: 0;
   }
 
   /* Process Section */
