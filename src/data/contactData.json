@@ -1,0 +1,165 @@
+{
+  "page": {
+    "title": "Contact Shagoon Seating Chair Mumbai | Furniture Showroom & Consultation",
+    "description": "Contact Shagoon Seating Chair in Mumbai for premium furniture consultation. Visit our showroom, call +91 98765 43210, or email for personalized chair and table solutions."
+  },
+  "hero": {
+    "title": "Contact Shagoon Seating Chair Mumbai",
+    "description": "Ready to transform your Mumbai home or office? Contact Shagoon Seating Chair for personalized furniture solutions and expert consultation from our experienced team."
+  },
+  "contactInfo": {
+    "title": "Contact Information - Mumbai Furniture Store",
+    "subtitle": "We're here to help you find the perfect furniture for your Mumbai home or office space",
+    "items": [
+      {
+        "icon": "<path d=\"M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z\"/>",
+        "title": "Visit Our Showroom",
+        "details": [
+          {
+            "label": "Address",
+            "value": "Shagoon Seating Chair<br/>Mumbai, Maharashtra, India"
+          },
+          {
+            "label": "Hours",
+            "value": "Mon-Sat: 9:00 AM - 7:00 PM<br/>Sunday: 11:00 AM - 5:00 PM"
+          }
+        ]
+      },
+      {
+        "icon": "<path d=\"M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z\"/>",
+        "title": "Call Us",
+        "details": [
+          {
+            "label": "Main Number",
+            "value": "+91 98765 43210"
+          },
+          {
+            "label": "Sales",
+            "value": "+91 98765 43211"
+          },
+          {
+            "label": "Support",
+            "value": "+91 98765 43212"
+          }
+        ]
+      },
+      {
+        "icon": "<path d=\"M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z\"/>",
+        "title": "Email Us",
+        "details": [
+          {
+            "label": "General",
+            "value": "info@shagoonseating.com"
+          },
+          {
+            "label": "Sales",
+            "value": "sales@shagoonseating.com"
+          },
+          {
+            "label": "Support",
+            "value": "support@shagoonseating.com"
+          }
+        ]
+      }
+    ]
+  },
+  "contactForm": {
+    "title": "Send us a Message",
+    "subtitle": "Have a question or ready to start your furniture journey? Fill out the form below and we'll get back to you shortly.",
+    "fields": [
+      {
+        "name": "name",
+        "label": "Full Name",
+        "type": "text",
+        "placeholder": "Enter your full name",
+        "required": true
+      },
+      {
+        "name": "email",
+        "label": "Email Address",
+        "type": "email",
+        "placeholder": "Enter your email address",
+        "required": true
+      },
+      {
+        "name": "phone",
+        "label": "Phone Number",
+        "type": "tel",
+        "placeholder": "Enter your phone number",
+        "required": true
+      },
+      {
+        "name": "subject",
+        "label": "Subject",
+        "type": "select",
+        "required": true,
+        "options": [
+          "General Inquiry",
+          "Product Information",
+          "Custom Order",
+          "Service Request",
+          "Feedback"
+        ]
+      },
+      {
+        "name": "message",
+        "label": "Message",
+        "type": "textarea",
+        "placeholder": "Tell us about your furniture needs...",
+        "rows": 5,
+        "required": true
+      }
+    ],
+    "submitText": "Send Message"
+  },
+  "map": {
+    "title": "Find Our Showroom",
+    "subtitle": "Visit us to see our furniture collections in person and get expert advice from our design consultants",
+    "embedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4965.800083316759!2d72.85280711180894!3d19.172813281977046!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b7aa451f8c29%3A0x5014ba2277683121!2sShagoon%20Seating%20Chair!5e1!3m2!1sen!2sin!4v1752428766618!5m2!1sen!2sin",
+    "businessName": "Shagoon Seating Chair",
+    "address": "Mumbai, Maharashtra, India",
+    "details": [
+      {
+        "icon": "🕒",
+        "title": "Store Hours",
+        "info": "Monday - Saturday: 9:00 AM - 7:00 PM<br/>Sunday: 11:00 AM - 5:00 PM"
+      },
+      {
+        "icon": "📞",
+        "title": "Contact",
+        "info": "Phone: +91 98765 43210<br/>Email: info@shagoonseating.com"
+      },
+      {
+        "icon": "🚗",
+        "title": "Parking",
+        "info": "Free parking available<br/>Large vehicles welcome"
+      }
+    ]
+  },
+  "faqs": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about our furniture and services",
+    "items": [
+      {
+        "question": "Do you offer custom furniture design?",
+        "answer": "Yes, we specialize in custom furniture design. Our expert craftsmen can create unique pieces tailored to your specific requirements, space, and style preferences."
+      },
+      {
+        "question": "What is your delivery timeframe?",
+        "answer": "Delivery timeframes vary by product. Ready-made items can be delivered within 2-3 days in Mumbai, while custom pieces typically take 2-4 weeks depending on complexity."
+      },
+      {
+        "question": "Do you provide installation services?",
+        "answer": "Yes, we provide professional installation services for all our furniture. Our experienced team ensures proper assembly and placement in your space."
+      },
+      {
+        "question": "What warranty do you offer?",
+        "answer": "We offer comprehensive warranties ranging from 3-10 years depending on the product. All our furniture comes with manufacturing defect coverage and quality guarantees."
+      },
+      {
+        "question": "Can I see products before purchasing?",
+        "answer": "Absolutely! We encourage customers to visit our Mumbai showroom to see and feel our furniture firsthand. We also offer in-home consultations for larger projects."
+      }
+    ]
+  }
+}
