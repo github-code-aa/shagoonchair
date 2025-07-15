@@ -1,6 +1,6 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { AUTH_CONFIG } from '../config/auth.js';
+import Layout from "../layouts/Layout.astro";
+import { AUTH_CONFIG } from "../config/auth.js";
 ---
 
 <Layout title="Invoice Management - Shagoon Chair">
@@ -12,8 +12,6 @@ import { AUTH_CONFIG } from '../config/auth.js';
       </div>
       <div class="header-actions">
         <a href="/bills/new" class="btn btn-primary">+ New Invoice</a>
-        <button onclick="exportData()" class="btn btn-secondary">📊 Export</button>
-        <button onclick="printReport()" class="btn btn-outline">🖨️ Print Report</button>
         <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
       </div>
     </div>
@@ -24,20 +22,27 @@ import { AUTH_CONFIG } from '../config/auth.js';
         <div class="filters-grid">
           <div class="filter-group">
             <label>Search:</label>
-            <input type="text" id="searchInput" placeholder="Invoice number, customer name...">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Invoice number, customer name..."
+            />
           </div>
           <div class="filter-group">
             <label>Date Range:</label>
             <div class="date-range-inputs">
-              <input type="date" id="startDate" placeholder="Start Date">
+              <input type="date" id="startDate" placeholder="Start Date" />
               <span class="date-separator">to</span>
-              <input type="date" id="endDate" placeholder="End Date">
+              <input type="date" id="endDate" placeholder="End Date" />
             </div>
           </div>
         </div>
         <div class="filter-actions">
-          <button onclick="applyFilters()" class="btn btn-primary">Apply Filters</button>
-          <button onclick="clearFilters()" class="btn btn-outline">Clear</button>
+          <button onclick="applyFilters()" class="btn btn-primary"
+            >Apply Filters</button
+          >
+          <button onclick="clearFilters()" class="btn btn-outline">Clear</button
+          >
         </div>
       </div>
     </div>
@@ -45,10 +50,6 @@ import { AUTH_CONFIG } from '../config/auth.js';
     <div class="invoices-section">
       <div class="invoices-header">
         <h2>📄 Invoices</h2>
-        <div class="view-options">
-          <button onclick="toggleView('grid')" class="view-btn active" id="gridView">🔲 Grid</button>
-          <button onclick="toggleView('list')" class="view-btn" id="listView">📋 List</button>
-        </div>
       </div>
 
       <div id="invoicesContainer" class="invoices-grid">
@@ -63,21 +64,27 @@ import { AUTH_CONFIG } from '../config/auth.js';
           <div class="error-message">
             <h4>⚠️ Error Loading Invoices</h4>
             <p id="errorText">Failed to load invoices. Please try again.</p>
-            <button onclick="loadInvoices()" class="btn btn-primary">� Retry</button>
+            <button onclick="loadInvoices()" class="btn btn-primary"
+              >🔄 Retry</button
+            >
           </div>
         </div>
 
         <!-- Table view -->
-        <div id="tableView" class="invoices-table-container" style="display: none;">
+        <div
+          id="tableView"
+          class="invoices-table-container"
+          style="display: none;"
+        >
           <div class="table-wrapper">
             <table class="invoices-table">
               <thead>
                 <tr>
-                  <th>Invoice #</th>
-                  <th>Customer</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Status</th>
+                  <th>Bill ID</th>
+                  <th>Customer Name</th>
+                  <th>Phone Number</th>
+                  <th>Total Amount</th>
+                  <th>Item Count</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -86,11 +93,6 @@ import { AUTH_CONFIG } from '../config/auth.js';
               </tbody>
             </table>
           </div>
-        </div>
-
-        <!-- Grid view (existing cards) -->
-        <div id="gridView" class="invoices-grid-container" style="display: none;">
-          <!-- Dynamic cards will be loaded here -->
         </div>
       </div>
 
@@ -111,7 +113,7 @@ import { AUTH_CONFIG } from '../config/auth.js';
     background: white;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 25px;
   }
 
@@ -140,7 +142,7 @@ import { AUTH_CONFIG } from '../config/auth.js';
     background: white;
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .filters-card h3 {
@@ -215,16 +217,18 @@ import { AUTH_CONFIG } from '../config/auth.js';
     background: white;
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     gap: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
   }
 
   .summary-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   }
 
   .card-icon {
@@ -278,7 +282,7 @@ import { AUTH_CONFIG } from '../config/auth.js';
     background: white;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .invoices-header {
@@ -296,27 +300,6 @@ import { AUTH_CONFIG } from '../config/auth.js';
     display: flex;
     align-items: center;
     gap: 8px;
-  }
-
-  .view-options {
-    display: flex;
-    gap: 5px;
-  }
-
-  .view-btn {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    background: white;
-    cursor: pointer;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-  }
-
-  .view-btn.active {
-    background: #3498db;
-    color: white;
-    border-color: #3498db;
   }
 
   .invoices-grid {
@@ -347,8 +330,12 @@ import { AUTH_CONFIG } from '../config/auth.js';
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   .error-container {
@@ -422,19 +409,15 @@ import { AUTH_CONFIG } from '../config/auth.js';
     color: #2c3e50;
   }
 
-  .table-customer {
-    max-width: 200px;
-  }
-
   .table-customer-name {
     font-weight: 600;
     color: #2c3e50;
-    margin-bottom: 3px;
+    max-width: 200px;
   }
 
-  .table-customer-contact {
-    font-size: 12px;
-    color: #7f8c8d;
+  .table-phone {
+    font-family: monospace;
+    color: #2c3e50;
   }
 
   .table-amount {
@@ -442,121 +425,46 @@ import { AUTH_CONFIG } from '../config/auth.js';
     color: #27ae60;
   }
 
+  .table-item-count {
+    color: #7f8c8d;
+    text-align: center;
+  }
+
   .table-actions {
     display: flex;
-    gap: 5px;
+    gap: 8px;
     flex-wrap: wrap;
-  }
-
-  .invoices-grid-container {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
-  }
-
-  .invoice-card {
-    border: 1px solid #e1e8ed;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    background: white;
-  }
-
-  .invoice-card:hover {
-    border-color: #3498db;
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
-    transform: translateY(-2px);
-  }
-
-  .invoice-header {
-    background: #f8f9fa;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #e1e8ed;
   }
 
-  .invoice-number {
-    font-weight: bold;
+  .action-icon {
     font-size: 16px;
-    color: #2c3e50;
+    padding: 6px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
   }
 
-  .invoice-status {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-
-  .status-paid {
-    background: #d5f4e6;
-    color: #27ae60;
-  }
-
-  .status-pending {
-    background: #ffeaa7;
-    color: #e17055;
-  }
-
-  .status-partial {
-    background: #a29bfe;
-    color: white;
-  }
-
-  .invoice-details {
-    padding: 20px;
-  }
-
-  .invoice-details h4 {
-    margin: 0 0 10px 0;
-    color: #2c3e50;
-    font-size: 16px;
-  }
-
-  .customer-info {
-    font-size: 13px;
-    color: #7f8c8d;
-    margin-bottom: 15px;
-    line-height: 1.5;
-  }
-
-  .invoice-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .meta-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-  }
-
-  .meta-item .label {
-    color: #7f8c8d;
-    font-weight: normal;
-  }
-
-  .meta-item .value {
-    color: #2c3e50;
-    font-weight: bold;
-  }
-
-  .meta-item .value.amount {
-    color: #27ae60;
-  }
-
-  .invoice-actions {
-    padding: 15px 20px;
-    border-top: 1px solid #e1e8ed;
+  .action-icon:hover {
     background: #f8f9fa;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    transform: scale(1.1);
+  }
+
+  .view-icon:hover {
+    background: #e3f2fd;
+  }
+
+  .edit-icon:hover {
+    background: #f3e5f5;
   }
 
   .btn {
@@ -576,6 +484,12 @@ import { AUTH_CONFIG } from '../config/auth.js';
   .btn-sm {
     padding: 6px 12px;
     font-size: 11px;
+  }
+
+  .btn-xs {
+    padding: 4px 8px;
+    font-size: 12px;
+    min-width: 32px;
   }
 
   .btn-primary {
@@ -616,7 +530,7 @@ import { AUTH_CONFIG } from '../config/auth.js';
 
   .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
 
   .pagination {
@@ -653,29 +567,28 @@ import { AUTH_CONFIG } from '../config/auth.js';
       display: none;
     }
 
-    .summary-cards {
-      grid-template-columns: 1fr;
-    }
-
-    .invoices-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .invoice-actions {
-      justify-content: center;
-    }
-
     .header-actions {
       flex-wrap: wrap;
       justify-content: center;
+    }
+
+    .table-actions {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .invoices-table th,
+    .invoices-table td {
+      padding: 10px 8px;
+      font-size: 12px;
     }
   }
 </style>
 
 <script define:vars={{ AUTH_CONFIG }}>
   // Check authentication on page load
-  document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== 'true') {
+  document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== "true") {
       window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
       return;
     }
@@ -684,13 +597,12 @@ import { AUTH_CONFIG } from '../config/auth.js';
   });
 
   let invoicesData = [];
-  let currentView = 'grid';
 
   async function loadInvoices() {
     try {
       showLoading();
-      
-      // Fetch invoices from API
+
+      Fetch invoices from API
       const response = await fetch('/api/bills', {
         method: 'GET',
         headers: {
@@ -704,46 +616,183 @@ import { AUTH_CONFIG } from '../config/auth.js';
 
       const data = await response.json();
       invoicesData = data.bills || []; // Changed from data.invoices to data.bills
-      
+
+      // invoicesData = [
+      //   {
+      //     id: 6,
+      //     bill_number: "2",
+      //     invoice_date: "2025-07-15",
+      //     challan_number: "ch1",
+      //     challan_date: "2025-07-14",
+      //     po_number: "po1",
+      //     po_date: "2025-07-13",
+      //     dispatch_details: "Dispatch",
+      //     customer_name: "Arjun Gupta",
+      //     customer_code: 2,
+      //     customer_phone: "+919167882173",
+      //     customer_email: "arjun@gmail.com",
+      //     customer_address:
+      //       "3, Nirpat Chappar Near Hakim chauk\nPost Chitauna Thana Kateya\nPanchdeori",
+      //     customer_gst_number: "BHDGFP91005",
+      //     vendor_code: "vn1",
+      //     hsn_code: "9876",
+      //     subtotal: 101,
+      //     cgst_percentage: 9,
+      //     cgst_amount: 9.09,
+      //     sgst_percentage: 9,
+      //     sgst_amount: 9.09,
+      //     igst_percentage: 0,
+      //     igst_amount: 0,
+      //     total_tax_amount: 18.18,
+      //     discount_percentage: 0,
+      //     discount_amount: 0,
+      //     total_amount: 119.18,
+      //     payment_method: "cash",
+      //     payment_status: "pending",
+      //     payment_terms:
+      //       "PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN MUMBAI",
+      //     bank_name: "INDIAN BANK",
+      //     bank_account_number: "641205735S",
+      //     bank_branch: "MALAD EAST",
+      //     bank_ifsc_code: "IDIB000M202",
+      //     bank_account_type: "CURRENT A/C",
+      //     notes: "notes",
+      //     terms_and_conditions:
+      //       "• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.\n• Inspection prior to dispatch if desire will be at our factory premises.\n• 50% advance with confirm order & balance against delivery.\n• Warranty period 12 Months against manufacturing defect.\n• Payment of the bill must every month of 15th.\n• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.",
+      //     created_at: "2025-07-15T15:33:57.888Z",
+      //     updated_at: "2025-07-15T15:33:57.888Z",
+      //     items: [
+      //       {
+      //         id: 2,
+      //         bill_id: 6,
+      //         sr_no: 1,
+      //         product_name: "q",
+      //         product_description: "q",
+      //         product_category: "General",
+      //         hsn_code: null,
+      //         unit_price: 2,
+      //         quantity: 3,
+      //         total_price: 6,
+      //         unit: "Nos",
+      //       },
+      //       {
+      //         id: 3,
+      //         bill_id: 6,
+      //         sr_no: 2,
+      //         product_name: "3",
+      //         product_description: "3",
+      //         product_category: "General",
+      //         hsn_code: null,
+      //         unit_price: 23,
+      //         quantity: 4,
+      //         total_price: 92,
+      //         unit: "Nos",
+      //       },
+      //       {
+      //         id: 4,
+      //         bill_id: 6,
+      //         sr_no: 3,
+      //         product_name: "4",
+      //         product_description: "4",
+      //         product_category: "General",
+      //         hsn_code: null,
+      //         unit_price: 1,
+      //         quantity: 3,
+      //         total_price: 3,
+      //         unit: "Nos",
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     id: 5,
+      //     bill_number: "1",
+      //     invoice_date: "2025-07-15",
+      //     challan_number: "ch1",
+      //     challan_date: "2025-07-14",
+      //     po_number: "po1",
+      //     po_date: "2025-07-13",
+      //     dispatch_details: "vgbg",
+      //     customer_name: "Arjun Gupta",
+      //     customer_code: 1,
+      //     customer_phone: "+919167882173",
+      //     customer_email: "arjun@gmail.com",
+      //     customer_address:
+      //       "3, Nirpat Chappar Near Hakim chauk\nPost Chitauna Thana Kateya\nPanchdeori",
+      //     customer_gst_number: "BHDGFP91005",
+      //     vendor_code: "vn1",
+      //     hsn_code: null,
+      //     subtotal: 770,
+      //     cgst_percentage: 9,
+      //     cgst_amount: 69.3,
+      //     sgst_percentage: 9,
+      //     sgst_amount: 69.3,
+      //     igst_percentage: 0,
+      //     igst_amount: 0,
+      //     total_tax_amount: 138.6,
+      //     discount_percentage: 0,
+      //     discount_amount: 0,
+      //     total_amount: 908.6,
+      //     payment_method: "cash",
+      //     payment_status: "pending",
+      //     payment_terms:
+      //       "PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN MUMBAI",
+      //     bank_name: "INDIAN BANK",
+      //     bank_account_number: "641205735S",
+      //     bank_branch: "MALAD EAST",
+      //     bank_ifsc_code: "IDIB000M202",
+      //     bank_account_type: "CURRENT A/C",
+      //     notes: null,
+      //     terms_and_conditions:
+      //       "• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.\n• Inspection prior to dispatch if desire will be at our factory premises.\n• 50% advance with confirm order & balance against delivery.\n• Warranty period 12 Months against manufacturing defect.\n• Payment of the bill must every month of 15th.\n• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.",
+      //     created_at: "2025-07-15T15:31:40.757Z",
+      //     updated_at: "2025-07-15T15:31:40.757Z",
+      //     items: [
+      //       {
+      //         id: 1,
+      //         bill_id: 5,
+      //         sr_no: 1,
+      //         product_name: "Fan",
+      //         product_description: "Fan",
+      //         product_category: "General",
+      //         hsn_code: null,
+      //         unit_price: 14,
+      //         quantity: 55,
+      //         total_price: 770,
+      //         unit: "Nos",
+      //       },
+      //     ],
+      //   },
+      // ];
       hideLoading();
-      renderInvoices();
-      
+      renderTableView();
     } catch (error) {
-      console.error('Error loading invoices:', error);
+      console.error("Error loading invoices:", error);
       hideLoading();
-      showError('Failed to load invoices. Please check your connection and try again.');
+      showError(
+        "Failed to load invoices. Please check your connection and try again.",
+      );
     }
   }
 
   function showLoading() {
-    document.getElementById('loadingState').style.display = 'block';
-    document.getElementById('errorState').style.display = 'none';
-    document.getElementById('tableView').style.display = 'none';
-    document.getElementById('gridView').style.display = 'none';
+    document.getElementById("loadingState").style.display = "block";
+    document.getElementById("errorState").style.display = "none";
+    document.getElementById("tableView").style.display = "none";
   }
 
   function hideLoading() {
-    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById("loadingState").style.display = "none";
   }
 
   function showError(message) {
-    document.getElementById('errorText').textContent = message;
-    document.getElementById('errorState').style.display = 'block';
-    document.getElementById('tableView').style.display = 'none';
-    document.getElementById('gridView').style.display = 'none';
-  }
-
-  function renderInvoices() {
-    if (currentView === 'grid') {
-      renderGridView();
-    } else {
-      renderTableView();
-    }
+    document.getElementById("errorText").textContent = message;
+    document.getElementById("errorState").style.display = "block";
+    document.getElementById("tableView").style.display = "none";
   }
 
   function renderTableView() {
-    const tbody = document.getElementById('invoicesTableBody');
-    tbody.innerHTML = '';
+    const tbody = document.getElementById("invoicesTableBody");
+    tbody.innerHTML = "";
 
     if (invoicesData.length === 0) {
       tbody.innerHTML = `
@@ -754,163 +803,58 @@ import { AUTH_CONFIG } from '../config/auth.js';
         </tr>
       `;
     } else {
-      invoicesData.forEach(invoice => {
+      invoicesData.forEach((invoice) => {
         const row = createTableRow(invoice);
         tbody.appendChild(row);
       });
     }
 
-    document.getElementById('tableView').style.display = 'block';
-    document.getElementById('gridView').style.display = 'none';
-  }
-
-  function renderGridView() {
-    const container = document.getElementById('gridView');
-    container.innerHTML = '';
-
-    if (invoicesData.length === 0) {
-      container.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">
-          📄 No invoices found
-        </div>
-      `;
-    } else {
-      invoicesData.forEach(invoice => {
-        const card = createInvoiceCard(invoice);
-        container.appendChild(card);
-      });
-    }
-
-    document.getElementById('tableView').style.display = 'none';
-    document.getElementById('gridView').style.display = 'block';
+    document.getElementById("tableView").style.display = "block";
   }
 
   function createTableRow(invoice) {
-    const row = document.createElement('tr');
-    
-    const statusClass = `status-${invoice.payment_status || 'pending'}`;
-    const formattedDate = new Date(invoice.invoice_date).toLocaleDateString();
+    const row = document.createElement("tr");
+
     const formattedAmount = `₹${parseFloat(invoice.total_amount || 0).toLocaleString()}`;
-    
+    const itemCount = invoice.items ? invoice.items.length : 0;
+
     row.innerHTML = `
       <td class="table-invoice-number">${invoice.bill_number}</td>
-      <td class="table-customer">
-        <div class="table-customer-name">${invoice.customer_name}</div>
-        <div class="table-customer-contact">
-          ${invoice.customer_phone ? `📞 ${invoice.customer_phone}` : ''}
-          ${invoice.customer_email ? `<br>📧 ${invoice.customer_email}` : ''}
-        </div>
-      </td>
-      <td>${formattedDate}</td>
+      <td class="table-customer-name">${invoice.customer_name}</td>
+      <td class="table-phone">${invoice.customer_phone || "N/A"}</td>
       <td class="table-amount">${formattedAmount}</td>
-      <td>
-        <span class="invoice-status ${statusClass}">
-          ${(invoice.payment_status || 'pending').toUpperCase()}
-        </span>
-      </td>
+      <td class="table-item-count">${itemCount} items</td>
       <td class="table-actions">
-        <a href="/invoice?id=${invoice.id}" class="btn btn-sm btn-primary">👁️ View</a>
-        <button onclick="editInvoice(${invoice.id})" class="btn btn-sm btn-secondary">✏️ Edit</button>
-        <button onclick="emailInvoice(${invoice.id})" class="btn btn-sm btn-info">📧 Email</button>
-        ${invoice.payment_status !== 'paid' ? 
-          `<button onclick="markAsPaid(${invoice.id})" class="btn btn-sm btn-success">✅ Mark Paid</button>` :
-          `<button onclick="printInvoice(${invoice.id})" class="btn btn-sm btn-outline">🖨️ Print</button>`
-        }
+        <a href="/invoice?id=${invoice.id}" class="action-icon view-icon" title="View Invoice">👁️</a>
+        <button onclick="editInvoice(${invoice.id})" class="action-icon edit-icon" title="Edit Invoice">✏️</button>
       </td>
     `;
-    
+
     return row;
-  }
-
-  function createInvoiceCard(invoice) {
-    const card = document.createElement('div');
-    card.className = 'invoice-card';
-    
-    const statusClass = `status-${invoice.payment_status || 'pending'}`;
-    const formattedDate = new Date(invoice.invoice_date).toLocaleDateString();
-    const formattedAmount = `₹${parseFloat(invoice.total_amount || 0).toLocaleString()}`;
-    const itemsCount = invoice.items ? invoice.items.length : 0;
-    
-    card.innerHTML = `
-      <div class="invoice-header">
-        <div class="invoice-number">${invoice.bill_number}</div>
-        <div class="invoice-status ${statusClass}">
-          ${(invoice.payment_status || 'pending').toUpperCase()}
-        </div>
-      </div>
-      <div class="invoice-details">
-        <h4>${invoice.customer_name}</h4>
-        <p class="customer-info">
-          ${invoice.customer_phone ? `📞 ${invoice.customer_phone}<br>` : ''}
-          ${invoice.customer_email ? `📧 ${invoice.customer_email}` : ''}
-        </p>
-        <div class="invoice-meta">
-          <div class="meta-item">
-            <span class="label">Date:</span>
-            <span class="value">${formattedDate}</span>
-          </div>
-          <div class="meta-item">
-            <span class="label">Amount:</span>
-            <span class="value amount">${formattedAmount}</span>
-          </div>
-          <div class="meta-item">
-            <span class="label">Items:</span>
-            <span class="value">${itemsCount} items</span>
-          </div>
-        </div>
-      </div>
-      <div class="invoice-actions">
-        <a href="/invoice?id=${invoice.id}" class="btn btn-sm btn-primary">👁️ View</a>
-        <button onclick="editInvoice(${invoice.id})" class="btn btn-sm btn-secondary">✏️ Edit</button>
-        <button onclick="emailInvoice(${invoice.id})" class="btn btn-sm btn-info">📧 Email</button>
-        ${invoice.payment_status !== 'paid' ? 
-          `<button onclick="markAsPaid(${invoice.id})" class="btn btn-sm btn-success">✅ Mark Paid</button>` :
-          `<button onclick="printInvoice(${invoice.id})" class="btn btn-sm btn-outline">🖨️ Print</button>`
-        }
-      </div>
-    `;
-    
-    return card;
-  }
-
-  function toggleView(view) {
-    const gridBtn = document.getElementById('gridView');
-    const listBtn = document.getElementById('listView');
-    
-    currentView = view;
-    
-    if (view === 'grid') {
-      gridBtn.classList.add('active');
-      listBtn.classList.remove('active');
-      renderGridView();
-    } else {
-      listBtn.classList.add('active');
-      gridBtn.classList.remove('active');
-      renderTableView();
-    }
   }
 
   async function applyFilters() {
     try {
       showLoading();
-      
-      const search = document.getElementById('searchInput').value.trim();
-      const startDate = document.getElementById('startDate').value;
-      const endDate = document.getElementById('endDate').value;
-      
+
+      const search = document.getElementById("searchInput").value.trim();
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+
       // Build query parameters
       const params = new URLSearchParams();
-      if (search) params.append('search', search);
-      if (startDate) params.append('startDate', startDate);
-      if (endDate) params.append('endDate', endDate);
-      
-      const url = '/api/bills' + (params.toString() ? '?' + params.toString() : '');
-      
+      if (search) params.append("search", search);
+      if (startDate) params.append("startDate", startDate);
+      if (endDate) params.append("endDate", endDate);
+
+      const url =
+        "/api/bills" + (params.toString() ? "?" + params.toString() : "");
+
       const response = await fetch(url, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-        }
+          "Content-Type": "application/json",
+        },
       });
 
       if (!response.ok) {
@@ -919,47 +863,66 @@ import { AUTH_CONFIG } from '../config/auth.js';
 
       const data = await response.json();
       invoicesData = data.bills || []; // Changed from data.invoices to data.bills
-      
+
       hideLoading();
-      renderInvoices();
-      
+      renderTableView();
     } catch (error) {
-      console.error('Error applying filters:', error);
+      console.error("Error applying filters:", error);
       hideLoading();
-      showError('Failed to filter invoices. Please try again.');
+      showError("Failed to filter invoices. Please try again.");
     }
   }
 
   function clearFilters() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
+    document.getElementById("searchInput").value = "";
+    document.getElementById("startDate").value = "";
+    document.getElementById("endDate").value = "";
     loadInvoices(); // Reload all invoices without filters
   }
 
-  function editInvoice(id) {
+  // Make all functions globally accessible
+  window.editInvoice = function(id) {
     window.location.href = `/bills/edit/${id}`;
   }
+  
+  window.logout = function() {
+    if (confirm("Are you sure you want to logout?")) {
+      window.location.href = "/login";
+    }
+  }
+  
+  window.applyFilters = function() {
+    loadInvoices();
+  }
+  
+  window.clearFilters = function() {
+    document.getElementById("searchInput").value = "";
+    document.getElementById("startDate").value = "";
+    document.getElementById("endDate").value = "";
+    loadInvoices();
+  }
+  
+  window.loadInvoices = loadInvoices;
 
   function emailInvoice(id) {
     alert(`Email invoice ${id} functionality`);
   }
 
   function printInvoice(id) {
-    window.open(`/invoice?id=${id}&print=true`, '_blank');
+    window.open(`/invoice?id=${id}&print=true`, "_blank");
   }
 
   async function markAsPaid(id) {
-    if (confirm('Mark this invoice as paid?')) {
+    if (confirm("Mark this invoice as paid?")) {
       try {
         const response = await fetch(`/api/bills/${id}`, {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            payment_status: 'paid'
-          })
+            payment_status: "paid",
+          }),
         });
 
         if (!response.ok) {
@@ -969,10 +932,9 @@ import { AUTH_CONFIG } from '../config/auth.js';
         // Reload invoices to reflect the change
         loadInvoices();
         alert(`Invoice ${id} marked as paid successfully!`);
-        
       } catch (error) {
-        console.error('Error updating invoice:', error);
-        alert('Failed to update invoice status. Please try again.');
+        console.error("Error updating invoice:", error);
+        alert("Failed to update invoice status. Please try again.");
       }
     }
   }
@@ -981,26 +943,18 @@ import { AUTH_CONFIG } from '../config/auth.js';
     alert(`Follow up functionality for invoice ${id}`);
   }
 
-  function exportData() {
-    alert('Export functionality - would generate Excel/CSV file');
-  }
-
-  function printReport() {
-    window.print();
-  }
-
-  function logout() {
-    localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-    alert('You have been logged out successfully.');
-    window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
-  }
-
   // Initialize filters with current date
-  document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date().toISOString().split('T')[0];
-    const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-    
-    document.getElementById('startDate').value = firstDay;
-    document.getElementById('endDate').value = today;
+  document.addEventListener("DOMContentLoaded", function () {
+    const today = new Date().toISOString().split("T")[0];
+    const firstDay = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1,
+    )
+      .toISOString()
+      .split("T")[0];
+
+    document.getElementById("startDate").value = firstDay;
+    document.getElementById("endDate").value = today;
   });
 </script>
