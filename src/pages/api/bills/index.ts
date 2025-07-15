@@ -9,7 +9,7 @@ export const GET: APIRoute = async ({ request }) => {
     const action = url.searchParams.get('action');
     
     // Initialize D1 database client
-    const db = initializeDatabase();
+    const db = await initializeDatabase();
     
     switch (action) {
       case 'list':
@@ -43,14 +43,25 @@ export const GET: APIRoute = async ({ request }) => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const billData: Bill = await request.json();
+    console.log('Received bill data:', JSON.stringify(billData, null, 2));
     
     // Initialize D1 database client
-    const db = initializeDatabase();
+    const db = await initializeDatabase();
 
     return await createBill(db, billData);
   } catch (error) {
-    console.error('API Error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    console.error('POST API Error:', error);
+    
+    // Log more details about the error
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    
+    return new Response(JSON.stringify({ 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -61,7 +72,7 @@ export const PUT: APIRoute = async ({ request }) => {
   try {
     const billData: Bill = await request.json();
     
-    const db = initializeDatabase();
+    const db = await initializeDatabase();
 
     return await updateBill(db, billData);
   } catch (error) {
@@ -85,7 +96,7 @@ export const DELETE: APIRoute = async ({ request }) => {
       });
     }
     
-    const db = initializeDatabase();
+    const db = await initializeDatabase();
 
     return await deleteBill(db, billNumber);
   } catch (error) {
@@ -207,8 +218,8 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
         cgst_percentage, cgst_amount, sgst_percentage, sgst_amount, igst_percentage, igst_amount, total_tax_amount,
         discount_percentage, discount_amount, total_amount, payment_method, payment_status, payment_terms,
         bank_name, bank_account_number, bank_branch, bank_ifsc_code, bank_account_type, notes,
-        created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        terms_and_conditions, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       RETURNING id
     `, [
       billData.bill_number,
@@ -246,6 +257,7 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
       billData.bank_details?.ifsc_code || null,
       billData.bank_details?.account_type || null,
       billData.notes || null,
+      billData.terms_and_conditions || null,
       billData.created_at,
       billData.updated_at
     ]);

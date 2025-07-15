@@ -8,21 +8,29 @@ export interface DatabaseConfig {
 
 export const DB_CONFIG: DatabaseConfig = {
   name: 'shagoonchairdb',
-  accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '',
-  databaseId: process.env.CLOUDFLARE_D1_DATABASE_ID || '',
-  apiToken: process.env.CLOUDFLARE_API_TOKEN || ''
+  accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '78ba55673298a7f5bda678055519beb9',
+  databaseId: process.env.CLOUDFLARE_D1_DATABASE_ID || 'b215f72f-a4f6-497d-a68f-2d92d373b524',
+  apiToken: process.env.CLOUDFLARE_API_TOKEN || '8ecRNZiD_rtS2W_zYdNeXm9gxWIwfr-Ttv6Zg0Fb'
 };
 
 // Validate configuration
 function validateConfig(config: DatabaseConfig): void {
+  console.log('Validating database configuration...');
+  console.log('Account ID length:', config.accountId?.length || 0);
+  console.log('Database ID length:', config.databaseId?.length || 0);
+  console.log('API Token length:', config.apiToken?.length || 0);
+  
   const missing = [];
   if (!config.accountId) missing.push('CLOUDFLARE_ACCOUNT_ID');
   if (!config.databaseId) missing.push('CLOUDFLARE_D1_DATABASE_ID');
   if (!config.apiToken) missing.push('CLOUDFLARE_API_TOKEN');
   
   if (missing.length > 0) {
+    console.error('Missing environment variables:', missing);
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+  
+  console.log('Database config validated successfully');
 }
 
 // Database schema interfaces
@@ -60,6 +68,7 @@ export interface Bill {
   payment_terms?: string;
   bank_details?: BankDetails;
   notes?: string;
+  terms_and_conditions?: string;
   created_at: string;
   updated_at: string;
 }
@@ -168,19 +177,45 @@ export class D1DatabaseClient {
   }
 }
 
+// Database client cache
+let dbClient: D1DatabaseClient | null = null;
+let initializationPromise: Promise<D1DatabaseClient> | null = null;
+
 // Initialize database client
-export function initializeDatabase(): D1DatabaseClient {
-  validateConfig(DB_CONFIG);
-  const client = new D1DatabaseClient(DB_CONFIG);
+export async function initializeDatabase(): Promise<D1DatabaseClient> {
+  // Return cached client if already initialized
+  if (dbClient) {
+    return dbClient;
+  }
   
-  // Initialize tables on first connection
-  initializeTables(client);
+  // Return existing initialization promise if in progress
+  if (initializationPromise) {
+    return initializationPromise;
+  }
   
-  return client;
+  // Start new initialization
+  initializationPromise = (async () => {
+    console.log('Initializing database client...');
+    validateConfig(DB_CONFIG);
+    const client = new D1DatabaseClient(DB_CONFIG);
+    
+    // Initialize tables on first connection
+    await initializeTables(client);
+    
+    // Cache the client
+    dbClient = client;
+    initializationPromise = null;
+    
+    return client;
+  })();
+  
+  return initializationPromise;
 }
 
 async function initializeTables(client: D1DatabaseClient) {
   try {
+    console.log('Starting database table initialization...');
+    
     // Create tables if they don't exist
     const createBillsTable = `
       CREATE TABLE IF NOT EXISTS bills (
@@ -220,6 +255,7 @@ async function initializeTables(client: D1DatabaseClient) {
         bank_ifsc_code TEXT,
         bank_account_type TEXT,
         notes TEXT,
+        terms_and_conditions TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
@@ -257,7 +293,18 @@ async function initializeTables(client: D1DatabaseClient) {
       )
     `;
 
+    // Execute table creation
+    console.log('Creating bills table...');
+    await client.execute(createBillsTable);
+    
+    console.log('Creating bill_items table...');
+    await client.execute(createBillItemsTable);
+    
+    console.log('Creating company_info table...');
+    await client.execute(createCompanyInfoTable);
+
     // Create indexes for better performance
+    console.log('Creating indexes...');
     const indexes = [
       'CREATE INDEX IF NOT EXISTS idx_bills_bill_number ON bills(bill_number)',
       'CREATE INDEX IF NOT EXISTS idx_bills_customer_name ON bills(customer_name)',
@@ -269,21 +316,17 @@ async function initializeTables(client: D1DatabaseClient) {
       'CREATE INDEX IF NOT EXISTS idx_bill_items_hsn_code ON bill_items(hsn_code)'
     ];
 
-    // Execute table creation and indexes
-    const statements = [
-      { sql: createBillsTable },
-      { sql: createBillItemsTable },
-      { sql: createCompanyInfoTable },
-      ...indexes.map(sql => ({ sql }))
-    ];
-
-    await client.batch(statements);
+    for (const indexSql of indexes) {
+      await client.execute(indexSql);
+    }
 
     // Insert company information
+    console.log('Inserting company information...');
     await insertCompanyInfo(client);
 
     // Insert sample data if tables are empty
-    await insertSampleData(client);
+    // console.log('Checking for sample data...');
+    // await insertSampleData(client);
     
     console.log('D1 Database initialized successfully');
   } catch (error) {
@@ -291,107 +334,6 @@ async function initializeTables(client: D1DatabaseClient) {
   }
 }
 
-async function insertSampleData(client: D1DatabaseClient) {
-  try {
-    // Check if bills table is empty
-    const countResult = await client.query('SELECT COUNT(*) as count FROM bills');
-    const billCount = countResult.results[0]?.count || 0;
-    
-    if (billCount === 0) {
-      console.log('Inserting sample data into D1 database...');
-      
-      // Sample bills data matching the invoice format
-      const sampleBills = [
-        [
-          'BILL-710', '2025-07-06', 'CH-710', '2025-07-05', 'PO-2025-001', '2025-07-01', 'Dispatched via Mumbai Transport',
-          'M/S. CUPS AND MOULDS LLP.', 1001, '+91 9820732807', 'cupsandmoulds@gmail.com',
-          'B 17, PRAVASI INDUSTRIAL ESTATE, GATE NO. 1, 1ST FLOOR GOREGAON MULUND LINK ROAD, GOREGAON (EAST) MUMBAI-400063',
-          '27AAQFC3444C1ZK', '*****', '9403',
-          21950.00, 9.0, 1975.50, 9.0, 1975.50, 18.0, 0.00, 3951.00,
-          0.0, 0.00, 25901.00, 'bank_transfer', 'paid',
-          'Payment only by crossed cheques/DD payable in Mumbai',
-          'INDIAN BANK', '641205735S', 'MALAD EAST', 'IDIB000M202', 'CURRENT A/C',
-          'TWENTY FIVE THOUSAND NINE HUNDRED ONE RUPEES ONLY'
-        ],
-        [
-          'BILL-711', '2025-07-07', 'CH-711', '2025-07-06', 'PO-2025-002', '2025-07-02', 'Dispatched via Express Logistics',
-          'ABC FURNITURE MART', 1002, '+91 9876543210', 'abc@furniture.com',
-          'Shop No. 15, Furniture Market, Andheri East, Mumbai-400069',
-          '27BBBCC1234D5EF', 'VEN001', '9403',
-          15000.00, 9.0, 1350.00, 9.0, 1350.00, 18.0, 0.00, 2700.00,
-          5.0, 750.00, 16950.00, 'cash', 'pending',
-          'Payment within 30 days',
-          'INDIAN BANK', '641205735S', 'MALAD EAST', 'IDIB000M202', 'CURRENT A/C',
-          'SIXTEEN THOUSAND NINE HUNDRED FIFTY RUPEES ONLY'
-        ],
-        [
-          'BILL-712', '2025-07-08', 'CH-712', '2025-07-07', 'PO-2025-003', '2025-07-03', 'Self pickup by customer',
-          'XYZ OFFICE SOLUTIONS', 1003, '+91 8765432109', 'xyz@office.com',
-          'Office No. 201, Business Center, Bandra West, Mumbai-400050',
-          '27CCCDD2345E6FG', 'VEN002', '9403',
-          45000.00, 9.0, 4050.00, 9.0, 4050.00, 18.0, 0.00, 8100.00,
-          10.0, 4500.00, 48600.00, 'upi', 'partial',
-          'Payment terms as agreed',
-          'INDIAN BANK', '641205735S', 'MALAD EAST', 'IDIB000M202', 'CURRENT A/C',
-          'FORTY EIGHT THOUSAND SIX HUNDRED RUPEES ONLY'
-        ]
-      ];
-
-      // Insert bills
-      const billStatements = sampleBills.map(billData => ({
-        sql: `INSERT INTO bills (
-          bill_number, invoice_date, challan_number, challan_date, po_number, po_date, dispatch_details,
-          customer_name, customer_code, customer_phone, customer_email, customer_address,
-          customer_gst_number, vendor_code, hsn_code, subtotal, 
-          cgst_percentage, cgst_amount, sgst_percentage, sgst_amount, igst_percentage, igst_amount, total_tax_amount,
-          discount_percentage, discount_amount, total_amount, payment_method, payment_status, payment_terms,
-          bank_name, bank_account_number, bank_branch, bank_ifsc_code, bank_account_type, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        params: billData
-      }));
-
-      const billResults = await client.batch(billStatements);
-
-      // Sample items for each bill matching the invoice format
-      const sampleItems = [
-        [
-          [1, 'MCD SS WOOD CHAIR ( MACK DOLOURE)', 'Premium wooden chair with mack doloure finish', 'Chair', '9403', 1600.00, 12, 19200.00, 'Nos'],
-          [2, 'ROUND WOOD ONLY', 'Round wooden component', 'Wood Component', '9403', 550.00, 5, 2750.00, 'Nos']
-        ],
-        [
-          [1, 'Executive Office Chair', 'Leather executive chair with ergonomic design', 'Chair', '9403', 2500.00, 6, 15000.00, 'Nos']
-        ],
-        [
-          [1, 'Conference Table Set', 'Large conference table with chairs', 'Table', '9403', 15000.00, 3, 45000.00, 'Set']
-        ]
-      ];
-
-      // Insert bill items
-      const itemStatements: Array<{ sql: string; params: any[] }> = [];
-      billResults.forEach((result, billIndex) => {
-        const billId = result.meta?.last_row_id;
-        if (billId && sampleItems[billIndex]) {
-          sampleItems[billIndex].forEach(itemData => {
-            itemStatements.push({
-              sql: `INSERT INTO bill_items (
-                bill_id, sr_no, product_name, product_description, product_category, hsn_code, unit_price, quantity, total_price, unit
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-              params: [billId, ...itemData]
-            });
-          });
-        }
-      });
-
-      if (itemStatements.length > 0) {
-        await client.batch(itemStatements);
-      }
-
-      console.log('Sample data inserted successfully');
-    }
-  } catch (error) {
-    console.error('Failed to insert sample data:', error);
-  }
-}
 
 async function insertCompanyInfo(client: D1DatabaseClient) {
   try {

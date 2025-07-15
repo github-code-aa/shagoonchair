@@ -963,8 +963,35 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     invoiceData.total_tax_amount = totalTaxAmount;
     invoiceData.discount_amount = discountAmount;
     invoiceData.total_amount = totalAmount;
+    
+    // Structure bank details properly
+    invoiceData.bank_details = {
+      bank_name: invoiceData.bank_name || '',
+      account_number: invoiceData.bank_account_number || '',
+      branch: invoiceData.bank_branch || '',
+      ifsc_code: invoiceData.bank_ifsc_code || '',
+      account_type: invoiceData.bank_account_type || ''
+    };
+    
+    // Remove individual bank fields from the main object since they're now in bank_details
+    delete invoiceData.bank_name;
+    delete invoiceData.bank_account_number;
+    delete invoiceData.bank_branch;
+    delete invoiceData.bank_ifsc_code;
+    delete invoiceData.bank_account_type;
+    
+    // Remove the flat item fields since we have the processed items array
+    Object.keys(invoiceData).forEach(key => {
+      if (key.startsWith('items[') && key.includes('][')) {
+        delete invoiceData[key];
+      }
+    });
+    
     invoiceData.created_at = new Date().toISOString();
     invoiceData.updated_at = new Date().toISOString();
+    
+    // Log the complete invoice data to verify all fields are included
+    console.log('Invoice Data to be sent:', invoiceData);
     
     try {
       const response = await fetch('/api/bills', {
