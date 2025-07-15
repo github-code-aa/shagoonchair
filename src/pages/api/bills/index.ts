@@ -284,6 +284,11 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
       FROM bills b
     `;
     
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM bills b
+    `;
+    
     const conditions = [];
     const params: any[] = [];
     
@@ -292,6 +297,19 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
     if (search) {
       conditions.push('(b.customer_name LIKE ? OR b.bill_number LIKE ?)');
       params.push(`%${search}%`, `%${search}%`);
+    }
+    
+    // Date range filtering
+    const startDate = searchParams.get('startDate');
+    if (startDate) {
+      conditions.push('DATE(b.invoice_date) >= ?');
+      params.push(startDate);
+    }
+    
+    const endDate = searchParams.get('endDate');
+    if (endDate) {
+      conditions.push('DATE(b.invoice_date) <= ?');
+      params.push(endDate);
     }
     
     const status = searchParams.get('status');
@@ -306,9 +324,9 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
       params.push(payment);
     }
     
-    if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
-    }
+    const whereClause = conditions.length > 0 ? ' WHERE ' + conditions.join(' AND ') : '';
+    query += whereClause;
+    countQuery += whereClause;
     
     query += ' ORDER BY b.created_at DESC';
     
@@ -318,6 +336,10 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
     const offset = (page - 1) * limit;
     
     query += ` LIMIT ${limit} OFFSET ${offset}`;
+    
+    // Get total count for pagination
+    const countResult = await db.query(countQuery, params);
+    const total = countResult.results?.[0]?.total || 0;
     
     const result = await db.query(query, params);
     const bills = result.results || [];
@@ -329,7 +351,12 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
       return { ...bill, items };
     }));
     
-    return new Response(JSON.stringify({ bills: billsWithItems, page, limit }), {
+    return new Response(JSON.stringify({ 
+      bills: billsWithItems, 
+      page, 
+      limit, 
+      total: parseInt(total.toString())
+    }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });

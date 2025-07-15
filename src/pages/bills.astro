@@ -26,14 +26,15 @@ import { AUTH_CONFIG } from "../config/auth.js";
               type="text"
               id="searchInput"
               placeholder="Invoice number, customer name..."
+              onkeypress="if(event.key==='Enter') applyFilters()"
             />
           </div>
           <div class="filter-group">
             <label>Date Range:</label>
             <div class="date-range-inputs">
-              <input type="date" id="startDate" placeholder="Start Date" />
+              <input type="date" id="startDate" placeholder="Start Date" onchange="applyFilters()" />
               <span class="date-separator">to</span>
-              <input type="date" id="endDate" placeholder="End Date" />
+              <input type="date" id="endDate" placeholder="End Date" onchange="applyFilters()" />
             </div>
           </div>
         </div>
@@ -97,9 +98,9 @@ import { AUTH_CONFIG } from "../config/auth.js";
       </div>
 
       <div class="pagination">
-        <button class="btn btn-outline">← Previous</button>
-        <span class="page-info">Page 1 of 5</span>
-        <button class="btn btn-outline">Next →</button>
+        <button id="prevBtn" onclick="goToPreviousPage()" class="btn btn-outline">← Previous</button>
+        <span id="pageInfo" class="page-info">Page 1 of 1</span>
+        <button id="nextBtn" onclick="goToNextPage()" class="btn btn-outline">Next →</button>
       </div>
     </div>
   </main>
@@ -528,6 +529,12 @@ import { AUTH_CONFIG } from "../config/auth.js";
     border: 1px solid #bdc3c7;
   }
 
+  .btn-outline.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -599,178 +606,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
   let invoicesData = [];
 
   async function loadInvoices() {
-    try {
-      showLoading();
-
-      const response = await fetch('/api/bills', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      invoicesData = data.bills || []; // Changed from data.invoices to data.bills
-
-      // invoicesData = [
-      //   {
-      //     id: 6,
-      //     bill_number: "2",
-      //     invoice_date: "2025-07-15",
-      //     challan_number: "ch1",
-      //     challan_date: "2025-07-14",
-      //     po_number: "po1",
-      //     po_date: "2025-07-13",
-      //     dispatch_details: "Dispatch",
-      //     customer_name: "Arjun Gupta",
-      //     customer_code: 2,
-      //     customer_phone: "+919167882173",
-      //     customer_email: "arjun@gmail.com",
-      //     customer_address:
-      //       "3, Nirpat Chappar Near Hakim chauk\nPost Chitauna Thana Kateya\nPanchdeori",
-      //     customer_gst_number: "BHDGFP91005",
-      //     vendor_code: "vn1",
-      //     hsn_code: "9876",
-      //     subtotal: 101,
-      //     cgst_percentage: 9,
-      //     cgst_amount: 9.09,
-      //     sgst_percentage: 9,
-      //     sgst_amount: 9.09,
-      //     igst_percentage: 0,
-      //     igst_amount: 0,
-      //     total_tax_amount: 18.18,
-      //     discount_percentage: 0,
-      //     discount_amount: 0,
-      //     total_amount: 119.18,
-      //     payment_method: "cash",
-      //     payment_status: "pending",
-      //     payment_terms:
-      //       "PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN MUMBAI",
-      //     bank_name: "INDIAN BANK",
-      //     bank_account_number: "641205735S",
-      //     bank_branch: "MALAD EAST",
-      //     bank_ifsc_code: "IDIB000M202",
-      //     bank_account_type: "CURRENT A/C",
-      //     notes: "notes",
-      //     terms_and_conditions:
-      //       "• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.\n• Inspection prior to dispatch if desire will be at our factory premises.\n• 50% advance with confirm order & balance against delivery.\n• Warranty period 12 Months against manufacturing defect.\n• Payment of the bill must every month of 15th.\n• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.",
-      //     created_at: "2025-07-15T15:33:57.888Z",
-      //     updated_at: "2025-07-15T15:33:57.888Z",
-      //     items: [
-      //       {
-      //         id: 2,
-      //         bill_id: 6,
-      //         sr_no: 1,
-      //         product_name: "q",
-      //         product_description: "q",
-      //         product_category: "General",
-      //         hsn_code: null,
-      //         unit_price: 2,
-      //         quantity: 3,
-      //         total_price: 6,
-      //         unit: "Nos",
-      //       },
-      //       {
-      //         id: 3,
-      //         bill_id: 6,
-      //         sr_no: 2,
-      //         product_name: "3",
-      //         product_description: "3",
-      //         product_category: "General",
-      //         hsn_code: null,
-      //         unit_price: 23,
-      //         quantity: 4,
-      //         total_price: 92,
-      //         unit: "Nos",
-      //       },
-      //       {
-      //         id: 4,
-      //         bill_id: 6,
-      //         sr_no: 3,
-      //         product_name: "4",
-      //         product_description: "4",
-      //         product_category: "General",
-      //         hsn_code: null,
-      //         unit_price: 1,
-      //         quantity: 3,
-      //         total_price: 3,
-      //         unit: "Nos",
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     id: 5,
-      //     bill_number: "1",
-      //     invoice_date: "2025-07-15",
-      //     challan_number: "ch1",
-      //     challan_date: "2025-07-14",
-      //     po_number: "po1",
-      //     po_date: "2025-07-13",
-      //     dispatch_details: "vgbg",
-      //     customer_name: "Arjun Gupta",
-      //     customer_code: 1,
-      //     customer_phone: "+919167882173",
-      //     customer_email: "arjun@gmail.com",
-      //     customer_address:
-      //       "3, Nirpat Chappar Near Hakim chauk\nPost Chitauna Thana Kateya\nPanchdeori",
-      //     customer_gst_number: "BHDGFP91005",
-      //     vendor_code: "vn1",
-      //     hsn_code: null,
-      //     subtotal: 770,
-      //     cgst_percentage: 9,
-      //     cgst_amount: 69.3,
-      //     sgst_percentage: 9,
-      //     sgst_amount: 69.3,
-      //     igst_percentage: 0,
-      //     igst_amount: 0,
-      //     total_tax_amount: 138.6,
-      //     discount_percentage: 0,
-      //     discount_amount: 0,
-      //     total_amount: 908.6,
-      //     payment_method: "cash",
-      //     payment_status: "pending",
-      //     payment_terms:
-      //       "PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN MUMBAI",
-      //     bank_name: "INDIAN BANK",
-      //     bank_account_number: "641205735S",
-      //     bank_branch: "MALAD EAST",
-      //     bank_ifsc_code: "IDIB000M202",
-      //     bank_account_type: "CURRENT A/C",
-      //     notes: null,
-      //     terms_and_conditions:
-      //       "• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.\n• Inspection prior to dispatch if desire will be at our factory premises.\n• 50% advance with confirm order & balance against delivery.\n• Warranty period 12 Months against manufacturing defect.\n• Payment of the bill must every month of 15th.\n• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.",
-      //     created_at: "2025-07-15T15:31:40.757Z",
-      //     updated_at: "2025-07-15T15:31:40.757Z",
-      //     items: [
-      //       {
-      //         id: 1,
-      //         bill_id: 5,
-      //         sr_no: 1,
-      //         product_name: "Fan",
-      //         product_description: "Fan",
-      //         product_category: "General",
-      //         hsn_code: null,
-      //         unit_price: 14,
-      //         quantity: 55,
-      //         total_price: 770,
-      //         unit: "Nos",
-      //       },
-      //     ],
-      //   },
-      // ];
-      hideLoading();
-      renderTableView();
-    } catch (error) {
-      console.error("Error loading invoices:", error);
-      hideLoading();
-      showError(
-        "Failed to load invoices. Please check your connection and try again.",
-      );
-    }
+    await loadInvoicesWithFilters(1);
   }
 
   function showLoading() {
@@ -832,7 +668,11 @@ import { AUTH_CONFIG } from "../config/auth.js";
     return row;
   }
 
-  async function applyFilters() {
+  let currentPage = 1;
+  let totalPages = 1;
+  let currentFilters = {};
+
+  async function loadInvoicesWithFilters(page = 1) {
     try {
       showLoading();
 
@@ -845,9 +685,13 @@ import { AUTH_CONFIG } from "../config/auth.js";
       if (search) params.append("search", search);
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
+      params.append("page", page.toString());
+      params.append("limit", "10"); // 10 items per page
 
-      const url =
-        "/api/bills" + (params.toString() ? "?" + params.toString() : "");
+      // Store current filters for pagination
+      currentFilters = { search, startDate, endDate };
+
+      const url = "/api/bills" + (params.toString() ? "?" + params.toString() : "");
 
       const response = await fetch(url, {
         method: "GET",
@@ -861,22 +705,67 @@ import { AUTH_CONFIG } from "../config/auth.js";
       }
 
       const data = await response.json();
-      invoicesData = data.bills || []; // Changed from data.invoices to data.bills
+      invoicesData = data.bills || [];
+      currentPage = data.page || 1;
+      totalPages = Math.ceil((data.total || 0) / (data.limit || 10));
 
       hideLoading();
       renderTableView();
+      updatePagination();
     } catch (error) {
-      console.error("Error applying filters:", error);
+      console.error("Error loading invoices:", error);
       hideLoading();
-      showError("Failed to filter invoices. Please try again.");
+      showError("Failed to load invoices. Please check your connection and try again.");
     }
+  }
+
+  async function applyFilters() {
+    currentPage = 1; // Reset to first page when applying new filters
+    await loadInvoicesWithFilters(1);
   }
 
   function clearFilters() {
     document.getElementById("searchInput").value = "";
     document.getElementById("startDate").value = "";
     document.getElementById("endDate").value = "";
+    currentPage = 1;
+    currentFilters = {};
     loadInvoices(); // Reload all invoices without filters
+  }
+
+  function updatePagination() {
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const pageInfo = document.getElementById("pageInfo");
+
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    
+    prevBtn.disabled = currentPage <= 1;
+    nextBtn.disabled = currentPage >= totalPages;
+
+    if (currentPage <= 1) {
+      prevBtn.classList.add("disabled");
+    } else {
+      prevBtn.classList.remove("disabled");
+    }
+
+    if (currentPage >= totalPages) {
+      nextBtn.classList.add("disabled");
+    } else {
+      nextBtn.classList.remove("disabled");
+    }
+  }
+
+  async function goToPreviousPage() {
+    if (currentPage > 1) {
+      await loadInvoicesWithFilters(currentPage - 1);
+    }
+  }
+
+  async function goToNextPage() {
+    if (currentPage < totalPages) {
+      await loadInvoicesWithFilters(currentPage + 1);
+    }
   }
 
   // Make all functions globally accessible
@@ -890,18 +779,15 @@ import { AUTH_CONFIG } from "../config/auth.js";
     }
   }
   
-  window.applyFilters = function() {
-    loadInvoices();
-  }
+  window.applyFilters = applyFilters;
   
-  window.clearFilters = function() {
-    document.getElementById("searchInput").value = "";
-    document.getElementById("startDate").value = "";
-    document.getElementById("endDate").value = "";
-    loadInvoices();
-  }
+  window.clearFilters = clearFilters;
   
   window.loadInvoices = loadInvoices;
+
+  window.goToPreviousPage = goToPreviousPage;
+  
+  window.goToNextPage = goToNextPage;
 
   function emailInvoice(id) {
     alert(`Email invoice ${id} functionality`);
