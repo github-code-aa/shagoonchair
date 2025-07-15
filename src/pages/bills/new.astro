@@ -9,7 +9,6 @@ import { AUTH_CONFIG } from '../../config/auth.js';
       <h1>Create New  Invoice</h1>
       <div class="header-actions">
         <a href="/bills" class="btn btn-outline">← Back to Bills</a>
-        <button type="button" onclick="previewInvoice()" class="btn btn-secondary">👁️ Preview</button>
         <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
       </div>
     </div>
@@ -1386,13 +1385,6 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     });
   }
 
-  function previewInvoice() {
-    // This would open a preview modal
-    alert('Preview functionality would show the invoice preview');
-  }
-
-
-
   // Add event listeners for tax percentage changes
   document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded - Setting up invoice form');
@@ -1666,12 +1658,7 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     }
   }
 
-  function previewInvoice() {
-    showMessage('info', 'Coming Soon', 'Invoice preview functionality will be available soon.');
-  }
-
   // Make functions available globally
   window.logout = logout;
   window.generateBillNumber = generateBillNumber;
-  window.previewInvoice = previewInvoice;
 </script>
