@@ -703,7 +703,7 @@ import { AUTH_CONFIG } from '../config/auth.js';
       }
 
       const data = await response.json();
-      invoicesData = data.invoices || [];
+      invoicesData = data.bills || []; // Changed from data.invoices to data.bills
       
       hideLoading();
       renderInvoices();
@@ -918,7 +918,7 @@ import { AUTH_CONFIG } from '../config/auth.js';
       }
 
       const data = await response.json();
-      invoicesData = data.invoices || [];
+      invoicesData = data.bills || []; // Changed from data.invoices to data.bills
       
       hideLoading();
       renderInvoices();

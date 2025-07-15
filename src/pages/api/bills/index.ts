@@ -8,7 +8,7 @@ export const prerender = false;
 export const GET: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
-    const action = url.searchParams.get('action');
+    const action = url.searchParams.get('action') || 'list'; // Default to 'list'
     
     // Initialize D1 database client
     const db = await initializeDatabase();
