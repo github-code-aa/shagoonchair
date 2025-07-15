@@ -114,7 +114,7 @@ import { AUTH_CONFIG } from '../../config/auth.js';
           <div id="itemsList">
             <!-- Items will be dynamically added here -->
           </div>
-          <button type="button" onclick="addItem()" class="btn btn-success">+ Add Item</button>
+          <button type="button" id="addItemBtn" class="btn btn-success">+ Add Item</button>
         </div>
       </section>
 
@@ -189,12 +189,11 @@ import { AUTH_CONFIG } from '../../config/auth.js';
             <select id="payment_status" name="payment_status" required>
               <option value="pending">Pending</option>
               <option value="paid">Paid</option>
-              <option value="partial">Partial</option>
             </select>
           </div>
           <div class="form-group">
             <label for="payment_terms">Payment Terms</label>
-            <textarea id="payment_terms" name="payment_terms" rows="2" placeholder="Payment only by crossed cheques/DD payable in Mumbai"></textarea>
+            <textarea id="payment_terms" name="payment_terms" rows="2">PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN MUMBAI</textarea>
           </div>
         </section>
       </div>
@@ -232,6 +231,20 @@ import { AUTH_CONFIG } from '../../config/auth.js';
         <div class="form-group">
           <label for="notes">Notes</label>
           <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes or comments"></textarea>
+        </div>
+      </section>
+
+      <!-- Terms and Conditions Section -->
+      <section class="form-section">
+        <h2>📋 Terms and Conditions</h2>
+        <div class="form-group">
+          <label for="terms_and_conditions">Terms and Conditions</label>
+          <textarea id="terms_and_conditions" name="terms_and_conditions" rows="6">• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.
+• Inspection prior to dispatch if desire will be at our factory premises.
+• 50% advance with confirm order & balance against delivery.
+• Warranty period 12 Months against manufacturing defect.
+• Payment of the bill must every month of 15th.
+• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.</textarea>
         </div>
       </section>
 
@@ -348,16 +361,17 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     border-bottom: 2px solid #dee2e6;
     text-align: center;
     color: #495057;
+    align-items: center;
   }
 
   .item-row {
-    display: grid;
-    grid-template-columns: 80px 1fr 150px 120px 150px 100px;
-    gap: 15px;
-    padding: 15px 20px;
-    border-bottom: 1px solid #f1f3f4;
-    align-items: center;
-    background: white;
+    display: grid !important;
+    grid-template-columns: 80px 1fr 150px 120px 150px 100px !important;
+    gap: 15px !important;
+    padding: 15px 20px !important;
+    border-bottom: 1px solid #f1f3f4 !important;
+    align-items: center !important;
+    background: white !important;
     transition: background-color 0.2s ease;
   }
 
@@ -371,50 +385,58 @@ import { AUTH_CONFIG } from '../../config/auth.js';
 
   .item-row input,
   .item-row select {
-    padding: 12px;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    background: white;
-    color: #495057;
+    padding: 12px !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    background: white !important;
+    color: #495057 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .item-row input:focus,
   .item-row select:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    background: #fff;
+    outline: none !important;
+    border-color: #3498db !important;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1) !important;
+    background: #fff !important;
   }
 
   .item-row input::placeholder {
-    color: #adb5bd;
-    font-weight: 400;
+    color: #adb5bd !important;
+    font-weight: 400 !important;
   }
 
   .item-total {
-    font-weight: 600;
-    font-size: 15px;
-    color: #27ae60;
-    text-align: center;
-    padding: 12px 8px;
-    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-    border-radius: 6px;
-    border: 1px solid #d4edda;
-    min-width: 100px;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    color: #27ae60 !important;
+    text-align: center !important;
+    padding: 12px 8px !important;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%) !important;
+    border-radius: 6px !important;
+    border: 1px solid #d4edda !important;
+    min-width: 100px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .sr-no {
-    font-weight: 600;
-    font-size: 16px;
-    color: #3498db;
-    text-align: center;
-    background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #e3f2fd;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    color: #3498db !important;
+    text-align: center !important;
+    background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%) !important;
+    padding: 8px !important;
+    border-radius: 6px !important;
+    border: 1px solid #e3f2fd !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .calculation-summary {
@@ -617,15 +639,136 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     const itemsList = document.getElementById('itemsList');
     const itemRow = document.createElement('div');
     itemRow.className = 'item-row';
-    itemRow.innerHTML = `
-      <span class="sr-no">${itemCounter}</span>
-      <input type="text" name="items[${itemCounter}][product_description]" placeholder="Item description" required>
-      <input type="number" name="items[${itemCounter}][unit_price]" placeholder="0.00" step="0.01" min="0" required onchange="calculateItemTotal(${itemCounter})" oninput="calculateItemTotal(${itemCounter})">
-      <input type="number" name="items[${itemCounter}][quantity]" placeholder="1" min="1" required onchange="calculateItemTotal(${itemCounter})" oninput="calculateItemTotal(${itemCounter})">
-      <span class="item-total" id="itemTotal${itemCounter}">₹0.00</span>
-      <button type="button" onclick="removeItem(this)" class="remove-item">✕</button>
+    itemRow.style.cssText = `
+      display: grid !important;
+      grid-template-columns: 80px 1fr 150px 120px 150px 100px !important;
+      gap: 15px !important;
+      padding: 15px 20px !important;
+      border-bottom: 1px solid #f1f3f4 !important;
+      align-items: center !important;
+      background: white !important;
+      transition: background-color 0.2s ease;
     `;
+    
+    itemRow.innerHTML = `
+      <span class="sr-no" style="
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        color: #3498db !important;
+        text-align: center !important;
+        background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%) !important;
+        padding: 8px !important;
+        border-radius: 6px !important;
+        border: 1px solid #e3f2fd !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      ">${itemCounter}</span>
+      <input type="text" name="items[${itemCounter}][product_description]" placeholder="Item description" required
+        style="
+          padding: 12px !important;
+          border: 1px solid #dee2e6 !important;
+          border-radius: 6px !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          transition: all 0.3s ease !important;
+          background: white !important;
+          color: #495057 !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        ">
+      <input type="number" name="items[${itemCounter}][unit_price]" placeholder="0.00" step="0.01" min="0" required
+        style="
+          padding: 12px !important;
+          border: 1px solid #dee2e6 !important;
+          border-radius: 6px !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          transition: all 0.3s ease !important;
+          background: white !important;
+          color: #495057 !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        ">
+      <input type="number" name="items[${itemCounter}][quantity]" placeholder="0" min="1" required
+        style="
+          padding: 12px !important;
+          border: 1px solid #dee2e6 !important;
+          border-radius: 6px !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          transition: all 0.3s ease !important;
+          background: white !important;
+          color: #495057 !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        ">
+      <span class="item-total" id="itemTotal${itemCounter}" style="
+        font-weight: 600 !important;
+        font-size: 15px !important;
+        color: #27ae60 !important;
+        text-align: center !important;
+        padding: 12px 8px !important;
+        background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%) !important;
+        border-radius: 6px !important;
+        border: 1px solid #d4edda !important;
+        min-width: 100px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      ">₹0.00</span>
+      <button type="button" class="remove-item" style="
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+        color: white !important;
+        border: none !important;
+        padding: 10px 12px !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2) !important;
+      ">✕</button>
+    `;
+    
     itemsList.appendChild(itemRow);
+    
+    // Add event listeners after the HTML is inserted
+    const unitPriceInput = itemRow.querySelector('input[name*="unit_price"]');
+    const quantityInput = itemRow.querySelector('input[name*="quantity"]');
+    const removeButton = itemRow.querySelector('.remove-item');
+    
+    // Add focus styles
+    [unitPriceInput, quantityInput].forEach(input => {
+      input.addEventListener('focus', function() {
+        this.style.borderColor = '#3498db !important';
+        this.style.boxShadow = '0 0 0 3px rgba(52, 152, 219, 0.1) !important';
+      });
+      input.addEventListener('blur', function() {
+        this.style.borderColor = '#dee2e6 !important';
+        this.style.boxShadow = 'none !important';
+      });
+    });
+    
+    // Add hover effect to remove button
+    removeButton.addEventListener('mouseenter', function() {
+      this.style.background = 'linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important';
+      this.style.transform = 'translateY(-1px) !important';
+      this.style.boxShadow = '0 4px 8px rgba(231, 76, 60, 0.3) !important';
+    });
+    removeButton.addEventListener('mouseleave', function() {
+      this.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important';
+      this.style.transform = 'translateY(0) !important';
+      this.style.boxShadow = '0 2px 4px rgba(231, 76, 60, 0.2) !important';
+    });
+    
+    unitPriceInput.addEventListener('change', () => calculateItemTotal(itemCounter));
+    unitPriceInput.addEventListener('input', () => calculateItemTotal(itemCounter));
+    quantityInput.addEventListener('change', () => calculateItemTotal(itemCounter));
+    quantityInput.addEventListener('input', () => calculateItemTotal(itemCounter));
+    removeButton.addEventListener('click', function() {
+      removeItem(this);
+    });
     
     // Auto-calculate when fields change
     calculateTotals();
@@ -656,22 +799,24 @@ import { AUTH_CONFIG } from '../../config/auth.js';
         }
       });
       
-      // Update onchange handlers
-      const unitPriceInput = row.querySelector('input[name*="unit_price"]');
-      const quantityInput = row.querySelector('input[name*="quantity"]');
-      if (unitPriceInput) {
-        unitPriceInput.setAttribute('onchange', `calculateItemTotal(${index + 1})`);
-        unitPriceInput.setAttribute('oninput', `calculateItemTotal(${index + 1})`);
-      }
-      if (quantityInput) {
-        quantityInput.setAttribute('onchange', `calculateItemTotal(${index + 1})`);
-        quantityInput.setAttribute('oninput', `calculateItemTotal(${index + 1})`);
-      }
-      
       // Update total span ID
       const totalSpan = row.querySelector('.item-total');
       if (totalSpan) {
         totalSpan.id = `itemTotal${index + 1}`;
+      }
+      
+      // Re-add event listeners for calculation
+      const unitPriceInput = row.querySelector('input[name*="unit_price"]');
+      const quantityInput = row.querySelector('input[name*="quantity"]');
+      
+      if (unitPriceInput) {
+        unitPriceInput.addEventListener('change', () => calculateItemTotal(index + 1));
+        unitPriceInput.addEventListener('input', () => calculateItemTotal(index + 1));
+      }
+      
+      if (quantityInput) {
+        quantityInput.addEventListener('change', () => calculateItemTotal(index + 1));
+        quantityInput.addEventListener('input', () => calculateItemTotal(index + 1));
       }
     });
     
@@ -743,6 +888,9 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     
     // Add one initial item
     addItem();
+
+    // Add event listener for Add Item button
+    document.getElementById('addItemBtn').addEventListener('click', addItem);
 
     // Add listeners for tax calculations
     ['cgst_percentage', 'sgst_percentage', 'igst_percentage', 'discount_percentage'].forEach(id => {
