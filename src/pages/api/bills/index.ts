@@ -446,7 +446,7 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     });
   } catch (error) {
     console.error('Database error:', error);
-    return new Response(JSON.stringify({ error: 'Failed to create bill' }), {
+    return new Response(JSON.stringify({ error: error }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
