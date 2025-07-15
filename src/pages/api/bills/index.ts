@@ -617,45 +617,39 @@ async function deleteBill(db: D1DatabaseClient, billNumber: string) {
 
 async function generateUniqueBillNumber(db: D1DatabaseClient) {
   try {
-    // Get the current year
-    const currentYear = new Date().getFullYear();
-    const yearSuffix = currentYear.toString().slice(-2); // Last 2 digits of year
+    console.log('🔍 Generating unique bill number...');
     
-    // Get the latest bill number for this year
+    // Get the last bill number (most recently created by ID)
     const latestBillResult = await db.query(`
       SELECT bill_number 
       FROM bills 
-      WHERE bill_number LIKE ?
-      ORDER BY CAST(SUBSTR(bill_number, 1, LENGTH(bill_number) - 2) AS INTEGER) DESC 
+      ORDER BY id DESC 
       LIMIT 1
-    `, [`%${yearSuffix}`]);
+    `);
     
-    let nextNumber = 1;
+    let newBillNumber: string;
     
     if (latestBillResult.results && latestBillResult.results.length > 0) {
-      const latestBillNumber = latestBillResult.results[0].bill_number;
-      // Extract the number part (remove year suffix)
-      const numberPart = latestBillNumber.replace(yearSuffix, '');
-      nextNumber = parseInt(numberPart) + 1;
+      const lastBillNumber = latestBillResult.results[0].bill_number;
+      console.log('📋 Latest bill number found:', lastBillNumber);
+      
+      // Parse the number and increment by 1
+      const currentNumber = parseInt(lastBillNumber);
+      if (!isNaN(currentNumber)) {
+        newBillNumber = (currentNumber + 1).toString();
+        console.log('📋 Incremented bill number:', newBillNumber);
+      } else {
+        // If the last bill number is not numeric, start from 1
+        console.log('📋 Last bill number is not numeric, starting from 1');
+        newBillNumber = '1';
+      }
+    } else {
+      // No bills exist, start from 1
+      console.log('📋 No bills found, starting from 1');
+      newBillNumber = '1';
     }
     
-    // Generate new bill number with format: NUMBER + YEAR (e.g., 71025, 71125, etc.)
-    const newBillNumber = `${nextNumber}${yearSuffix}`;
-    
-    // Double-check that this number doesn't exist
-    const existingCheck = await db.query('SELECT bill_number FROM bills WHERE bill_number = ?', [newBillNumber]);
-    
-    if (existingCheck.results && existingCheck.results.length > 0) {
-      // If it exists, try the next number
-      const fallbackNumber = `${nextNumber + 1}${yearSuffix}`;
-      return new Response(JSON.stringify({ 
-        billNumber: fallbackNumber,
-        message: 'Generated unique bill number'
-      }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    console.log('✅ Generated unique bill number:', newBillNumber);
     
     return new Response(JSON.stringify({ 
       billNumber: newBillNumber,
