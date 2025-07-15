@@ -2,11 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import InvoiceTemplate from '../components/InvoiceTemplate.astro';
 import { AUTH_CONFIG } from '../config/auth.js';
+import type { Bill } from '../config/database.js';
 
 // This would normally fetch from your D1 database
 const sampleBill = {
   id: 1,
-  bill_number: '710',
+  bill_number: 'BILL-710',
   invoice_date: '2025-07-06',
   challan_number: 'CH-710',
   challan_date: '2025-07-05',
@@ -58,8 +59,8 @@ const sampleBill = {
   discount_percentage: 0,
   discount_amount: 0,
   total_amount: 25901.00,
-  payment_method: 'bank_transfer',
-  payment_status: 'paid',
+  payment_method: 'bank_transfer' as const,
+  payment_status: 'paid' as const,
   payment_terms: 'Payment only by crossed cheques/DD payable in Mumbai',
   bank_details: {
     bank_name: 'INDIAN BANK',
@@ -69,6 +70,7 @@ const sampleBill = {
     account_type: 'CURRENT A/C'
   },
   notes: 'TWENTY FIVE THOUSAND NINE HUNDRED ONE RUPEES ONLY',
+  terms_and_conditions: 'All disputes are subject to Mumbai jurisdiction. Goods once sold will not be taken back or exchanged.',
   created_at: '2025-07-06T00:00:00Z',
   updated_at: '2025-07-06T00:00:00Z'
 };

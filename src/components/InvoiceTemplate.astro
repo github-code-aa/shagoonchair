@@ -147,7 +147,7 @@ const totalInWords = numberToWords(Math.floor(finalTotal));
     </thead>
     <tbody>
       {bill.items.map((item, index) => (
-        <tr key={index}>
+        <tr>
           <td>{item.sr_no}</td>
           <td>{item.product_name}. {item.product_description && <br><small>{item.product_description}</small>}</td>
           <td class="price-rs">{Math.floor(item.unit_price)}</td>
@@ -160,7 +160,7 @@ const totalInWords = numberToWords(Math.floor(finalTotal));
       
       <!-- Empty rows for spacing -->
       {Array.from({ length: 8 - bill.items.length }, (_, i) => (
-        <tr key={`empty-${i}`}>
+        <tr>
           <td>&nbsp;</td>
           <td></td>
           <td></td>
