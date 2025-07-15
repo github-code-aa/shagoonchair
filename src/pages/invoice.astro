@@ -1,8 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import InvoiceTemplate from '../components/InvoiceTemplate.astro';
+// import InvoiceTemplate from '../components/InvoiceTemplate.astro';
 import { AUTH_CONFIG } from '../config/auth.js';
-import type { Bill } from '../config/database.js';
 
 // This would normally fetch from your D1 database
 const sampleBill = {
@@ -99,9 +98,9 @@ const companyInfo = {
       </div>
     </div>
 
-    <div class="invoice-preview">
+    <!-- <div class="invoice-preview">
       <InvoiceTemplate bill={sampleBill} companyInfo={companyInfo} />
-    </div>
+    </div> -->
 
     <div class="invoice-actions">
       <div class="action-section">
