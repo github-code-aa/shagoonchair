@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 import type { Bill } from '../../../config/database';
 import { initializeDatabase, type D1DatabaseClient } from '../../../config/database';
 
+export const prerender = false;
+
 // This endpoint handles all bill-related operations using Cloudflare D1 REST API
 export const GET: APIRoute = async ({ request }) => {
   try {
@@ -41,26 +43,168 @@ export const GET: APIRoute = async ({ request }) => {
 };
 
 export const POST: APIRoute = async ({ request }) => {
+  console.log('🔍 POST /api/bills - Starting request processing');
+  
   try {
-    const billData: Bill = await request.json();
-    console.log('Received bill data:', JSON.stringify(billData, null, 2));
+    // Log request details
+    console.log('📥 Request method:', request.method);
+    console.log('📥 Request URL:', request.url);
+    console.log('📥 Request headers:', Object.fromEntries(request.headers.entries()));
     
-    // Initialize D1 database client
-    const db = await initializeDatabase();
-
-    return await createBill(db, billData);
+    // Check if request has body
+    const contentType = request.headers.get('content-type');
+    const contentLength = request.headers.get('content-length');
+    console.log('📥 Content-Type:', contentType);
+    console.log('📥 Content-Length:', contentLength);
+    
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('❌ Invalid content type. Expected application/json, got:', contentType);
+      return new Response(JSON.stringify({ 
+        error: 'Invalid content type. Expected application/json' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Check if body is empty
+    if (contentLength === '0' || contentLength === null) {
+      console.error('❌ Empty request body');
+      return new Response(JSON.stringify({ 
+        error: 'Request body is empty' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Get raw body text first to debug
+    let rawBody: string;
+    try {
+      rawBody = await request.text();
+      console.log('📋 Raw body length:', rawBody.length);
+      console.log('📋 Raw body preview:', rawBody.substring(0, 200) + (rawBody.length > 200 ? '...' : ''));
+      
+      if (!rawBody || rawBody.trim() === '') {
+        console.error('❌ Empty body text');
+        return new Response(JSON.stringify({ 
+          error: 'Request body is empty' 
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    } catch (textError) {
+      console.error('❌ Failed to read request body as text:', textError);
+      return new Response(JSON.stringify({ 
+        error: 'Failed to read request body',
+        details: textError instanceof Error ? textError.message : 'Unknown error'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Parse JSON from raw body
+    let billData: Bill;
+    try {
+      billData = JSON.parse(rawBody);
+      console.log('✅ Successfully parsed JSON data');
+      console.log('📋 Received bill data keys:', Object.keys(billData));
+      console.log('📋 Bill number:', billData.bill_number);
+      console.log('📋 Customer name:', billData.customer_name);
+      console.log('📋 Items count:', billData.items?.length || 0);
+    } catch (parseError) {
+      console.error('❌ Failed to parse JSON:', parseError);
+      console.error('❌ Raw body that failed to parse:', rawBody);
+      return new Response(JSON.stringify({ 
+        error: 'Invalid JSON format in request body',
+        details: parseError instanceof Error ? parseError.message : 'Unknown parsing error',
+        rawBodyPreview: rawBody.substring(0, 100)
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Validate required fields
+    console.log('🔍 Validating required fields...');
+    const requiredFields = ['bill_number', 'customer_name', 'customer_phone', 'invoice_date'];
+    const missingFields = requiredFields.filter(field => !billData[field as keyof Bill]);
+    
+    if (missingFields.length > 0) {
+      console.error('❌ Missing required fields:', missingFields);
+      return new Response(JSON.stringify({ 
+        error: 'Missing required fields',
+        missingFields 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Validate items
+    if (!billData.items || billData.items.length === 0) {
+      console.error('❌ No items provided');
+      return new Response(JSON.stringify({ 
+        error: 'At least one item is required' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    console.log('✅ Validation passed');
+    
+    // Initialize database
+    console.log('🗄️ Initializing database connection...');
+    
+    try {
+      const db = await initializeDatabase();
+      console.log('✅ Database connection established');
+      
+      // Call createBill function
+      console.log('💾 Creating bill in database...');
+      const result = await createBill(db, billData);
+      console.log('✅ Bill creation completed');
+      
+      return result;
+      
+    } catch (dbError) {
+      console.error('❌ Database initialization or operation failed:', dbError);
+      
+      if (dbError instanceof Error) {
+        console.error('❌ DB Error message:', dbError.message);
+        console.error('❌ DB Error stack:', dbError.stack);
+      }
+      
+      return new Response(JSON.stringify({ 
+        error: 'Database operation failed',
+        details: dbError instanceof Error ? dbError.message : 'Unknown database error'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
   } catch (error) {
-    console.error('POST API Error:', error);
+    console.error('❌ Unexpected error in POST handler:', error);
     
     // Log more details about the error
     if (error instanceof Error) {
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+      console.error('❌ Error name:', error.name);
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Error stack:', error.stack);
     }
+    
+    // Log error type and properties
+    console.error('❌ Error type:', typeof error);
+    console.error('❌ Error constructor:', error?.constructor?.name);
     
     return new Response(JSON.stringify({ 
       error: 'Internal server error',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      type: error?.constructor?.name || typeof error
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

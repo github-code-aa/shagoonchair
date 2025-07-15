@@ -991,28 +991,49 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     invoiceData.updated_at = new Date().toISOString();
     
     // Log the complete invoice data to verify all fields are included
-    console.log('Invoice Data to be sent:', invoiceData);
+    console.log('Invoice Data to be sent:', JSON.stringify(invoiceData, null, 2));
+    console.log('Invoice Data size (bytes):', JSON.stringify(invoiceData).length);
     
     try {
+      console.log('🔍 Sending POST request to /api/bills...');
+      
+      const requestBody = JSON.stringify(invoiceData);
+      console.log('📋 Request body size:', requestBody.length);
+      console.log('📋 Request body preview:', requestBody.substring(0, 200) + '...');
+      
       const response = await fetch('/api/bills', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(invoiceData)
+        body: requestBody
       });
+      
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (response.ok) {
         const result = await response.json();
+        console.log('✅ Success response:', result);
         alert('Invoice created successfully!');
         window.location.href = '/bills';
       } else {
-        const errorData = await response.json();
+        const errorText = await response.text();
+        console.error('❌ Error response text:', errorText);
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: 'Server returned non-JSON error', details: errorText };
+        }
+        
+        console.error('❌ Error data:', errorData);
         throw new Error(errorData.error || 'Failed to create invoice');
       }
     } catch (error) {
+      console.error('❌ Invoice creation error:', error);
       alert('Error creating invoice: ' + error.message);
-      console.error('Invoice creation error:', error);
     }
   });
 

@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { initializeDatabase } from '../../../config/database';
 
+export const prerender = false;
+
 export const GET: APIRoute = async () => {
   try {
     console.log('Testing database connection...');
