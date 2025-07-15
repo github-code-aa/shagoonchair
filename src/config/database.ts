@@ -165,25 +165,28 @@ export class D1DatabaseClient {
 
   async batch(statements: Array<{ sql: string; params?: any[] }>): Promise<any[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/query`, {
-        method: 'POST',
-        headers: this.headers,
-        body: JSON.stringify(statements)
-      });
-
-      if (!response.ok) {
-        throw new Error(`D1 API error: ${response.status} ${response.statusText}`);
-      }
-
-      const result = await response.json();
+      console.log('🔍 Executing batch with', statements.length, 'statements...');
       
-      if (!result.success) {
-        throw new Error(`D1 batch failed: ${result.errors?.[0]?.message || 'Unknown error'}`);
+      const results = [];
+      
+      for (let i = 0; i < statements.length; i++) {
+        const statement = statements[i];
+        console.log(`📤 Executing statement ${i + 1}/${statements.length}:`, statement.sql.substring(0, 50) + '...');
+        
+        try {
+          const result = await this.query(statement.sql, statement.params || []);
+          results.push(result);
+          console.log(`✅ Statement ${i + 1} executed successfully`);
+        } catch (error) {
+          console.error(`❌ Statement ${i + 1} failed:`, error);
+          throw new Error(`Batch statement ${i + 1} failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
       }
-
-      return result.result;
+      
+      console.log('✅ All batch statements executed successfully');
+      return results;
     } catch (error) {
-      console.error('D1 Database batch error:', error);
+      console.error('❌ D1 Database batch error:', error);
       throw error;
     }
   }
