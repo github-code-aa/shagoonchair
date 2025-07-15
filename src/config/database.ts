@@ -1,4 +1,4 @@
-// Cloudflare D1 Database Configuration (without Wrangler)
+// Cloudflare D1 Database Configuration (supports both binding and REST API)
 export interface DatabaseConfig {
   name: string;
   accountId: string;
@@ -121,6 +121,11 @@ export class D1DatabaseClient {
 
   async query(sql: string, params: any[] = []): Promise<any> {
     try {
+      console.log('🔍 Making D1 API request...');
+      console.log('🔍 URL:', `${this.baseUrl}/query`);
+      console.log('🔍 SQL:', sql);
+      console.log('🔍 Params:', params);
+      
       const response = await fetch(`${this.baseUrl}/query`, {
         method: 'POST',
         headers: this.headers,
@@ -130,19 +135,26 @@ export class D1DatabaseClient {
         })
       });
 
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response statusText:', response.statusText);
+
       if (!response.ok) {
-        throw new Error(`D1 API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('❌ D1 API Response:', errorText);
+        throw new Error(`D1 API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('✅ D1 API Result:', result);
       
       if (!result.success) {
+        console.error('❌ D1 Query Error:', result.errors);
         throw new Error(`D1 query failed: ${result.errors?.[0]?.message || 'Unknown error'}`);
       }
 
       return result.result[0]; // D1 returns an array, we want the first result
     } catch (error) {
-      console.error('D1 Database query error:', error);
+      console.error('❌ D1 Database query error:', error);
       throw error;
     }
   }
