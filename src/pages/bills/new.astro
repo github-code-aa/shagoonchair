@@ -585,12 +585,26 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     margin-top: 15px;
     font-weight: 600;
     box-shadow: 0 3px 6px rgba(39, 174, 96, 0.2);
+    transition: all 0.3s ease;
   }
 
-  .btn.btn-success:hover {
+  .btn.btn-success:hover:not(:disabled) {
     background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
     transform: translateY(-2px);
     box-shadow: 0 5px 12px rgba(39, 174, 96, 0.3);
+  }
+
+  .btn.btn-success:disabled {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%) !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(149, 165, 166, 0.2) !important;
+  }
+
+  .btn.btn-success:disabled:hover {
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(149, 165, 166, 0.2) !important;
   }
 
   @media (max-width: 768px) {
@@ -998,10 +1012,20 @@ import { AUTH_CONFIG } from '../../config/auth.js';
   });
 
   let itemCounter = 0;
+  const MAX_ITEMS = 15;
 
   function addItem() {
+    // Check if we've reached the maximum number of items
+    const currentItemCount = document.querySelectorAll('.item-row').length;
+    
+    if (currentItemCount >= MAX_ITEMS) {
+      showMessage('warning', 'Item Limit Reached', `You can only add a maximum of ${MAX_ITEMS} items to an invoice.`);
+      console.log('Maximum item limit reached:', currentItemCount);
+      return;
+    }
+    
     itemCounter++;
-    console.log('Adding item #', itemCounter);
+    console.log('Adding item #', itemCounter, `(${currentItemCount + 1}/${MAX_ITEMS})`);
     
     const itemsList = document.getElementById('itemsList');
     const itemRow = document.createElement('div');
@@ -1108,10 +1132,34 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     console.log('Setting up event listeners for new item row');
     setupItemRowEventListeners(itemRow);
     
+    // Update the Add Item button text and state
+    updateAddItemButton();
+    
     // Initial calculation
     calculateTotals();
     
     console.log('Item added successfully');
+  }
+
+  function updateAddItemButton() {
+    const addItemBtn = document.getElementById('addItemBtn');
+    const currentItemCount = document.querySelectorAll('.item-row').length;
+    
+    if (addItemBtn) {
+      if (currentItemCount >= MAX_ITEMS) {
+        addItemBtn.textContent = `Maximum ${MAX_ITEMS} Items Reached`;
+        addItemBtn.disabled = true;
+        addItemBtn.style.opacity = '0.6';
+        addItemBtn.style.cursor = 'not-allowed';
+        addItemBtn.style.background = 'linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%)';
+      } else {
+        addItemBtn.textContent = `+ Add Item (${currentItemCount}/${MAX_ITEMS})`;
+        addItemBtn.disabled = false;
+        addItemBtn.style.opacity = '1';
+        addItemBtn.style.cursor = 'pointer';
+        addItemBtn.style.background = 'linear-gradient(135deg, #27ae60 0%, #229954 100%)';
+      }
+    }
   }
 
   function removeItem(button) {
@@ -1120,6 +1168,10 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     
     // Renumber all items
     renumberItems();
+    
+    // Update the Add Item button state
+    updateAddItemButton();
+    
     calculateTotals();
   }
 
@@ -1229,6 +1281,9 @@ import { AUTH_CONFIG } from '../../config/auth.js';
     // Update itemCounter to match the actual number of items
     itemCounter = itemRows.length;
     console.log('Updated itemCounter to:', itemCounter);
+    
+    // Update the Add Item button state
+    updateAddItemButton();
   }
 
   function calculateItemTotalByRow(itemRow) {
@@ -1386,9 +1441,10 @@ import { AUTH_CONFIG } from '../../config/auth.js';
       }
     });
     
-    // Initial calculation
+    // Initial calculation and button state
     console.log('Running initial calculation');
     calculateTotals();
+    updateAddItemButton();
     
     console.log('Invoice form setup complete');
   });
@@ -1408,6 +1464,14 @@ import { AUTH_CONFIG } from '../../config/auth.js';
       // Collect items data with simplified structure
       const items = [];
       const itemRows = document.querySelectorAll('.item-row');
+      
+      // Check item limit before processing
+      if (itemRows.length > MAX_ITEMS) {
+        hideLoader();
+        await showMessage('error', 'Too Many Items', `You can only submit a maximum of ${MAX_ITEMS} items. Please remove some items before submitting.`);
+        return;
+      }
+      
       itemRows.forEach((row, index) => {
         const descriptionInput = row.querySelector('input[name*="product_description"]');
         const unitPriceInput = row.querySelector('input[name*="unit_price"]');
