@@ -394,9 +394,12 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     
     console.log('✅ Bill number is unique, proceeding with creation');
     
-    // Insert bill
-    const billResult = await db.query(`
-      INSERT INTO bills (
+    // Prepare all statements for atomic execution
+    const statements = [];
+    
+    // First statement: Insert bill
+    statements.push({
+      sql: `INSERT INTO bills (
         bill_number, invoice_date, challan_number, challan_date, po_number, po_date, dispatch_details,
         customer_name, customer_code, customer_phone, customer_email, customer_address,
         customer_gst_number, vendor_code, hsn_code, subtotal, 
@@ -404,83 +407,131 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
         discount_percentage, discount_amount, total_amount, payment_method, payment_status, payment_terms,
         bank_name, bank_account_number, bank_branch, bank_ifsc_code, bank_account_type, notes,
         terms_and_conditions, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      RETURNING id
-    `, [
-      billData.bill_number,
-      billData.invoice_date,
-      billData.challan_number || null,
-      billData.challan_date || null,
-      billData.po_number || null,
-      billData.po_date || null,
-      billData.dispatch_details || null,
-      billData.customer_name,
-      billData.customer_code || null,
-      billData.customer_phone,
-      billData.customer_email || null,
-      billData.customer_address || null,
-      billData.customer_gst_number || null,
-      billData.vendor_code || null,
-      billData.hsn_code || null,
-      billData.subtotal,
-      billData.cgst_percentage,
-      billData.cgst_amount,
-      billData.sgst_percentage,
-      billData.sgst_amount,
-      billData.igst_percentage,
-      billData.igst_amount,
-      billData.total_tax_amount,
-      billData.discount_percentage || 0,
-      billData.discount_amount || 0,
-      billData.total_amount,
-      billData.payment_method,
-      billData.payment_status,
-      billData.payment_terms || null,
-      billData.bank_details?.bank_name || null,
-      billData.bank_details?.account_number || null,
-      billData.bank_details?.branch || null,
-      billData.bank_details?.ifsc_code || null,
-      billData.bank_details?.account_type || null,
-      billData.notes || null,
-      billData.terms_and_conditions || null,
-      billData.created_at,
-      billData.updated_at
-    ]);
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      params: [
+        billData.bill_number,
+        billData.invoice_date,
+        billData.challan_number || null,
+        billData.challan_date || null,
+        billData.po_number || null,
+        billData.po_date || null,
+        billData.dispatch_details || null,
+        billData.customer_name,
+        billData.customer_code || null,
+        billData.customer_phone,
+        billData.customer_email || null,
+        billData.customer_address || null,
+        billData.customer_gst_number || null,
+        billData.vendor_code || null,
+        billData.hsn_code || null,
+        billData.subtotal,
+        billData.cgst_percentage,
+        billData.cgst_amount,
+        billData.sgst_percentage,
+        billData.sgst_amount,
+        billData.igst_percentage,
+        billData.igst_amount,
+        billData.total_tax_amount,
+        billData.discount_percentage || 0,
+        billData.discount_amount || 0,
+        billData.total_amount,
+        billData.payment_method,
+        billData.payment_status,
+        billData.payment_terms || null,
+        billData.bank_details?.bank_name || null,
+        billData.bank_details?.account_number || null,
+        billData.bank_details?.branch || null,
+        billData.bank_details?.ifsc_code || null,
+        billData.bank_details?.account_type || null,
+        billData.notes || null,
+        billData.terms_and_conditions || null,
+        billData.created_at,
+        billData.updated_at
+      ]
+    });
     
+    // Execute bill insertion first to get the bill ID
+    console.log('💾 Inserting bill record...');
+    const billResult = await db.query(statements[0].sql, statements[0].params);
     const billId = billResult.results?.[0]?.id || billResult.meta?.last_row_id;
     
     if (!billId) {
       throw new Error('Failed to get bill ID after insertion');
     }
     
-    // Insert bill items using batch
-    if (billData.items.length > 0) {
-      const itemStatements = billData.items.map(item => ({
-        sql: `INSERT INTO bill_items (
-          bill_id, sr_no, product_name, product_description, product_category, hsn_code,
-          unit_price, quantity, total_price, unit
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        params: [
-          billId,
-          item.sr_no,
-          item.product_name,
-          item.product_description || null,
-          item.product_category,
-          item.hsn_code || null,
-          item.unit_price,
-          item.quantity,
-          item.total_price,
-          item.unit || 'Nos'
-        ]
-      }));
+    console.log('✅ Bill inserted with ID:', billId);
+    
+    // Prepare item statements with the actual bill ID
+    if (billData.items && billData.items.length > 0) {
+      console.log('💾 Preparing to insert', billData.items.length, 'items...');
       
-      await db.batch(itemStatements);
+      const itemStatements = billData.items.map((item, index) => {
+        // Ensure all required fields are present and properly typed
+        const unitPrice = parseFloat(item.unit_price?.toString() || '0');
+        const quantity = parseInt(item.quantity?.toString() || '1');
+        const totalPrice = parseFloat(item.total_price?.toString() || '0');
+        const srNo = parseInt(item.sr_no?.toString() || (index + 1).toString());
+        
+        console.log(`📦 Item ${index + 1}:`, {
+          sr_no: srNo,
+          product_name: item.product_name,
+          product_description: item.product_description,
+          product_category: item.product_category,
+          quantity: quantity,
+          unit_price: unitPrice,
+          total_price: totalPrice,
+          unit: item.unit || 'Nos'
+        });
+        
+        // Validate required fields
+        if (!item.product_name || item.product_name.trim() === '') {
+          throw new Error(`Item ${index + 1}: Product name is required`);
+        }
+        if (!item.product_category || item.product_category.trim() === '') {
+          throw new Error(`Item ${index + 1}: Product category is required`);
+        }
+        if (unitPrice <= 0) {
+          throw new Error(`Item ${index + 1}: Unit price must be greater than 0`);
+        }
+        if (quantity <= 0) {
+          throw new Error(`Item ${index + 1}: Quantity must be greater than 0`);
+        }
+        if (totalPrice <= 0) {
+          throw new Error(`Item ${index + 1}: Total price must be greater than 0`);
+        }
+        
+        return {
+          sql: `INSERT INTO bill_items (
+            bill_id, sr_no, product_name, product_description, product_category, hsn_code,
+            unit_price, quantity, total_price, unit
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          params: [
+            billId,
+            srNo,
+            item.product_name.trim(),
+            item.product_description?.trim() || null,
+            item.product_category.trim(),
+            item.hsn_code?.trim() || null,
+            unitPrice,
+            quantity,
+            totalPrice,
+            item.unit?.trim() || 'Nos'
+          ]
+        };
+      });
+      
+      // Execute item insertions using batch
+      console.log('💾 Inserting bill items using batch...');
+      const batchResult = await db.batch(itemStatements);
+      console.log('✅ Batch result:', batchResult);
+      console.log('✅ All bill items inserted successfully');
     }
     
     return new Response(JSON.stringify({ 
       success: true, 
       billNumber: billData.bill_number,
-      billId 
+      billId,
+      itemsCount: billData.items?.length || 0
     }), {
       status: 201,
       headers: { 'Content-Type': 'application/json' }
@@ -501,7 +552,8 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     }
     
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: error instanceof Error ? error.stack : 'No stack trace available'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
