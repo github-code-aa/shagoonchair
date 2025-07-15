@@ -602,7 +602,6 @@ import { AUTH_CONFIG } from "../config/auth.js";
     try {
       showLoading();
 
-      Fetch invoices from API
       const response = await fetch('/api/bills', {
         method: 'GET',
         headers: {
