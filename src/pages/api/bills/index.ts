@@ -252,6 +252,29 @@ export const DELETE: APIRoute = async ({ request }) => {
   }
 };
 
+export const PATCH: APIRoute = async ({ request }) => {
+  try {
+    const url = new URL(request.url);
+    const action = url.searchParams.get('action');
+    
+    if (action === 'generate-bill-number') {
+      const db = await initializeDatabase();
+      return await generateUniqueBillNumber(db);
+    }
+    
+    return new Response(JSON.stringify({ error: 'Invalid action' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('API Error:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+};
+
 // Database operation functions using D1 REST API
 async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) {
   try {
@@ -353,6 +376,24 @@ async function getBill(db: D1DatabaseClient, billNumber: string) {
 
 async function createBill(db: D1DatabaseClient, billData: Bill) {
   try {
+    // Check if bill number already exists
+    console.log('🔍 Checking if bill number exists:', billData.bill_number);
+    const existingBill = await db.query('SELECT bill_number FROM bills WHERE bill_number = ?', [billData.bill_number]);
+    
+    if (existingBill.results && existingBill.results.length > 0) {
+      console.log('❌ Bill number already exists:', billData.bill_number);
+      return new Response(JSON.stringify({ 
+        error: 'Bill number already exists',
+        billNumber: billData.bill_number,
+        message: 'A bill with this number already exists. Please use a different bill number.'
+      }), {
+        status: 409, // Conflict status code
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    console.log('✅ Bill number is unique, proceeding with creation');
+    
     // Insert bill
     const billResult = await db.query(`
       INSERT INTO bills (
@@ -446,7 +487,22 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     });
   } catch (error) {
     console.error('Database error:', error);
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
+    
+    // Handle specific constraint errors
+    if (error instanceof Error && error.message.includes('UNIQUE constraint failed: bills.bill_number')) {
+      return new Response(JSON.stringify({ 
+        error: 'Bill number already exists',
+        billNumber: billData.bill_number,
+        message: 'A bill with this number already exists. Please use a different bill number.'
+      }), {
+        status: 409,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    return new Response(JSON.stringify({ 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -553,6 +609,67 @@ async function deleteBill(db: D1DatabaseClient, billNumber: string) {
   } catch (error) {
     console.error('Database error:', error);
     return new Response(JSON.stringify({ error: 'Failed to delete bill' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+async function generateUniqueBillNumber(db: D1DatabaseClient) {
+  try {
+    // Get the current year
+    const currentYear = new Date().getFullYear();
+    const yearSuffix = currentYear.toString().slice(-2); // Last 2 digits of year
+    
+    // Get the latest bill number for this year
+    const latestBillResult = await db.query(`
+      SELECT bill_number 
+      FROM bills 
+      WHERE bill_number LIKE ?
+      ORDER BY CAST(SUBSTR(bill_number, 1, LENGTH(bill_number) - 2) AS INTEGER) DESC 
+      LIMIT 1
+    `, [`%${yearSuffix}`]);
+    
+    let nextNumber = 1;
+    
+    if (latestBillResult.results && latestBillResult.results.length > 0) {
+      const latestBillNumber = latestBillResult.results[0].bill_number;
+      // Extract the number part (remove year suffix)
+      const numberPart = latestBillNumber.replace(yearSuffix, '');
+      nextNumber = parseInt(numberPart) + 1;
+    }
+    
+    // Generate new bill number with format: NUMBER + YEAR (e.g., 71025, 71125, etc.)
+    const newBillNumber = `${nextNumber}${yearSuffix}`;
+    
+    // Double-check that this number doesn't exist
+    const existingCheck = await db.query('SELECT bill_number FROM bills WHERE bill_number = ?', [newBillNumber]);
+    
+    if (existingCheck.results && existingCheck.results.length > 0) {
+      // If it exists, try the next number
+      const fallbackNumber = `${nextNumber + 1}${yearSuffix}`;
+      return new Response(JSON.stringify({ 
+        billNumber: fallbackNumber,
+        message: 'Generated unique bill number'
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    return new Response(JSON.stringify({ 
+      billNumber: newBillNumber,
+      message: 'Generated unique bill number'
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Error generating bill number:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to generate bill number',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
