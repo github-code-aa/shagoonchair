@@ -1,0 +1,721 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { AUTH_CONFIG } from '../config/auth.js';
+---
+
+<Layout title="Invoice Management - Shagoon Chair">
+  <main>
+    <div class="page-header">
+      <div class="header-left">
+        <h1>📋 Invoice Management</h1>
+        <p>Professional invoice system for Shagoon Seating Chair</p>
+      </div>
+      <div class="header-actions">
+        <a href="/bills/new" class="btn btn-primary">+ New Invoice</a>
+        <button onclick="exportData()" class="btn btn-secondary">📊 Export</button>
+        <button onclick="printReport()" class="btn btn-outline">🖨️ Print Report</button>
+        <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
+      </div>
+    </div>
+
+    <div class="filters-section">
+      <div class="filters-card">
+        <h3>🔍 Filter & Search</h3>
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label>Search:</label>
+            <input type="text" id="searchInput" placeholder="Invoice number, customer name...">
+          </div>
+          <div class="filter-group">
+            <label>Payment Status:</label>
+            <select id="statusFilter">
+              <option value="">All Status</option>
+              <option value="paid">Paid</option>
+              <option value="pending">Pending</option>
+              <option value="partial">Partial</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Payment Method:</label>
+            <select id="paymentFilter">
+              <option value="">All Methods</option>
+              <option value="cash">Cash</option>
+              <option value="card">Card</option>
+              <option value="upi">UPI</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="cheque">Cheque</option>
+              <option value="dd">Demand Draft</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Date Range:</label>
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button onclick="applyFilters()" class="btn btn-primary">Apply Filters</button>
+          <button onclick="clearFilters()" class="btn btn-outline">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="card-icon">💰</div>
+        <div class="card-content">
+          <h3>Total Revenue</h3>
+          <p class="amount">₹1,25,450.00</p>
+          <small>This month</small>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">📋</div>
+        <div class="card-content">
+          <h3>Total Invoices</h3>
+          <p class="count">156</p>
+          <small>All time</small>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">⏳</div>
+        <div class="card-content">
+          <h3>Pending Payments</h3>
+          <p class="amount pending">₹25,750.00</p>
+          <small>12 invoices</small>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">✅</div>
+        <div class="card-content">
+          <h3>Collection Rate</h3>
+          <p class="percentage">92.5%</p>
+          <small>Last 30 days</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="invoices-section">
+      <div class="invoices-header">
+        <h2>📄 Invoices</h2>
+        <div class="view-options">
+          <button onclick="toggleView('grid')" class="view-btn active" id="gridView">🔲 Grid</button>
+          <button onclick="toggleView('list')" class="view-btn" id="listView">📋 List</button>
+        </div>
+      </div>
+
+      <div id="invoicesContainer" class="invoices-grid">
+        <!-- Sample invoice cards -->
+        <div class="invoice-card">
+          <div class="invoice-header">
+            <div class="invoice-number">INV-710</div>
+            <div class="invoice-status status-paid">PAID</div>
+          </div>
+          <div class="invoice-details">
+            <h4>M/S. CUPS AND MOULDS LLP.</h4>
+            <p class="customer-info">
+              📞 +91 9820732807<br>
+              📧 cupsandmoulds@gmail.com
+            </p>
+            <div class="invoice-meta">
+              <div class="meta-item">
+                <span class="label">Date:</span>
+                <span class="value">07/06/2025</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">Amount:</span>
+                <span class="value amount">₹25,901.00</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">Items:</span>
+                <span class="value">2 items</span>
+              </div>
+            </div>
+          </div>
+          <div class="invoice-actions">
+            <a href="/invoice?id=710" class="btn btn-sm btn-primary">👁️ View</a>
+            <button onclick="editInvoice(710)" class="btn btn-sm btn-secondary">✏️ Edit</button>
+            <button onclick="emailInvoice(710)" class="btn btn-sm btn-info">📧 Email</button>
+            <button onclick="printInvoice(710)" class="btn btn-sm btn-outline">🖨️ Print</button>
+          </div>
+        </div>
+
+        <div class="invoice-card">
+          <div class="invoice-header">
+            <div class="invoice-number">INV-711</div>
+            <div class="invoice-status status-pending">PENDING</div>
+          </div>
+          <div class="invoice-details">
+            <h4>ABC FURNITURE MART</h4>
+            <p class="customer-info">
+              📞 +91 9876543210<br>
+              📧 abc@furniture.com
+            </p>
+            <div class="invoice-meta">
+              <div class="meta-item">
+                <span class="label">Date:</span>
+                <span class="value">07/07/2025</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">Amount:</span>
+                <span class="value amount">₹16,950.00</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">Items:</span>
+                <span class="value">1 item</span>
+              </div>
+            </div>
+          </div>
+          <div class="invoice-actions">
+            <a href="/invoice?id=711" class="btn btn-sm btn-primary">👁️ View</a>
+            <button onclick="editInvoice(711)" class="btn btn-sm btn-secondary">✏️ Edit</button>
+            <button onclick="emailInvoice(711)" class="btn btn-sm btn-info">📧 Email</button>
+            <button onclick="markAsPaid(711)" class="btn btn-sm btn-success">✅ Mark Paid</button>
+          </div>
+        </div>
+
+        <div class="invoice-card">
+          <div class="invoice-header">
+            <div class="invoice-number">INV-712</div>
+            <div class="invoice-status status-partial">PARTIAL</div>
+          </div>
+          <div class="invoice-details">
+            <h4>XYZ OFFICE SOLUTIONS</h4>
+            <p class="customer-info">
+              📞 +91 8765432109<br>
+              📧 xyz@office.com
+            </p>
+            <div class="invoice-meta">
+              <div class="meta-item">
+                <span class="label">Date:</span>
+                <span class="value">07/08/2025</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">Amount:</span>
+                <span class="value amount">₹48,600.00</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">Items:</span>
+                <span class="value">1 item</span>
+              </div>
+            </div>
+          </div>
+          <div class="invoice-actions">
+            <a href="/invoice?id=712" class="btn btn-sm btn-primary">👁️ View</a>
+            <button onclick="editInvoice(712)" class="btn btn-sm btn-secondary">✏️ Edit</button>
+            <button onclick="emailInvoice(712)" class="btn btn-sm btn-info">📧 Email</button>
+            <button onclick="followUp(712)" class="btn btn-sm btn-warning">📞 Follow Up</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination">
+        <button class="btn btn-outline">← Previous</button>
+        <span class="page-info">Page 1 of 5</span>
+        <button class="btn btn-outline">Next →</button>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+  }
+
+  .header-left h1 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+    font-size: 28px;
+  }
+
+  .header-left p {
+    margin: 0;
+    color: #7f8c8d;
+    font-size: 16px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .filters-section {
+    margin-bottom: 25px;
+  }
+
+  .filters-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .filters-card h3 {
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .filter-group label {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 14px;
+  }
+
+  .filter-group input,
+  .filter-group select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .summary-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  }
+
+  .card-icon {
+    font-size: 40px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-content h3 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+    font-size: 16px;
+  }
+
+  .card-content .amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #27ae60;
+    margin: 0;
+  }
+
+  .card-content .amount.pending {
+    color: #f39c12;
+  }
+
+  .card-content .count {
+    font-size: 24px;
+    font-weight: bold;
+    color: #3498db;
+    margin: 0;
+  }
+
+  .card-content .percentage {
+    font-size: 24px;
+    font-weight: bold;
+    color: #9b59b6;
+    margin: 0;
+  }
+
+  .card-content small {
+    color: #7f8c8d;
+    font-size: 12px;
+  }
+
+  .invoices-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .invoices-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ecf0f1;
+  }
+
+  .invoices-header h2 {
+    margin: 0;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .view-options {
+    display: flex;
+    gap: 5px;
+  }
+
+  .view-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  .view-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+  }
+
+  .invoices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .invoice-card {
+    border: 1px solid #e1e8ed;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+  }
+
+  .invoice-card:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .invoice-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e1e8ed;
+  }
+
+  .invoice-number {
+    font-weight: bold;
+    font-size: 16px;
+    color: #2c3e50;
+  }
+
+  .invoice-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .status-paid {
+    background: #d5f4e6;
+    color: #27ae60;
+  }
+
+  .status-pending {
+    background: #ffeaa7;
+    color: #e17055;
+  }
+
+  .status-partial {
+    background: #a29bfe;
+    color: white;
+  }
+
+  .invoice-details {
+    padding: 20px;
+  }
+
+  .invoice-details h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 16px;
+  }
+
+  .customer-info {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+
+  .invoice-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .meta-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+
+  .meta-item .label {
+    color: #7f8c8d;
+    font-weight: normal;
+  }
+
+  .meta-item .value {
+    color: #2c3e50;
+    font-weight: bold;
+  }
+
+  .meta-item .value.amount {
+    color: #27ae60;
+  }
+
+  .invoice-actions {
+    padding: 15px 20px;
+    border-top: 1px solid #e1e8ed;
+    background: #f8f9fa;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+  }
+
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .btn-primary {
+    background: #3498db;
+    color: white;
+  }
+
+  .btn-secondary {
+    background: #95a5a6;
+    color: white;
+  }
+
+  .btn-success {
+    background: #27ae60;
+    color: white;
+  }
+
+  .btn-warning {
+    background: #f39c12;
+    color: white;
+  }
+
+  .btn-info {
+    background: #2980b9;
+    color: white;
+  }
+
+  .btn-danger {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: #2c3e50;
+    border: 1px solid #bdc3c7;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .page-info {
+    color: #7f8c8d;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .filters-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .summary-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .invoices-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .invoice-actions {
+      justify-content: center;
+    }
+
+    .header-actions {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script define:vars={{ AUTH_CONFIG }}>
+  // Check authentication on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== 'true') {
+      window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+      return;
+    }
+  });
+
+  function toggleView(view) {
+    const gridBtn = document.getElementById('gridView');
+    const listBtn = document.getElementById('listView');
+    const container = document.getElementById('invoicesContainer');
+    
+    if (view === 'grid') {
+      gridBtn.classList.add('active');
+      listBtn.classList.remove('active');
+      container.className = 'invoices-grid';
+    } else {
+      listBtn.classList.add('active');
+      gridBtn.classList.remove('active');
+      container.className = 'invoices-list';
+    }
+  }
+
+  function applyFilters() {
+    // Filter implementation
+    const search = document.getElementById('searchInput').value;
+    const status = document.getElementById('statusFilter').value;
+    const payment = document.getElementById('paymentFilter').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    console.log('Applying filters:', { search, status, payment, startDate, endDate });
+    // This would make an API call to filter invoices
+  }
+
+  function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('paymentFilter').value = '';
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    applyFilters();
+  }
+
+  function editInvoice(id) {
+    window.location.href = `/bills/edit/${id}`;
+  }
+
+  function emailInvoice(id) {
+    alert(`Email invoice ${id} functionality`);
+  }
+
+  function printInvoice(id) {
+    window.open(`/invoice?id=${id}&print=true`, '_blank');
+  }
+
+  function markAsPaid(id) {
+    if (confirm('Mark this invoice as paid?')) {
+      // API call to update status
+      alert(`Invoice ${id} marked as paid`);
+    }
+  }
+
+  function followUp(id) {
+    alert(`Follow up functionality for invoice ${id}`);
+  }
+
+  function exportData() {
+    alert('Export functionality - would generate Excel/CSV file');
+  }
+
+  function printReport() {
+    window.print();
+  }
+
+  function logout() {
+    localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+    alert('You have been logged out successfully.');
+    window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+  }
+
+  // Initialize filters with current date
+  document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+    
+    document.getElementById('startDate').value = firstDay;
+    document.getElementById('endDate').value = today;
+  });
+</script>

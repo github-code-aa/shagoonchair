@@ -201,25 +201,50 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     // Insert bill
     const billResult = await db.query(`
       INSERT INTO bills (
-        bill_number, customer_name, customer_phone, customer_email, customer_address,
-        subtotal, tax_percentage, tax_amount, discount_percentage, discount_amount,
-        total_amount, payment_method, payment_status, notes, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        bill_number, invoice_date, challan_number, challan_date, po_number, po_date, dispatch_details,
+        customer_name, customer_code, customer_phone, customer_email, customer_address,
+        customer_gst_number, vendor_code, hsn_code, subtotal, 
+        cgst_percentage, cgst_amount, sgst_percentage, sgst_amount, igst_percentage, igst_amount, total_tax_amount,
+        discount_percentage, discount_amount, total_amount, payment_method, payment_status, payment_terms,
+        bank_name, bank_account_number, bank_branch, bank_ifsc_code, bank_account_type, notes,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       RETURNING id
     `, [
       billData.bill_number,
+      billData.invoice_date,
+      billData.challan_number || null,
+      billData.challan_date || null,
+      billData.po_number || null,
+      billData.po_date || null,
+      billData.dispatch_details || null,
       billData.customer_name,
+      billData.customer_code || null,
       billData.customer_phone,
       billData.customer_email || null,
       billData.customer_address || null,
+      billData.customer_gst_number || null,
+      billData.vendor_code || null,
+      billData.hsn_code || null,
       billData.subtotal,
-      billData.tax_percentage,
-      billData.tax_amount,
+      billData.cgst_percentage,
+      billData.cgst_amount,
+      billData.sgst_percentage,
+      billData.sgst_amount,
+      billData.igst_percentage,
+      billData.igst_amount,
+      billData.total_tax_amount,
       billData.discount_percentage || 0,
       billData.discount_amount || 0,
       billData.total_amount,
       billData.payment_method,
       billData.payment_status,
+      billData.payment_terms || null,
+      billData.bank_details?.bank_name || null,
+      billData.bank_details?.account_number || null,
+      billData.bank_details?.branch || null,
+      billData.bank_details?.ifsc_code || null,
+      billData.bank_details?.account_type || null,
       billData.notes || null,
       billData.created_at,
       billData.updated_at
@@ -235,16 +260,20 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     if (billData.items.length > 0) {
       const itemStatements = billData.items.map(item => ({
         sql: `INSERT INTO bill_items (
-          bill_id, product_name, product_category, quantity, unit_price, total_price, description
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          bill_id, sr_no, product_name, product_description, product_category, hsn_code,
+          unit_price, quantity, total_price, unit
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         params: [
           billId,
+          item.sr_no,
           item.product_name,
+          item.product_description || null,
           item.product_category,
-          item.quantity,
+          item.hsn_code || null,
           item.unit_price,
+          item.quantity,
           item.total_price,
-          item.description || null
+          item.unit || 'Nos'
         ]
       }));
       
@@ -273,23 +302,43 @@ async function updateBill(db: D1DatabaseClient, billData: Bill) {
     // Update bill
     await db.query(`
       UPDATE bills SET 
-        customer_name = ?, customer_phone = ?, customer_email = ?, customer_address = ?,
-        subtotal = ?, tax_percentage = ?, tax_amount = ?, discount_percentage = ?, discount_amount = ?,
-        total_amount = ?, payment_method = ?, payment_status = ?, notes = ?, updated_at = ?
+        invoice_date = ?, customer_name = ?, customer_phone = ?, customer_email = ?, customer_address = ?,
+        customer_gst_number = ?, vendor_code = ?, hsn_code = ?, subtotal = ?,
+        cgst_percentage = ?, cgst_amount = ?, sgst_percentage = ?, sgst_amount = ?,
+        igst_percentage = ?, igst_amount = ?, total_tax_amount = ?,
+        discount_percentage = ?, discount_amount = ?, total_amount = ?,
+        payment_method = ?, payment_status = ?, payment_terms = ?,
+        bank_name = ?, bank_account_number = ?, bank_branch = ?, bank_ifsc_code = ?, bank_account_type = ?,
+        notes = ?, updated_at = ?
       WHERE bill_number = ?
     `, [
+      billData.invoice_date,
       billData.customer_name,
       billData.customer_phone,
       billData.customer_email || null,
       billData.customer_address || null,
+      billData.customer_gst_number || null,
+      billData.vendor_code || null,
+      billData.hsn_code || null,
       billData.subtotal,
-      billData.tax_percentage,
-      billData.tax_amount,
+      billData.cgst_percentage,
+      billData.cgst_amount,
+      billData.sgst_percentage,
+      billData.sgst_amount,
+      billData.igst_percentage,
+      billData.igst_amount,
+      billData.total_tax_amount,
       billData.discount_percentage || 0,
       billData.discount_amount || 0,
       billData.total_amount,
       billData.payment_method,
       billData.payment_status,
+      billData.payment_terms || null,
+      billData.bank_details?.bank_name || null,
+      billData.bank_details?.account_number || null,
+      billData.bank_details?.branch || null,
+      billData.bank_details?.ifsc_code || null,
+      billData.bank_details?.account_type || null,
       billData.notes || null,
       new Date().toISOString(),
       billData.bill_number

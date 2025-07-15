@@ -4,7 +4,9 @@ export const AUTH_CONFIG = {
     SESSION_KEY: 'authenticated',
     REDIRECT_PATHS: {
         LOGIN: '/login',
-        BILL: '/bill',
+        BILLS: '/bills',
+        BILLS_NEW: '/bills/new',
+        INVOICE: '/invoice',
         HOME: '/'
     },
     // Use localStorage instead of sessionStorage for persistent authentication

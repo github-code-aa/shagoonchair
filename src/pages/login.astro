@@ -173,7 +173,7 @@ import { AUTH_CONFIG } from '../config/auth.js';
 
             // Check if already authenticated
             if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true') {
-                window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILL;
+                window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILLS;
                 return;
             }
 
@@ -195,7 +195,7 @@ import { AUTH_CONFIG } from '../config/auth.js';
                     loginBtn.disabled = true;
                     
                     // Redirect to bill page
-                    window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILL;
+                    window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILLS;
                 } else {
                     // Show error
                     errorMessage.classList.add('show');
