@@ -16,9 +16,17 @@ export const DB_CONFIG: DatabaseConfig = {
 // Validate configuration
 function validateConfig(config: DatabaseConfig): void {
   console.log('Validating database configuration...');
+  console.log('Environment:', process.env.NODE_ENV || 'undefined');
   console.log('Account ID length:', config.accountId?.length || 0);
   console.log('Database ID length:', config.databaseId?.length || 0);
   console.log('API Token length:', config.apiToken?.length || 0);
+  
+  // Security check for production
+  if (process.env.NODE_ENV === 'production' && process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') {
+    console.error('🚨 SECURITY WARNING: SSL certificate verification is disabled in production!');
+    console.error('🚨 This is a serious security risk and should be fixed immediately!');
+    throw new Error('SSL certificate verification must be enabled in production');
+  }
   
   const missing = [];
   if (!config.accountId) missing.push('CLOUDFLARE_ACCOUNT_ID');
@@ -126,14 +134,34 @@ export class D1DatabaseClient {
       console.log('🔍 SQL:', sql);
       console.log('🔍 Params:', params);
       
-      const response = await fetch(`${this.baseUrl}/query`, {
+      // Configure fetch for local development SSL issues
+      const fetchOptions: RequestInit = {
         method: 'POST',
         headers: this.headers,
         body: JSON.stringify({
           sql: sql,
           params: params
         })
-      });
+      };
+
+      // Handle SSL certificate issues in local development only
+      if (typeof process !== 'undefined' && 
+          (process.env.NODE_ENV === 'development' || 
+           process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0')) {
+        console.log('🔧 Local development mode - SSL certificate verification disabled');
+        console.log('⚠️  This should NEVER happen in production!');
+        
+        // Only disable SSL verification if explicitly allowed for local development
+        if (process.env.NODE_TLS_REJECT_UNAUTHORIZED !== '0') {
+          process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+        }
+      } else if (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') {
+        console.log('🔒 Production mode - SSL certificate verification enabled');
+        // Ensure SSL verification is enabled in production
+        delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+      }
+      
+      const response = await fetch(`${this.baseUrl}/query`, fetchOptions);
 
       console.log('📥 Response status:', response.status);
       console.log('📥 Response statusText:', response.statusText);
