@@ -219,23 +219,23 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
         <div class="form-grid">
           <div class="form-group">
             <label for="bank_name">Bank Name</label>
-            <input type="text" id="bank_name" name="bank_name" value="INDIAN BANK">
+            <input type="text" id="bank_name" name="bank_name" placeholder="Bank Name">
           </div>
           <div class="form-group">
             <label for="bank_account_number">Account Number</label>
-            <input type="text" id="bank_account_number" name="bank_account_number" value="641205735S">
+            <input type="text" id="bank_account_number" name="bank_account_number" placeholder="Account Number">
           </div>
           <div class="form-group">
             <label for="bank_branch">Branch</label>
-            <input type="text" id="bank_branch" name="bank_branch" value="MALAD EAST">
+            <input type="text" id="bank_branch" name="bank_branch" placeholder="Branch Name">
           </div>
           <div class="form-group">
             <label for="bank_ifsc_code">IFSC Code</label>
-            <input type="text" id="bank_ifsc_code" name="bank_ifsc_code" value="IDIB000M202">
+            <input type="text" id="bank_ifsc_code" name="bank_ifsc_code" placeholder="IFSC Code">
           </div>
           <div class="form-group">
             <label for="bank_account_type">Account Type</label>
-            <input type="text" id="bank_account_type" name="bank_account_type" value="CURRENT A/C">
+            <input type="text" id="bank_account_type" name="bank_account_type" placeholder="Account Type">
           </div>
         </div>
       </section>
@@ -1255,17 +1255,17 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
 
     // Populate bank fields regardless of source
     const bankFieldMappings = {
-      'bank_name': bankDetails?.bank_name || invoice.bank_name,
-      'bank_account_number': bankDetails?.account_number || invoice.bank_account_number,
-      'bank_branch': bankDetails?.branch || invoice.bank_branch,
-      'bank_ifsc_code': bankDetails?.ifsc_code || invoice.bank_ifsc_code,
-      'bank_account_type': bankDetails?.account_type || invoice.bank_account_type
+      'bank_name': bankDetails?.bank_name || invoice.bank_name || 'INDIAN BANK',
+      'bank_account_number': bankDetails?.account_number || invoice.bank_account_number || '641205735S',
+      'bank_branch': bankDetails?.branch || invoice.bank_branch || 'MALAD EAST',
+      'bank_ifsc_code': bankDetails?.ifsc_code || invoice.bank_ifsc_code || 'IDIB000M202',
+      'bank_account_type': bankDetails?.account_type || invoice.bank_account_type || 'CURRENT A/C'
     };
 
     Object.entries(bankFieldMappings).forEach(([elementId, value]) => {
       const element = document.getElementById(elementId);
-      if (element && value !== undefined && value !== null && value !== '') {
-        element.value = value;
+      if (element) {
+        element.value = value || '';
         console.log(`Set ${elementId} = ${value}`);
       }
     });

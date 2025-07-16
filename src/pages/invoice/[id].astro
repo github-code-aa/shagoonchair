@@ -27,9 +27,7 @@ const companyInfo = {
                 <button onclick="window.print()" class="btn btn-primary"
                     >🖨️ Print Invoice</button
                 >
-                <button onclick="downloadPDF()" class="btn btn-secondary"
-                    >📄 Download PDF</button
-                >
+             
                 <a href="/bills" class="btn btn-outline">← Back to Bills</a>
                 <button onclick="logout()" class="btn btn-danger"
                     >🚪 Logout</button
@@ -1154,10 +1152,7 @@ const companyInfo = {
         return "AMOUNT TOO LARGE";
     }
 
-    function downloadPDF() {
-        window.print();
-    }
-
+ 
     function logout() {
         localStorage.removeItem("authenticated");
         window.location.href = "/login";
