@@ -179,6 +179,10 @@ const companyInfo = {
                                 <td id="igstLabel">IGST @ 18%</td>
                                 <td id="igstAmount">0.00</td>
                             </tr>
+                             <tr>
+                                <td id="discountLabel">Discount</td>
+                                <td id="discountAmount">0.00</td>
+                            </tr>
                             <tr class="total-row">
                                 <td><strong>TOTAL Rs.</strong></td>
                                 <td id="totalAmount"><strong>0.00</strong></td>
@@ -572,7 +576,7 @@ const companyInfo = {
         border-collapse: collapse;
         margin-bottom: 8px;
         flex: 1;
-        border: 1px solid #000;
+        /* border: 1px solid #000; */
     }
 
     .items-table th,
@@ -715,7 +719,7 @@ const companyInfo = {
         padding: 0 0 0 10px;
         border: none;
         vertical-align: top;
-        line-height: 5px
+        line-height: 2px
     }
 
     .terms-details-cell p {
@@ -933,9 +937,9 @@ const companyInfo = {
         customerInfo.innerHTML = `
       <p style="margin: 1px 0; line-height: 1.1;"><strong>${bill.customer_name || "N/A"}</strong></p>
       <p style="margin: 1px 0; line-height: 1.1;">${bill.customer_address || "N/A"}</p>
-      <p style="margin: 1px 0; line-height: 1.1;">MOB NO. ${bill.customer_phone || "N/A"} ${bill.customer_email || ""}</p>
+      <p style="margin: 1px 0; line-height: 1.1;">MOB NO. ${bill.customer_phone || "N/A"} | Email: ${bill.customer_email || ""}</p>
       <p style="margin: 1px 0; line-height: 1.1;">GST NO. NO ${bill.customer_gst_number || "N/A"}</p>
-      <p style="margin: 1px 0; line-height: 1.1;">STATE- MAHARASHTRA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CODE- 27</p>
+
     `;
 
         // Items table
@@ -979,11 +983,11 @@ const companyInfo = {
         for (let i = itemIndex; i < maxRows; i++) {
             const row = document.createElement("tr");
             row.innerHTML = `
-        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
       `;
             tbody.appendChild(row);
         }
@@ -994,6 +998,7 @@ const companyInfo = {
         const sgstAmount = parseFloat(bill.sgst_amount || 0);
         const igstAmount = parseFloat(bill.igst_amount || 0);
         const totalAmount = parseFloat(bill.total_amount || 0);
+        const discountAmount = parseFloat(bill.discount_amount || 0) || 0;
 
         document.getElementById("subtotalAmount").textContent =
             subtotal.toFixed(2);
@@ -1005,6 +1010,8 @@ const companyInfo = {
             igstAmount.toFixed(2);
         document.getElementById("totalAmount").textContent =
             totalAmount.toFixed(2);
+        document.getElementById("discountAmount").textContent =
+            discountAmount.toFixed(2);
 
         // Update tax labels with percentages
         document.getElementById("cgstLabel").textContent =
@@ -1016,7 +1023,7 @@ const companyInfo = {
 
         // Amount in words
         document.getElementById("amountInWords").textContent =
-            bill.notes || numberToWords(totalAmount) + " RUPEES ONLY";
+            numberToWords(totalAmount) + " RUPEES ONLY" ;
 
         // Bank details
         let bankDetails = null;
@@ -1029,6 +1036,7 @@ const companyInfo = {
         } else if (typeof bill.bank_details === "object" && bill.bank_details) {
             bankDetails = bill.bank_details;
         }
+        debugger
 
         // Use either structured bank_details or individual fields
         document.getElementById("bankName").textContent =
@@ -1055,7 +1063,7 @@ const companyInfo = {
                 .filter((term) => term);
             termsContent.innerHTML =
                 '<div class="terms-list">' +
-                terms.map((term) => `<p>• ${term}</p>`).join("") +
+                terms.map((term) => `<p>${term}</p>`).join("") +
                 "</div>";
         } else {
             termsContent.innerHTML = `
