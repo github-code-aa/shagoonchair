@@ -303,15 +303,16 @@ const companyInfo = {
         }
 
         .items-table tbody tr {
-            height: 14px !important;
-            max-height: 14px !important;
+            height: 16px !important;
+            max-height: 16px !important;
         }
 
         .items-table th,
         .items-table td {
-            font-size: 9px !important;
-            padding: 2px 4px !important;
+            font-size: 10px !important;
+            padding: 3px 4px !important;
             border: 0.5px solid #666 !important;
+            font-weight: 600 !important;
         }
     }
 
@@ -577,17 +578,18 @@ const companyInfo = {
     .items-table th,
     .items-table td {
         border: 0.5px solid #666;
-        padding: 2px 4px;
+        padding: 3px 4px;
         text-align: center;
-        vertical-align: top;
-        font-size: 9px;
-        line-height: 1.1;
+        vertical-align: middle;
+        font-size: 12px;
+        line-height: 1.2;
+        font-weight: 500;
     }
 
     .items-table th {
         background: #f0f0f0;
         font-weight: bold;
-        font-size: 9px;
+        font-size: 12px;
         height: 20px;
         border: 0.5px solid #666;
     }
@@ -597,8 +599,8 @@ const companyInfo = {
     }
 
     .items-table tbody tr {
-        height: 14px;
-        max-height: 14px;
+        height: 18px;
+        max-height: 18px;
     }
 
     .sr-col {
@@ -647,6 +649,8 @@ const companyInfo = {
     .amount-words {
         font-size: 8px;
         margin: 0;
+        line-height: 1.3;
+        word-wrap: break-word;
     }
 
     .tax-right {
@@ -660,8 +664,9 @@ const companyInfo = {
 
     .tax-table td {
         border: 1px solid #000;
-        padding: 2px 4px;
+        padding: 3px 4px;
         font-size: 8px;
+        line-height: 1.2;
     }
 
     .tax-table td:first-child {
@@ -693,28 +698,30 @@ const companyInfo = {
 
     .bank-details-cell {
         width: 50%;
-        font-size: 8px;
+        font-size: 7px;
         padding: 0 10px 0 0;
         border: none;
         vertical-align: top;
     }
 
     .bank-details-cell p {
-        margin: 0.5px 0;
+        margin: 1px 0;
+        line-height: 1.2;
     }
 
     .terms-details-cell {
         width: 50%;
-        font-size: 8px;
+        font-size: 7px;
         padding: 0 0 0 10px;
         border: none;
         vertical-align: top;
-        line-height: 5px;
+        line-height: 5px
     }
 
     .terms-details-cell p {
-        margin: 0 0 2px 0;
+        margin: 0 0 3px 0;
         font-weight: bold;
+        line-height: 1.2;
     }
 
     .terms-list {
@@ -723,8 +730,9 @@ const companyInfo = {
     }
 
     .terms-list p {
-        margin: 0.5px 0;
+        margin: 1px 0;
         font-weight: normal;
+        line-height: 1.2;
     }
 
     /* Footer */
@@ -744,7 +752,8 @@ const companyInfo = {
     }
 
     .gst-info p {
-        margin: 0.5px 0;
+        margin: 1px 0;
+        line-height: 1.2;
     }
 
     .signature-section {
@@ -945,19 +954,19 @@ const companyInfo = {
                     
                     if (hasData) {
                         row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">${item.sr_no || (index + 1)}</td>
-                <td style="border: 0.5px solid #666; padding: 2px 4px; text-align: left; font-size: 9px;">${item.product_description || item.product_name || ""}</td>
-                <td style="border: 0.5px solid #666; padding: 2px 4px; text-align: right; font-size: 9px;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
-                <td style="border: 0.5px solid #666; padding: 2px 4px; text-align: right; font-size: 9px;">${item.quantity || 0}</td>
-                <td style="border: 0.5px solid #666; padding: 2px 4px; text-align: right; font-size: 9px;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">${item.sr_no || (index + 1)}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: left; font-size: 10px; font-weight: 600;">${item.product_description || item.product_name || ""}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">${item.quantity || 0}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
               `;
                     } else {
                         row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
               `;
                     }
                     tbody.appendChild(row);
@@ -970,11 +979,11 @@ const companyInfo = {
         for (let i = itemIndex; i < maxRows; i++) {
             const row = document.createElement("tr");
             row.innerHTML = `
-        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
-        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
-        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
-        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
-        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
       `;
             tbody.appendChild(row);
         }
