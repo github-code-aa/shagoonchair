@@ -866,7 +866,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
       <td class="table-amount">${formattedAmount}</td>
       <td class="table-item-count">${itemCount} items</td>
       <td class="table-actions">
-        <a href="/invoice?id=${invoice.id}" class="action-icon view-icon" title="View Invoice">👁️</a>
+        <a href="/invoice/${invoice.id}" class="action-icon view-icon" title="View Invoice">👁️</a>
         <button onclick="editInvoice(${invoice.id})" class="action-icon edit-icon" title="Edit Invoice">✏️</button>
         <button onclick="deleteInvoice(${invoice.id}, '${invoice.bill_number}')" class="action-icon delete-icon" title="Delete Invoice">🗑️</button>
       </td>

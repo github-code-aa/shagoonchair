@@ -1,0 +1,1164 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { AUTH_CONFIG } from "../../config/auth.js";
+
+// Get the ID from the URL parameter
+const { id } = Astro.params;
+
+const companyInfo = {
+    name: "SHAGOON SEATING CHAIR",
+    subtitle: "(MFG. OF EXCLUSIVE CHAIR, SOFA, S.S POWDER COATED FURNITURE)",
+    address:
+        "GALA NO.07, KAUSHALYA RAMKARAN KEVET CHAWL, NEAR PRAVASI INDUSTRIAL ESTATE, 2ND MARK DORIAN ESTATE, MULUND LINK ROAD, GOREGAON EAST, MUMBAI-400063, MAHARASHTRA",
+    phone: "+91 9867071332/9769956235",
+    email: "shagoonchair@gmail.com",
+    gst_number: "27ASQPG8588M1ZQ",
+    pan_number: "ASQPG8588M",
+    state_code: "27",
+};
+---
+
+<Layout title="Invoice View - Shagoon Chair">
+    <main>
+        <!-- Print Controls (hidden when printing) -->
+        <div class="invoice-controls no-print">
+            <h1>📄 Invoice View</h1>
+            <div class="button-group">
+                <button onclick="window.print()" class="btn btn-primary"
+                    >🖨️ Print Invoice</button
+                >
+                <button onclick="downloadPDF()" class="btn btn-secondary"
+                    >📄 Download PDF</button
+                >
+                <a href="/bills" class="btn btn-outline">← Back to Bills</a>
+                <button onclick="logout()" class="btn btn-danger"
+                    >🚪 Logout</button
+                >
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-container no-print">
+            <div class="spinner"></div>
+            <p>Loading invoice...</p>
+        </div>
+
+        <!-- Error State -->
+        <div
+            id="errorState"
+            class="error-container no-print"
+            style="display: none;"
+        >
+            <div class="error-message">
+                <h4>⚠️ Error Loading Invoice</h4>
+                <p id="errorMessage">
+                    Failed to load invoice. Please try again.
+                </p>
+                <button onclick="loadInvoiceData()" class="btn btn-primary"
+                    >🔄 Retry</button
+                >
+            </div>
+        </div>
+
+        <!-- Invoice Content -->
+        <div id="invoiceContent" class="invoice-wrapper" style="display: none;">
+            <div class="invoice-document">
+                <!-- Company Header -->
+                <div class="company-header">
+                    <div class="company-logo">
+                        <div class="logo-circle">S</div>
+                    </div>
+                    <div class="company-info">
+                        <h1 class="company-name">{companyInfo.name}</h1>
+                        <p class="company-subtitle">{companyInfo.subtitle}</p>
+                        <p class="company-address">{companyInfo.address}</p>
+                        <p class="company-contact">
+                            Ph.: MOB.: {companyInfo.phone}, Email: {
+                                companyInfo.email
+                            }
+                        </p>
+                    </div>
+                    <div class="document-type">
+                        <span>ORIGINAL / DUPLICATE / EXTRA</span>
+                    </div>
+                </div>
+
+                <!-- Invoice Details -->
+                <div class="invoice-header">
+                    <div class="customer-section">
+                        <h3>To,</h3>
+                        <div id="customerInfo">
+                            <!-- Customer info will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="invoice-meta">
+                        <table class="meta-table">
+                            <tr>
+                                <td><strong>INVOICE No:</strong></td>
+                                <td id="invoiceNumber">-</td>
+                                <td><strong>Date:</strong></td>
+                                <td id="invoiceDate">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CHALLAN No.</strong></td>
+                                <td id="challanNumber">-</td>
+                                <td><strong>Date:</strong></td>
+                                <td id="challanDate">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>P.O. No.</strong></td>
+                                <td id="poNumber">-</td>
+                                <td><strong>Date:</strong></td>
+                                <td id="poDate">-</td>
+                            </tr>
+                        </table>
+
+                        <div class="dispatch-section">
+                            <p>
+                                <strong>DISPATCH DETAILS:</strong>
+                                <span id="dispatchDetails">-</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vendor and HSN Info -->
+                <div class="vendor-hsn-section">
+                    <div class="vendor-info">
+                        <strong>VENDOR CODE:</strong>
+                        <span id="vendorCode">*****</span>
+                    </div>
+                    <div class="hsn-info">
+                        <strong>HSN CODE:</strong>
+                        <span id="hsnCode">-</span>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="items-section">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th class="sr-col">SR.</th>
+                                <th class="desc-col">DESCRIPTION</th>
+                                <th class="price-col">UNIT PRICE</th>
+                                <th class="qty-col">QTY</th>
+                                <th class="amount-col">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                            <!-- Items will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tax Calculation -->
+                <div class="tax-section">
+                    <div class="tax-left">
+                        <p class="amount-words">
+                            <strong>TOTAL:</strong>
+                            <span id="amountInWords">-</span>
+                        </p>
+                    </div>
+                    <div class="tax-right">
+                        <table class="tax-table">
+                            <tr>
+                                <td>TOTAL AMOUNT BEFORE TAX</td>
+                                <td id="subtotalAmount">0.00</td>
+                            </tr>
+                            <tr>
+                                <td id="cgstLabel">CGST@9%</td>
+                                <td id="cgstAmount">0.00</td>
+                            </tr>
+                            <tr>
+                                <td id="sgstLabel">SGST@9%</td>
+                                <td id="sgstAmount">0.00</td>
+                            </tr>
+                            <tr>
+                                <td id="igstLabel">IGST @ 18%</td>
+                                <td id="igstAmount">0.00</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td><strong>TOTAL Rs.</strong></td>
+                                <td id="totalAmount"><strong>0.00</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bank Details and Terms & Conditions -->
+                <div class="bank-section">
+                    <table class="bank-terms-table">
+                        <tr>
+                            <td class="bank-details-cell">
+                                <p>
+                                    <strong>Bank Name:</strong>
+                                    <span id="bankName">-</span>
+                                </p>
+                                <p>
+                                    <strong>Bank A/c:</strong>
+                                    <span id="bankAccount">-</span>
+                                </p>
+                                <p>
+                                    <strong>Bank Branch:</strong>
+                                    <span id="bankBranch">-</span>
+                                </p>
+                                <p>
+                                    <strong>Bank IFSC:</strong>
+                                    <span id="bankIFSC">-</span>
+                                </p>
+                                <p>
+                                    <strong>Type of A/C:</strong>
+                                    <span id="bankAccountType">-</span>
+                                </p>
+                            </td>
+                            <td class="terms-details-cell">
+                                <p><strong>TERM AND CONDITION</strong></p>
+                                <div id="termsContent">
+                                    <!-- Terms will be populated here -->
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Footer -->
+                <div class="invoice-footer">
+                    <div class="gst-info">
+                        <p>
+                            <strong>GST No.:</strong>
+                            {companyInfo.gst_number}
+                        </p>
+                        <p>
+                            <strong>PAN NO.:</strong>
+                            {companyInfo.pan_number}
+                        </p>
+                    </div>
+
+                    <div class="signature-section">
+                        <p>For <strong>SHAGOON SEATING CHAIR</strong></p>
+                        <div class="signature-space"></div>
+                        <p><strong>PROPRIETOR</strong></p>
+                    </div>
+                </div>
+
+                <!-- Payment Terms -->
+                <div class="payment-terms">
+                    <p>
+                        <strong
+                            >PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN
+                            MUMBAI</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+</Layout>
+
+<style>
+    /* No Print Styles */
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+
+        * {
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-size: 10px;
+        }
+
+        .invoice-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            width: 210mm !important;
+            height: 297mm !important;
+            max-height: 297mm !important;
+            min-height: 297mm !important;
+            page-break-after: always;
+        }
+
+        .invoice-document {
+            padding: 8mm 12mm 10mm 12mm !important;
+            height: calc(297mm - 25mm) !important;
+            font-size: 10px !important;
+        }
+
+        .items-section {
+            min-height: 140mm !important;
+        }
+
+        .items-table tbody tr {
+            height: 14px !important;
+            max-height: 14px !important;
+        }
+
+        .items-table th,
+        .items-table td {
+            font-size: 9px !important;
+            padding: 2px 4px !important;
+            border: 0.5px solid #666 !important;
+        }
+    }
+
+    /* General Styles */
+    .invoice-controls {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .invoice-controls h1 {
+        margin: 0;
+        color: #2c3e50;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    .btn-secondary {
+        background: #95a5a6;
+        color: white;
+    }
+    .btn-outline {
+        background: transparent;
+        color: #2c3e50;
+        border: 1px solid #2c3e50;
+    }
+    .btn-danger {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Loading and Error States */
+    .loading-container,
+    .error-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+        background: white;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Invoice Document Styles */
+    .invoice-wrapper {
+        width: 210mm;
+        min-height: 297mm;
+        max-height: 297mm;
+        margin: 0 auto;
+        background: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        page-break-after: always;
+    }
+
+    .invoice-document {
+        padding: 8mm 12mm 10mm 12mm;
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        line-height: 1.2;
+        color: #000;
+        height: calc(297mm - 25mm);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Company Header */
+    .company-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 8px;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .company-logo {
+        flex-shrink: 0;
+    }
+
+    .logo-circle {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #000;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        background: #f0f0f0;
+    }
+
+    .company-info {
+        flex: 1;
+        text-align: center;
+    }
+
+    .company-name {
+        font-size: 16px;
+        font-weight: bold;
+        margin: 0 0 3px 0;
+        letter-spacing: 1px;
+    }
+
+    .company-subtitle {
+        font-size: 8px;
+        margin: 0 0 5px 0;
+        font-weight: normal;
+    }
+
+    .company-address,
+    .company-contact {
+        font-size: 8px;
+        margin: 2px 0;
+        line-height: 1.2;
+    }
+
+    .document-type {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 8px;
+        font-weight: bold;
+    }
+
+    /* Invoice Header */
+    .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0px;
+        gap: 15px;
+        flex-shrink: 0;
+    }
+
+    .customer-section {
+        flex: 1;
+    }
+
+    .customer-section h3 {
+        margin: 0 0 5px 0;
+        font-size: 12px;
+    }
+
+    .customer-section p {
+        margin: 1px 0;
+        line-height: 1.1;
+        font-size: 9px;
+    }
+
+    .invoice-meta {
+        flex: 1;
+    }
+
+    .meta-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 8px;
+    }
+
+    .meta-table td {
+        padding: 2px 6px;
+        border: 1px solid #000;
+        font-size: 9px;
+    }
+
+    .meta-table td:nth-child(1),
+    .meta-table td:nth-child(3) {
+        background: #f0f0f0;
+        font-weight: bold;
+        width: 25%;
+    }
+
+    .dispatch-section {
+        margin-top: 5px;
+        font-size: 8px;
+    }
+
+    /* Vendor and HSN Section */
+    .vendor-hsn-section {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        padding: 4px 8px;
+        border: 1px solid #000;
+        background: #f8f8f8;
+        font-size: 9px;
+        flex-shrink: 0;
+    }
+
+    /* Items Table */
+    .items-section {
+        flex: 1;
+        min-height: 140mm;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 8px;
+        flex: 1;
+        border: 1px solid #000;
+    }
+
+    .items-table th,
+    .items-table td {
+        border: 0.5px solid #666;
+        padding: 2px 4px;
+        text-align: center;
+        vertical-align: top;
+        font-size: 9px;
+        line-height: 1.1;
+    }
+
+    .items-table th {
+        background: #f0f0f0;
+        font-weight: bold;
+        font-size: 9px;
+        height: 20px;
+        border: 0.5px solid #666;
+    }
+
+    .items-table tbody {
+        height: auto;
+    }
+
+    .items-table tbody tr {
+        height: 14px;
+        max-height: 14px;
+    }
+
+    .sr-col {
+        width: 6%;
+    }
+    .desc-col {
+        width: 55%;
+        text-align: left;
+    }
+    .price-col {
+        width: 13%;
+    }
+    .qty-col {
+        width: 8%;
+    }
+    .amount-col {
+        width: 18%;
+    }
+
+    .items-table .desc-col {
+        text-align: left;
+        padding-left: 6px;
+    }
+
+    .items-table .price-col,
+    .items-table .qty-col,
+    .items-table .amount-col {
+        text-align: right;
+        padding-right: 6px;
+    }
+
+    /* Tax Section */
+    .tax-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 8px;
+        gap: 15px;
+        flex-shrink: 0;
+    }
+
+    .tax-left {
+        flex: 1;
+    }
+
+    .amount-words {
+        font-size: 8px;
+        margin: 0;
+    }
+
+    .tax-right {
+        flex: 0 0 180px;
+    }
+
+    .tax-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .tax-table td {
+        border: 1px solid #000;
+        padding: 2px 4px;
+        font-size: 8px;
+    }
+
+    .tax-table td:first-child {
+        text-align: left;
+        width: 60%;
+    }
+
+    .tax-table td:last-child {
+        text-align: right;
+        width: 40%;
+    }
+
+    .tax-table .total-row td {
+        background: #f0f0f0;
+        font-weight: bold;
+    }
+
+    /* Bank Section */
+    .bank-section {
+        margin-bottom: 8px;
+        flex-shrink: 0;
+    }
+
+    .bank-terms-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: none;
+    }
+
+    .bank-details-cell {
+        width: 50%;
+        font-size: 8px;
+        padding: 0 10px 0 0;
+        border: none;
+        vertical-align: top;
+    }
+
+    .bank-details-cell p {
+        margin: 0.5px 0;
+    }
+
+    .terms-details-cell {
+        width: 50%;
+        font-size: 8px;
+        padding: 0 0 0 10px;
+        border: none;
+        vertical-align: top;
+        line-height: 5px;
+    }
+
+    .terms-details-cell p {
+        margin: 0 0 2px 0;
+        font-weight: bold;
+    }
+
+    .terms-list {
+        font-size: 6px;
+        line-height: 1.1;
+    }
+
+    .terms-list p {
+        margin: 0.5px 0;
+        font-weight: normal;
+    }
+
+    /* Footer */
+    .invoice-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 6px;
+        border-top: 1px solid #000;
+        padding-top: 6px;
+        flex-shrink: 0;
+    }
+
+    .gst-info {
+        flex: 1;
+        font-size: 7px;
+    }
+
+    .gst-info p {
+        margin: 0.5px 0;
+    }
+
+    .signature-section {
+        flex: 1;
+        text-align: right;
+        font-size: 8px;
+    }
+
+    .signature-space {
+        height: 15px;
+        margin: 3px 0;
+    }
+
+    /* Payment Terms */
+    .payment-terms {
+        text-align: center;
+        font-size: 9px;
+        font-weight: bold;
+        padding: 6px;
+        border: 1px solid #000;
+        background: #f8f8f8;
+        flex-shrink: 0;
+    }
+
+    .payment-terms p {
+        margin: 0;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .invoice-controls {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .button-group {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .invoice-wrapper {
+            width: 100vw;
+            min-height: auto;
+            max-height: none;
+        }
+
+        .invoice-document {
+            padding: 10mm !important;
+            font-size: 9px !important;
+            height: auto !important;
+        }
+
+        .company-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .invoice-header {
+            flex-direction: column;
+        }
+
+        .tax-section {
+            flex-direction: column;
+        }
+
+        .bank-section {
+            margin-bottom: 8px;
+        }
+
+        .bank-terms-table {
+            display: block;
+        }
+
+        .bank-details-cell,
+        .terms-details-cell {
+            display: block;
+            width: 100% !important;
+            padding: 5px 0 !important;
+        }
+
+        .invoice-footer {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .items-section {
+            min-height: auto;
+        }
+
+        .tax-right {
+            flex: 1;
+        }
+    }
+</style>
+
+<script define:vars={{ AUTH_CONFIG }}>
+    let currentInvoiceId = null;
+
+    // Load invoice data from API
+    async function loadInvoiceData() {
+        try {
+            document.getElementById("loadingState").style.display = "block";
+            document.getElementById("errorState").style.display = "none";
+            document.getElementById("invoiceContent").style.display = "none";
+
+            // Get invoice ID from URL
+            const urlParts = window.location.pathname.split("/");
+            currentInvoiceId = urlParts[urlParts.length - 1];
+            console.log("Loading invoice with ID:", currentInvoiceId);
+
+            const apiUrl = `/api/bills/${currentInvoiceId}`;
+            console.log("Making API request to:", apiUrl);
+
+            const response = await fetch(apiUrl);
+            console.log("API response status:", response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("API error response:", errorText);
+                throw new Error(
+                    `HTTP error! status: ${response.status} - ${errorText}`,
+                );
+            }
+
+            const responseData = await response.json();
+            console.log("Full API response:", responseData);
+
+            // Extract the bill data from the API response
+            const billData = responseData.bill || responseData;
+            console.log("Extracted bill data:", billData);
+
+            if (!billData) {
+                throw new Error("No bill data found in API response");
+            }
+
+            // Populate invoice with data
+            populateInvoice(billData);
+
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("invoiceContent").style.display = "block";
+        } catch (error) {
+            console.error("Error loading invoice:", error);
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("errorState").style.display = "block";
+
+            const errorMessageEl = document.getElementById("errorMessage");
+            if (errorMessageEl) {
+                errorMessageEl.textContent = `Failed to load invoice: ${error.message}`;
+            }
+        }
+    }
+
+    function populateInvoice(bill) {
+        console.log("Populating invoice with data:", bill);
+
+        // Basic invoice details
+        document.getElementById("invoiceNumber").textContent =
+            bill.bill_number || "-";
+        document.getElementById("invoiceDate").textContent =
+            formatDate(bill.invoice_date) || "-";
+        document.getElementById("challanNumber").textContent =
+            bill.challan_number || "-";
+        document.getElementById("challanDate").textContent =
+            formatDate(bill.challan_date) || "-";
+        document.getElementById("poNumber").textContent = bill.po_number || "-";
+        document.getElementById("poDate").textContent =
+            formatDate(bill.po_date) || "-";
+        document.getElementById("dispatchDetails").textContent =
+            bill.dispatch_details || "-";
+        document.getElementById("vendorCode").textContent =
+            bill.vendor_code || "*****";
+        document.getElementById("hsnCode").textContent = bill.hsn_code || "-";
+
+        // Customer information
+        const customerInfo = document.getElementById("customerInfo");
+        customerInfo.innerHTML = `
+      <p style="margin: 1px 0; line-height: 1.1;"><strong>${bill.customer_name || "N/A"}</strong></p>
+      <p style="margin: 1px 0; line-height: 1.1;">${bill.customer_address || "N/A"}</p>
+      <p style="margin: 1px 0; line-height: 1.1;">MOB NO. ${bill.customer_phone || "N/A"} ${bill.customer_email || ""}</p>
+      <p style="margin: 1px 0; line-height: 1.1;">GST NO. NO ${bill.customer_gst_number || "N/A"}</p>
+      <p style="margin: 1px 0; line-height: 1.1;">STATE- MAHARASHTRA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CODE- 27</p>
+    `;
+
+        // Items table
+        const tbody = document.getElementById("itemsTableBody");
+        tbody.innerHTML = "";
+
+        const maxRows = 15; // Show all 15 items from the form
+        let itemIndex = 0;
+
+        // Add actual items
+        if (bill.items && Array.isArray(bill.items)) {
+            bill.items.forEach((item, index) => {
+                if (index < maxRows) {
+                    const row = document.createElement("tr");
+                    const hasData = item.product_description || item.product_name || item.quantity || item.unit_price;
+                    
+                    if (hasData) {
+                        row.innerHTML = `
+                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">${item.sr_no || (index + 1)}</td>
+                <td style="border: 0.5px solid #666; padding: 2px 4px; text-align: left; font-size: 9px;">${item.product_description || item.product_name || ""}</td>
+                <td style="border: 0.5px solid #666; padding: 2px 4px; text-align: right; font-size: 9px;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
+                <td style="border: 0.5px solid #666; padding: 2px 4px; text-align: right; font-size: 9px;">${item.quantity || 0}</td>
+                <td style="border: 0.5px solid #666; padding: 2px 4px; text-align: right; font-size: 9px;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
+              `;
+                    } else {
+                        row.innerHTML = `
+                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+              `;
+                    }
+                    tbody.appendChild(row);
+                    itemIndex++;
+                }
+            });
+        }
+
+        // Fill remaining rows with empty content for consistent layout
+        for (let i = itemIndex; i < maxRows; i++) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+        <td style="border: 0.5px solid #666; padding: 2px 4px; font-size: 9px;">&nbsp;</td>
+      `;
+            tbody.appendChild(row);
+        }
+
+        // Tax calculations
+        const subtotal = parseFloat(bill.subtotal || 0);
+        const cgstAmount = parseFloat(bill.cgst_amount || 0);
+        const sgstAmount = parseFloat(bill.sgst_amount || 0);
+        const igstAmount = parseFloat(bill.igst_amount || 0);
+        const totalAmount = parseFloat(bill.total_amount || 0);
+
+        document.getElementById("subtotalAmount").textContent =
+            subtotal.toFixed(2);
+        document.getElementById("cgstAmount").textContent =
+            cgstAmount.toFixed(2);
+        document.getElementById("sgstAmount").textContent =
+            sgstAmount.toFixed(2);
+        document.getElementById("igstAmount").textContent =
+            igstAmount.toFixed(2);
+        document.getElementById("totalAmount").textContent =
+            totalAmount.toFixed(2);
+
+        // Update tax labels with percentages
+        document.getElementById("cgstLabel").textContent =
+            `CGST@${bill.cgst_percentage || 9}%`;
+        document.getElementById("sgstLabel").textContent =
+            `SGST@${bill.sgst_percentage || 9}%`;
+        document.getElementById("igstLabel").textContent =
+            `IGST @ ${bill.igst_percentage || 18}%`;
+
+        // Amount in words
+        document.getElementById("amountInWords").textContent =
+            bill.notes || numberToWords(totalAmount) + " RUPEES ONLY";
+
+        // Bank details
+        let bankDetails = null;
+        if (typeof bill.bank_details === "string") {
+            try {
+                bankDetails = JSON.parse(bill.bank_details);
+            } catch (e) {
+                console.warn("Failed to parse bank_details JSON:", e);
+            }
+        } else if (typeof bill.bank_details === "object" && bill.bank_details) {
+            bankDetails = bill.bank_details;
+        }
+
+        // Use either structured bank_details or individual fields
+        document.getElementById("bankName").textContent =
+            bankDetails?.bank_name || bill.bank_name || "INDIAN BANK";
+        document.getElementById("bankAccount").textContent =
+            bankDetails?.account_number ||
+            bill.bank_account_number ||
+            "641205735S";
+        document.getElementById("bankBranch").textContent =
+            bankDetails?.branch || bill.bank_branch || "MALAD EAST";
+        document.getElementById("bankIFSC").textContent =
+            bankDetails?.ifsc_code || bill.bank_ifsc_code || "IDIB000M202";
+        document.getElementById("bankAccountType").textContent =
+            bankDetails?.account_type ||
+            bill.bank_account_type ||
+            "CURRENT A/C";
+
+        // Terms and conditions
+        const termsContent = document.getElementById("termsContent");
+        if (bill.terms_and_conditions) {
+            const terms = bill.terms_and_conditions
+                .split("\n")
+                .map((term) => term.trim())
+                .filter((term) => term);
+            termsContent.innerHTML =
+                '<div class="terms-list">' +
+                terms.map((term) => `<p>• ${term}</p>`).join("") +
+                "</div>";
+        } else {
+            termsContent.innerHTML = `
+        <div class="terms-list">
+          <p>• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.</p>
+          <p>• Inspection prior to dispatch if desire will be at our factory premises.</p>
+          <p>• 50% advance with confirm order & balance against delivery.</p>
+          <p>• Warranty period 12 Months against manufacturing defect.</p>
+          <p>• Payment of the bill must every month of 15th.</p>
+          <p>• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.</p>
+        </div>
+      `;
+        }
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return "";
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString("en-GB"); // DD/MM/YYYY format
+        } catch (e) {
+            return dateString;
+        }
+    }
+
+    function numberToWords(amount) {
+        // Simple number to words conversion (basic implementation)
+        const ones = [
+            "",
+            "ONE",
+            "TWO",
+            "THREE",
+            "FOUR",
+            "FIVE",
+            "SIX",
+            "SEVEN",
+            "EIGHT",
+            "NINE",
+        ];
+        const teens = [
+            "TEN",
+            "ELEVEN",
+            "TWELVE",
+            "THIRTEEN",
+            "FOURTEEN",
+            "FIFTEEN",
+            "SIXTEEN",
+            "SEVENTEEN",
+            "EIGHTEEN",
+            "NINETEEN",
+        ];
+        const tens = [
+            "",
+            "",
+            "TWENTY",
+            "THIRTY",
+            "FORTY",
+            "FIFTY",
+            "SIXTY",
+            "SEVENTY",
+            "EIGHTY",
+            "NINETY",
+        ];
+
+        if (amount === 0) return "ZERO";
+
+        const num = Math.floor(amount);
+        if (num < 10) return ones[num];
+        if (num < 20) return teens[num - 10];
+        if (num < 100)
+            return (
+                tens[Math.floor(num / 10)] +
+                (num % 10 ? " " + ones[num % 10] : "")
+            );
+        if (num < 1000)
+            return (
+                ones[Math.floor(num / 100)] +
+                " HUNDRED" +
+                (num % 100 ? " " + numberToWords(num % 100) : "")
+            );
+        if (num < 100000)
+            return (
+                numberToWords(Math.floor(num / 1000)) +
+                " THOUSAND" +
+                (num % 1000 ? " " + numberToWords(num % 1000) : "")
+            );
+
+        return "AMOUNT TOO LARGE";
+    }
+
+    function downloadPDF() {
+        window.print();
+    }
+
+    function logout() {
+        localStorage.removeItem("authenticated");
+        window.location.href = "/login";
+    }
+
+    // Check authentication and load invoice data on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        if (localStorage.getItem("authenticated") !== "true") {
+            window.location.href = "/login";
+            return;
+        }
+
+        // Load invoice data
+        loadInvoiceData();
+    });
+
+    // Make functions available globally
+    window.logout = logout;
+    window.loadInvoiceData = loadInvoiceData;
+    window.downloadPDF = downloadPDF;
+</script>

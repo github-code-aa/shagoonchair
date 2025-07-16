@@ -118,13 +118,23 @@ export const PUT: APIRoute = async ({ request, params }) => {
 
     // Handle items update if provided
     if (updateData.items && Array.isArray(updateData.items)) {
+      console.log('Processing items update. Total items received:', updateData.items.length);
+      
       // Delete existing items
       await db.query('DELETE FROM bill_items WHERE bill_id = ?', [id]);
 
-      // Insert new items
-      for (const item of updateData.items) {
-        if (item.product_description && item.quantity && item.unit_price) {
-          await db.query(`
+      // Insert new items - process all items from UI (up to 15)
+      for (let i = 0; i < updateData.items.length; i++) {
+        const item = updateData.items[i];
+        console.log(`Processing item ${i + 1}:`, item);
+        
+        // Insert item even if some fields are empty (allows for partial data)
+        // Only skip completely empty items
+        const hasData = item.product_description || item.product_name || 
+                       item.quantity || item.unit_price || item.total_price;
+        
+        if (hasData) {
+          const insertResult = await db.query(`
             INSERT INTO bill_items (
               bill_id, sr_no, product_name, product_description, product_category, 
               hsn_code, unit_price, quantity, total_price, unit
@@ -132,18 +142,23 @@ export const PUT: APIRoute = async ({ request, params }) => {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `, [
             id,
-            item.sr_no || 1,
-            item.product_name || item.product_description,
-            item.product_description,
+            item.sr_no || (i + 1), // Use index + 1 as fallback for sr_no
+            item.product_name || item.product_description || '',
+            item.product_description || '',
             item.product_category || 'General',
             item.hsn_code || '',
-            item.unit_price,
-            item.quantity,
-            item.total_price || (item.quantity * item.unit_price),
+            parseFloat(item.unit_price) || 0,
+            parseInt(item.quantity) || 0,
+            parseFloat(item.total_price) || (parseFloat(item.quantity || 0) * parseFloat(item.unit_price || 0)),
             item.unit || 'Nos'
           ]);
+          console.log(`Item ${i + 1} inserted successfully`);
+        } else {
+          console.log(`Skipping completely empty item ${i + 1}`);
         }
       }
+      
+      console.log('Items update completed');
     }
 
     // Get the updated bill with items
