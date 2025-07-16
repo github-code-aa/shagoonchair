@@ -103,6 +103,37 @@ import { AUTH_CONFIG } from "../config/auth.js";
         <button id="nextBtn" onclick="goToNextPage()" class="btn btn-outline">Next →</button>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>🗑️ Delete Invoice</h3>
+          <button class="modal-close" onclick="closeDeleteModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="warning-icon">⚠️</div>
+          <p>Are you sure you want to delete invoice <strong id="deleteInvoiceNumber"></strong>?</p>
+          <p class="warning-text">This action cannot be undone and will permanently remove all invoice data.</p>
+          
+          <!-- Success/Error Messages -->
+          <div id="deleteSuccessMessage" class="message-container success-message" style="display: none;">
+            <div class="message-icon">✅</div>
+            <p>Invoice deleted successfully!</p>
+          </div>
+          
+          <div id="deleteErrorMessage" class="message-container error-message" style="display: none;">
+            <div class="message-icon">❌</div>
+            <p id="deleteErrorText">Failed to delete invoice. Please try again.</p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="cancelBtn" onclick="closeDeleteModal()" class="btn btn-outline">Cancel</button>
+          <button id="deleteBtn" onclick="confirmDelete()" class="btn btn-danger">Delete Invoice</button>
+          <button id="closeAfterActionBtn" onclick="closeDeleteModal()" class="btn btn-primary" style="display: none;">Close</button>
+        </div>
+      </div>
+    </div>
   </main>
 </Layout>
 
@@ -468,6 +499,11 @@ import { AUTH_CONFIG } from "../config/auth.js";
     background: #f3e5f5;
   }
 
+  .delete-icon:hover {
+    background: #ffebee;
+    color: #e74c3c;
+  }
+
   .btn {
     padding: 8px 16px;
     border: none;
@@ -553,6 +589,161 @@ import { AUTH_CONFIG } from "../config/auth.js";
     font-weight: 500;
   }
 
+  /* Delete Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    min-width: 400px;
+    max-width: 500px;
+    overflow: hidden;
+    animation: modalSlideIn 0.3s ease-out;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes messageSlideIn {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px 25px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+
+  .modal-close:hover {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  .modal-body {
+    padding: 30px 25px;
+    text-align: center;
+  }
+
+  .warning-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  .modal-body p {
+    margin: 0 0 15px 0;
+    color: #495057;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .warning-text {
+    color: #e74c3c !important;
+    font-size: 14px !important;
+    font-weight: 500;
+  }
+
+  .modal-actions {
+    padding: 20px 25px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #f8f9fa;
+  }
+
+  .modal-actions .btn {
+    min-width: 100px;
+  }
+
+  /* Success/Error Message Styles */
+  .message-container {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: messageSlideIn 0.3s ease-out;
+  }
+
+  .success-message {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 1px solid #c3e6cb;
+    color: #155724;
+  }
+
+  .error-message {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+  }
+
+  .message-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .message-container p {
+    margin: 0 !important;
+    font-weight: 500;
+  }
+
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -589,6 +780,20 @@ import { AUTH_CONFIG } from "../config/auth.js";
       padding: 10px 8px;
       font-size: 12px;
     }
+
+    .modal-content {
+      min-width: auto;
+      max-width: 90%;
+      margin: 20px;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+
+    .modal-actions .btn {
+      width: 100%;
+    }
   }
 </style>
 
@@ -604,6 +809,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
   });
 
   let invoicesData = [];
+  let currentDeleteId = null;
 
   async function loadInvoices() {
     await loadInvoicesWithFilters(1);
@@ -662,6 +868,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
       <td class="table-actions">
         <a href="/invoice?id=${invoice.id}" class="action-icon view-icon" title="View Invoice">👁️</a>
         <button onclick="editInvoice(${invoice.id})" class="action-icon edit-icon" title="Edit Invoice">✏️</button>
+        <button onclick="deleteInvoice(${invoice.id}, '${invoice.bill_number}')" class="action-icon delete-icon" title="Delete Invoice">🗑️</button>
       </td>
     `;
 
@@ -771,6 +978,122 @@ import { AUTH_CONFIG } from "../config/auth.js";
   // Make all functions globally accessible
   window.editInvoice = function(id) {
     window.location.href = `/bills/edit/${id}`;
+  }
+
+  window.deleteInvoice = function(id, billNumber) {
+    currentDeleteId = id;
+    document.getElementById('deleteInvoiceNumber').textContent = billNumber;
+    
+    // Reset modal state
+    resetDeleteModal();
+    
+    document.getElementById('deleteModal').style.display = 'flex';
+    
+    // Add event listeners for closing modal
+    document.addEventListener('keydown', handleEscapeKey);
+    document.getElementById('deleteModal').addEventListener('click', handleOutsideClick);
+  }
+
+  function resetDeleteModal() {
+    // Hide all messages
+    document.getElementById('deleteSuccessMessage').style.display = 'none';
+    document.getElementById('deleteErrorMessage').style.display = 'none';
+    
+    // Show confirmation elements
+    document.querySelector('.warning-icon').style.display = 'block';
+    document.querySelector('.modal-body p:nth-child(2)').style.display = 'block';
+    document.querySelector('.warning-text').style.display = 'block';
+    
+    // Show/hide buttons
+    document.getElementById('cancelBtn').style.display = 'inline-flex';
+    document.getElementById('deleteBtn').style.display = 'inline-flex';
+    document.getElementById('closeAfterActionBtn').style.display = 'none';
+    
+    // Reset button states
+    document.getElementById('deleteBtn').disabled = false;
+    document.getElementById('cancelBtn').disabled = false;
+    document.getElementById('deleteBtn').textContent = 'Delete Invoice';
+  }
+
+  window.closeDeleteModal = function() {
+    document.getElementById('deleteModal').style.display = 'none';
+    currentDeleteId = null;
+    
+    // Remove event listeners
+    document.removeEventListener('keydown', handleEscapeKey);
+    document.getElementById('deleteModal').removeEventListener('click', handleOutsideClick);
+    
+    // Reset modal state for next time
+    resetDeleteModal();
+  }
+
+  function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+      closeDeleteModal();
+    }
+  }
+
+  function handleOutsideClick(e) {
+    if (e.target === document.getElementById('deleteModal')) {
+      closeDeleteModal();
+    }
+  }
+
+  window.confirmDelete = async function() {
+    if (!currentDeleteId) return;
+
+    // Disable buttons and show loading state
+    const deleteBtn = document.getElementById('deleteBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const closeBtn = document.getElementById('closeAfterActionBtn');
+    
+    deleteBtn.disabled = true;
+    cancelBtn.disabled = true;
+    deleteBtn.textContent = 'Deleting...';
+
+    try {
+      const response = await fetch(`/api/bills/${currentDeleteId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      // Hide confirmation content and show success message
+      document.querySelector('.warning-icon').style.display = 'none';
+      document.querySelector('.modal-body p:nth-child(2)').style.display = 'none';
+      document.querySelector('.warning-text').style.display = 'none';
+      
+      document.getElementById('deleteSuccessMessage').style.display = 'flex';
+      
+      // Hide delete/cancel buttons, show close button
+      deleteBtn.style.display = 'none';
+      cancelBtn.style.display = 'none';
+      closeBtn.style.display = 'inline-block';
+
+      // Reload invoices to reflect the change
+      await loadInvoicesWithFilters(currentPage);
+    } catch (error) {
+      console.error('Error deleting invoice:', error);
+      
+      // Hide confirmation content and show error message
+      document.querySelector('.warning-icon').style.display = 'none';
+      document.querySelector('.modal-body p:nth-child(2)').style.display = 'none';
+      document.querySelector('.warning-text').style.display = 'none';
+      
+      document.getElementById('deleteErrorMessage').style.display = 'flex';
+      document.getElementById('deleteErrorText').textContent = `Failed to delete invoice: ${error.message}`;
+      
+      // Hide delete/cancel buttons, show close button
+      deleteBtn.style.display = 'none';
+      cancelBtn.style.display = 'none';
+      closeBtn.style.display = 'inline-block';
+    }
   }
   
   window.logout = function() {
