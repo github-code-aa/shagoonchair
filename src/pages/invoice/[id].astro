@@ -147,47 +147,14 @@ const companyInfo = {
                         </thead>
                         <tbody id="itemsTableBody">
                             <!-- Items will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Tax Calculation -->
-                <div class="tax-section">
-                    <div class="tax-left">
-                        <p class="amount-words">
-                            <strong>TOTAL:</strong>
-                            <span id="amountInWords">-</span>
-                        </p>
-                    </div>
-                    <div class="tax-right">
-                        <table class="tax-table">
-                            <tr>
-                                <td>TOTAL AMOUNT BEFORE TAX</td>
-                                <td id="subtotalAmount">0.00</td>
-                            </tr>
-                            <tr>
-                                <td id="cgstLabel">CGST@9%</td>
-                                <td id="cgstAmount">0.00</td>
-                            </tr>
-                            <tr>
-                                <td id="sgstLabel">SGST@9%</td>
-                                <td id="sgstAmount">0.00</td>
-                            </tr>
-                            <tr>
-                                <td id="igstLabel">IGST @ 18%</td>
-                                <td id="igstAmount">0.00</td>
-                            </tr>
-                             <tr>
-                                <td id="discountLabel">Discount</td>
-                                <td id="discountAmount">0.00</td>
-                            </tr>
-                            <tr class="total-row">
-                                <td><strong>TOTAL Rs.</strong></td>
-                                <td id="totalAmount"><strong>0.00</strong></td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
+                    <!-- Tax calculations will be added here -->
+                </tbody>
+            </table>
+            <p class="amount-words">
+                <strong>TOTAL:</strong>
+                <span id="amountInWords">-</span>
+            </p>
+        </div>
 
                 <!-- Bank Details and Terms & Conditions -->
                 <div class="bank-section">
@@ -634,107 +601,95 @@ const companyInfo = {
         padding-right: 6px;
     }
 
-    /* Tax Section */
-    .tax-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 8px;
-        gap: 15px;
-        flex-shrink: 0;
+    /* Tax Rows */
+    .tax-row td {
+        border: 0.5px solid #666;
+        padding: 3px 4px;
+        font-size: 10px;
+        font-weight: 600;
     }
 
-    .tax-left {
-        flex: 1;
+    .tax-label {
+        text-align: left;
+        padding-left: 6px !important;
+    }
+
+    .tax-amount {
+        text-align: right !important;
+        padding-right: 6px !important;
+    }
+
+    .spacer-row td {
+        border: none;
+        height: 20px;
+    }
+
+    .total-row td {
+        background: #f0f0f0;
     }
 
     .amount-words {
         font-size: 8px;
-        margin: 0;
+        margin: 8px 0;
         line-height: 1.3;
         word-wrap: break-word;
     }
 
-    .tax-right {
-        flex: 0 0 180px;
-    }
-
-    .tax-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .tax-table td {
-        border: 1px solid #000;
-        padding: 3px 4px;
-        font-size: 8px;
-        line-height: 1.2;
-    }
-
-    .tax-table td:first-child {
-        text-align: left;
-        width: 60%;
-    }
-
-    .tax-table td:last-child {
-        text-align: right;
-        width: 40%;
-    }
-
-    .tax-table .total-row td {
-        background: #f0f0f0;
-        font-weight: bold;
-    }
-
     /* Bank Section */
     .bank-section {
-        margin-bottom: 8px;
+        margin: 12px 0;
         flex-shrink: 0;
     }
 
     .bank-terms-table {
         width: 100%;
         border-collapse: collapse;
-        border: none;
+        border: 0.5px solid #666;
     }
 
     .bank-details-cell {
         width: 50%;
-        font-size: 7px;
-        padding: 0 10px 0 0;
-        border: none;
+        font-size: 9px;
+        padding: 8px;
+        border-right: 0.5px solid #666;
         vertical-align: top;
     }
 
     .bank-details-cell p {
-        margin: 1px 0;
-        line-height: 1.2;
+        margin: 4px 0;
+        line-height: 1.4;
     }
 
     .terms-details-cell {
         width: 50%;
-        font-size: 7px;
-        padding: 0 0 0 10px;
-        border: none;
+        font-size: 9px;
+        padding: 8px;
         vertical-align: top;
-        line-height: 2px
     }
 
     .terms-details-cell p {
-        margin: 0 0 3px 0;
+        margin: 0 0 6px 0;
         font-weight: bold;
-        line-height: 1.2;
+        line-height: 1.4;
     }
 
     .terms-list {
-        font-size: 6px;
-        line-height: 1.1;
+        font-size: 8px;
+        line-height: 1.4;
     }
 
     .terms-list p {
-        margin: 1px 0;
+        margin: 4px 0;
         font-weight: normal;
-        line-height: 1.2;
+        line-height: 1.4;
+        position: relative;
+        padding-left: 12px;
+    }
+
+    .terms-list p:before {
+        content: "•";
+        position: absolute;
+        left: 0;
     }
 
     /* Footer */
@@ -940,17 +895,23 @@ const companyInfo = {
 
     `;
 
+        // Helper function to create spacer row
+        function createSpacerRow() {
+            const row = document.createElement("tr");
+            row.className = "spacer-row";
+            row.innerHTML = '<td colspan="5">&nbsp;</td>';
+            return row;
+        }
+
         // Items table
         const tbody = document.getElementById("itemsTableBody");
         tbody.innerHTML = "";
 
-        const maxRows = 15; // Show all 15 items from the form
         let itemIndex = 0;
 
         // Add actual items
         if (bill.items && Array.isArray(bill.items)) {
             bill.items.forEach((item, index) => {
-                if (index < maxRows) {
                     const row = document.createElement("tr");
                     const hasData = item.product_description || item.product_name || item.quantity || item.unit_price;
                     
@@ -974,23 +935,24 @@ const companyInfo = {
                     tbody.appendChild(row);
                     itemIndex++;
                 }
-            });
+            );
+        
         }
 
-        // Fill remaining rows with empty content for consistent layout
-        for (let i = itemIndex; i < maxRows; i++) {
+        // Add one empty row if no items
+        if (itemIndex === 0) {
             const row = document.createElement("tr");
             row.innerHTML = `
-        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-        <td style="border: 0px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-      `;
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+            `;
             tbody.appendChild(row);
         }
 
-        // Tax calculations
+        // Tax calculations and display
         const subtotal = parseFloat(bill.subtotal || 0);
         const cgstAmount = parseFloat(bill.cgst_amount || 0);
         const sgstAmount = parseFloat(bill.sgst_amount || 0);
@@ -998,26 +960,60 @@ const companyInfo = {
         const totalAmount = parseFloat(bill.total_amount || 0);
         const discountAmount = parseFloat(bill.discount_amount || 0) || 0;
 
-        document.getElementById("subtotalAmount").textContent =
-            subtotal.toFixed(2);
-        document.getElementById("cgstAmount").textContent =
-            cgstAmount.toFixed(2);
-        document.getElementById("sgstAmount").textContent =
-            sgstAmount.toFixed(2);
-        document.getElementById("igstAmount").textContent =
-            igstAmount.toFixed(2);
-        document.getElementById("totalAmount").textContent =
-            totalAmount.toFixed(2);
-        document.getElementById("discountAmount").textContent =
-            discountAmount.toFixed(2);
+        // Add spacer and tax rows
+        const taxRows = [
+            {
+                label: "TOTAL AMOUNT BEFORE TAX",
+                amount: subtotal.toFixed(2),
+                id: "subtotalAmount"
+            },
+            {
+                label: `CGST@${bill.cgst_percentage || 9}%`,
+                amount: cgstAmount.toFixed(2),
+                id: "cgstAmount"
+            },
+            {
+                label: `SGST@${bill.sgst_percentage || 9}%`,
+                amount: sgstAmount.toFixed(2),
+                id: "sgstAmount"
+            },
+            {
+                label: `IGST @ ${bill.igst_percentage || 18}%`,
+                amount: igstAmount.toFixed(2),
+                id: "igstAmount"
+            },
+            {
+                label: "Discount",
+                amount: discountAmount.toFixed(2),
+                id: "discountAmount"
+            },
+            {
+                label: "TOTAL Rs.",
+                amount: totalAmount.toFixed(2),
+                id: "totalAmount",
+                isTotal: true
+            }
+        ];
 
-        // Update tax labels with percentages
-        document.getElementById("cgstLabel").textContent =
-            `CGST@${bill.cgst_percentage || 9}%`;
-        document.getElementById("sgstLabel").textContent =
-            `SGST@${bill.sgst_percentage || 9}%`;
-        document.getElementById("igstLabel").textContent =
-            `IGST @ ${bill.igst_percentage || 18}%`;
+        // Add spacer before tax rows
+        tbody.appendChild(createSpacerRow());
+
+        // Add tax rows with right-aligned totals and proper styling
+        taxRows.forEach((taxRow, index) => {
+            const row = document.createElement("tr");
+            row.className = taxRow.isTotal ? "total-row" : "tax-row";
+            row.innerHTML = `
+                <td style="border: none"></td>
+                <td class="tax-label" style="border: none; text-align: right; padding-right: 20px; ${taxRow.isTotal ? 'font-weight: bold;' : ''}">${taxRow.label}</td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td class="tax-amount" id="${taxRow.id}" style="border: 0.5px solid #666; text-align: right; padding-right: 6px; ${taxRow.isTotal ? 'font-weight: bold; background: #f0f0f0;' : ''}">₹${taxRow.amount}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Add extra spacing after tax calculations
+        tbody.appendChild(createSpacerRow());
 
         // Amount in words
         document.getElementById("amountInWords").textContent =
@@ -1172,5 +1168,4 @@ const companyInfo = {
     // Make functions available globally
     window.logout = logout;
     window.loadInvoiceData = loadInvoiceData;
-    window.downloadPDF = downloadPDF;
 </script>
