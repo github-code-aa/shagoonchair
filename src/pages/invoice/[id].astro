@@ -146,15 +146,14 @@ const companyInfo = {
                             </tr>
                         </thead>
                         <tbody id="itemsTableBody">
-                            <!-- Items will be populated here -->
-                    <!-- Tax calculations will be added here -->
-                </tbody>
-            </table>
-            <p class="amount-words">
-                <strong>TOTAL:</strong>
-                <span id="amountInWords">-</span>
-            </p>
-        </div>
+                            <!-- Items and tax calculations will be populated here -->
+                        </tbody>
+                    </table>
+                    <p class="amount-words">
+                        <strong>TOTAL:</strong>
+                        <span id="amountInWords">-</span>
+                    </p>
+                </div>
 
                 <!-- Bank Details and Terms & Conditions -->
                 <div class="bank-section">
@@ -235,18 +234,19 @@ const companyInfo = {
         * {
             -webkit-print-color-adjust: exact !important;
             color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         @page {
-            size: A4;
+            size: A4 portrait;
             margin: 0;
-            padding: 0;
         }
 
         body {
             margin: 0;
             padding: 0;
-            font-size: 10px;
+            width: 210mm;
+            height: 297mm;
         }
 
         .invoice-wrapper {
@@ -255,25 +255,37 @@ const companyInfo = {
             box-shadow: none !important;
             border-radius: 0 !important;
             width: 210mm !important;
-            height: 297mm !important;
-            max-height: 297mm !important;
             min-height: 297mm !important;
-            page-break-after: always;
         }
 
         .invoice-document {
-            padding: 8mm 12mm 10mm 12mm !important;
-            height: calc(297mm - 25mm) !important;
-            font-size: 10px !important;
+            padding: 5mm !important;
+            box-sizing: border-box !important;
+            font-size: 8px !important;
+            line-height: 1.2 !important;
+        }
+
+        .company-header {
+            margin-bottom: 10px !important;
+        }
+
+        .company-name {
+            font-size: 16px !important;
+        }
+
+        .invoice-header {
+            margin: 10px 0 !important;
+            gap: 10px !important;
         }
 
         .items-section {
-            min-height: 140mm !important;
+            min-height: 150mm !important;
         }
 
         .items-table tbody tr {
-            height: 16px !important;
-            max-height: 16px !important;
+            height: 13px !important;
+            max-height: 13px !important;
+            font-size: 8px !important;
         }
 
         .items-table th,
@@ -282,6 +294,16 @@ const companyInfo = {
             padding: 3px 4px !important;
             border: 0.5px solid #666 !important;
             font-weight: 600 !important;
+        }
+
+        .customer-section {
+            padding: 8px 10px !important;
+            box-shadow: none !important;
+        }
+
+        .customer-section hr {
+            margin: 3px 0 !important;
+            border-color: #ddd !important;
         }
     }
 
@@ -390,26 +412,27 @@ const companyInfo = {
         page-break-after: always;
     }
 
-    .invoice-document {
-        padding: 8mm 12mm 10mm 12mm;
-        font-family: Arial, sans-serif;
-        font-size: 10px;
-        line-height: 1.2;
-        color: #000;
-        height: calc(297mm - 25mm);
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-    }
+        .invoice-document {
+            padding: 6mm;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 9px;
+            line-height: 1.2;
+            color: #333;
+            min-height: 297mm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            position: relative;
+        }
 
     /* Company Header */
     .company-header {
         display: flex;
         align-items: flex-start;
         gap: 10px;
-        margin-bottom: 12px;
-        border-bottom: 2px solid #000;
-        padding-bottom: 8px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 10px;
         position: relative;
         flex-shrink: 0;
     }
@@ -419,14 +442,14 @@ const companyInfo = {
     }
 
     .logo-circle {
-        width: 40px;
-        height: 40px;
-        border: 2px solid #000;
+        width: 30px;
+        height: 30px;
+        border: 1.5px solid #000;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: 18px;
         font-weight: bold;
         background: #f0f0f0;
     }
@@ -438,15 +461,18 @@ const companyInfo = {
 
     .company-name {
         font-size: 16px;
-        font-weight: bold;
-        margin: 0 0 3px 0;
-        letter-spacing: 1px;
+        font-weight: 600;
+        margin: 0 0 2px 0;
+        letter-spacing: 0.5px;
+        color: #222;
     }
 
     .company-subtitle {
         font-size: 8px;
-        margin: 0 0 5px 0;
-        font-weight: normal;
+        margin: 0 0 4px 0;
+        font-weight: 500;
+        color: #555;
+        text-transform: uppercase;
     }
 
     .company-address,
@@ -468,24 +494,38 @@ const companyInfo = {
     .invoice-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 0px;
-        gap: 15px;
+        margin: 8px 0;
+        gap: 10px;
         flex-shrink: 0;
     }
 
     .customer-section {
         flex: 1;
+        padding: 10px 12px;
+        background: #f8f8f8;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
     .customer-section h3 {
-        margin: 0 0 5px 0;
+        margin: 0 0 10px 0;
         font-size: 12px;
+        color: #444;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .customer-section p {
-        margin: 1px 0;
-        line-height: 1.1;
+        margin: 2px 0;
+        line-height: 1.2;
         font-size: 9px;
+        color: #333;
+    }
+
+    .customer-section p strong {
+        font-weight: 600;
+        color: #222;
     }
 
     .invoice-meta {
@@ -494,73 +534,108 @@ const companyInfo = {
 
     .meta-table {
         width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 8px;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 12px;
+        background: #fff;
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .meta-table td {
-        padding: 2px 6px;
-        border: 1px solid #000;
-        font-size: 9px;
+        padding: 4px 8px;
+        border: 1px solid #e0e0e0;
+        font-size: 10px;
+        color: #333;
     }
 
     .meta-table td:nth-child(1),
     .meta-table td:nth-child(3) {
-        background: #f0f0f0;
-        font-weight: bold;
-        width: 25%;
+        background: #f4f4f4;
+        font-weight: 600;
+        width: 30%;
+        color: #444;
+    }
+
+    .meta-table td:nth-child(2),
+    .meta-table td:nth-child(4) {
+        width: 20%;
     }
 
     .dispatch-section {
-        margin-top: 5px;
-        font-size: 8px;
+        margin-top: 12px;
+        padding: 8px 12px;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+
+    .dispatch-section p {
+        margin: 0;
+        color: #333;
     }
 
     /* Vendor and HSN Section */
     .vendor-hsn-section {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 8px;
-        padding: 4px 8px;
-        border: 1px solid #000;
+        margin-bottom: 05px;
+        padding: 10px 15px;
         background: #f8f8f8;
-        font-size: 9px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 10px;
         flex-shrink: 0;
+        color: #444;
+    }
+
+    .vendor-hsn-section strong {
+        color: #222;
+        font-weight: 600;
+        margin-right: 8px;
     }
 
     /* Items Table */
     .items-section {
         flex: 1;
-        min-height: 140mm;
+        min-height: 120mm;
         display: flex;
         flex-direction: column;
+        /* margin-bottom: 10px; */
     }
 
     .items-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
         margin-bottom: 8px;
         flex: 1;
-        /* border: 1px solid #000; */
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .items-table th,
     .items-table td {
-        border: 0.5px solid #666;
-        padding: 3px 4px;
+        border: 1px solid #e0e0e0;
+        padding: 2px 4px;
         text-align: center;
         vertical-align: middle;
-        font-size: 12px;
+        font-size: 8px;
         line-height: 1.2;
-        font-weight: 500;
+        color: #333;
     }
 
     .items-table th {
-        background: #f0f0f0;
-        font-weight: bold;
-        font-size: 12px;
-        height: 20px;
-        border: 0.5px solid #666;
+        background: #f4f4f4;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #222;
+        border-bottom: 2px solid #e0e0e0;
     }
 
     .items-table tbody {
@@ -601,142 +676,181 @@ const companyInfo = {
         padding-right: 6px;
     }
 
-    /* Tax Rows */
-    .tax-row td {
-        border: 0.5px solid #666;
+    /* Tax and Total Rows */
+    .tax-row td, .total-row td {
         padding: 3px 4px;
         font-size: 10px;
         font-weight: 600;
+        vertical-align: middle;
     }
 
     .tax-label {
-        text-align: left;
-        padding-left: 6px !important;
+        text-align: right !important;
+        padding-right: 20px !important;
     }
 
     .tax-amount {
         text-align: right !important;
         padding-right: 6px !important;
+        border: 0.5px solid #666 !important;
     }
 
     .spacer-row td {
-        border: none;
-        height: 20px;
+        border: none !important;
+        height: 10px;
     }
 
-    .total-row td {
+    .total-row .tax-amount {
         background: #f0f0f0;
+        font-weight: bold;
     }
 
-    .amount-words {
-        font-size: 8px;
-        margin: 8px 0;
-        line-height: 1.3;
-        word-wrap: break-word;
+    .tax-row td:not(.tax-amount),
+    .total-row td:not(.tax-amount) {
+        border: none !important;
     }
 
-    /* Bank Section */
+
+    /* Bank and Terms Section */
     .bank-section {
-        margin: 12px 0;
+        margin: 00px 0;
         flex-shrink: 0;
     }
 
     .bank-terms-table {
         width: 100%;
-        border-collapse: collapse;
-        border: 0.5px solid #666;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .bank-details-cell {
         width: 50%;
-        font-size: 9px;
-        padding: 8px;
-        border-right: 0.5px solid #666;
+        font-size: 8px;
+        padding: 6px 8px;
+        border-right: 1px solid #e0e0e0;
         vertical-align: top;
+        background: #f8f8f8;
     }
 
     .bank-details-cell p {
-        margin: 4px 0;
-        line-height: 1.4;
+        margin: 6px 0;
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .bank-details-cell strong {
+        color: #222;
+        font-weight: 600;
+        margin-right: 4px;
     }
 
     .terms-details-cell {
         width: 50%;
-        font-size: 9px;
-        padding: 8px;
+        font-size: 8px;
+        padding: 6px 8px;
         vertical-align: top;
     }
 
     .terms-details-cell p {
-        margin: 0 0 6px 0;
-        font-weight: bold;
+        margin: 0 0 10px 0;
+        font-weight: 600;
         line-height: 1.4;
+        color: #222;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .terms-list {
-        font-size: 8px;
-        line-height: 1.4;
+        font-size: 9px;
+        line-height: 1.5;
     }
 
     .terms-list p {
-        margin: 4px 0;
+        margin: 6px 0;
         font-weight: normal;
-        line-height: 1.4;
+        line-height: 1.5;
         position: relative;
-        padding-left: 12px;
+        padding-left: 15px;
+        color: #444;
     }
 
     .terms-list p:before {
         content: "•";
         position: absolute;
         left: 0;
+        color: #666;
     }
 
-    /* Footer */
+    /* Footer and Payment Section */
     .invoice-footer {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        margin-bottom: 6px;
-        border-top: 1px solid #000;
-        padding-top: 6px;
+        margin: 8px 0;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 15px;
         flex-shrink: 0;
     }
 
     .gst-info {
         flex: 1;
-        font-size: 7px;
+        font-size: 9px;
     }
 
     .gst-info p {
-        margin: 1px 0;
-        line-height: 1.2;
+        margin: 4px 0;
+        line-height: 1.4;
+        color: #444;
+    }
+
+    .gst-info strong {
+        color: #222;
+        font-weight: 600;
+        margin-right: 4px;
     }
 
     .signature-section {
         flex: 1;
         text-align: right;
-        font-size: 8px;
+        font-size: 10px;
+    }
+
+    .signature-section p {
+        margin: 3px 0;
+        color: #333;
+    }
+
+    .signature-section strong {
+        color: #222;
+        font-weight: 600;
     }
 
     .signature-space {
-        height: 15px;
-        margin: 3px 0;
+        height: 25px;
+        margin: 5px 0;
+        border-bottom: 1px dashed #ccc;
     }
 
     /* Payment Terms */
     .payment-terms {
         text-align: center;
-        font-size: 9px;
-        font-weight: bold;
+        font-size: 8px;
+        font-weight: 600;
         padding: 6px;
-        border: 1px solid #000;
         background: #f8f8f8;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        color: #222;
         flex-shrink: 0;
     }
 
     .payment-terms p {
         margin: 0;
+        letter-spacing: 0.5px;
     }
 
     /* Mobile Responsive */
@@ -887,13 +1001,21 @@ const companyInfo = {
 
         // Customer information
         const customerInfo = document.getElementById("customerInfo");
-        customerInfo.innerHTML = `
-      <p style="margin: 1px 0; line-height: 1.1;"><strong>${bill.customer_name || "N/A"}</strong></p>
-      <p style="margin: 1px 0; line-height: 1.1;">${bill.customer_address || "N/A"}</p>
-      <p style="margin: 1px 0; line-height: 1.1;">MOB NO. ${bill.customer_phone || "N/A"} | Email: ${bill.customer_email || ""}</p>
-      <p style="margin: 1px 0; line-height: 1.1;">GST NO. NO ${bill.customer_gst_number || "N/A"}</p>
+        // Format customer address with proper line breaks
+        const formattedAddress = bill.customer_address ? 
+            bill.customer_address.split('\n').map(line => 
+                line.includes('-----') ? 
+                    `<hr style="margin: 4px 0; border: none; border-top: 1px dashed #ccc; opacity: 0.5;">` :
+                    `<p style="margin: 1px 0; line-height: 1.2;">${line.trim()}</p>`
+            ).join('') : 
+            '<p style="margin: 1px 0; line-height: 1.2;">N/A</p>';
 
-    `;
+        customerInfo.innerHTML = `
+            <p style="margin: 1px 0; line-height: 1.2;"><strong>${bill.customer_name || "N/A"}</strong></p>
+            ${formattedAddress}
+            <p style="margin: 1px 0; line-height: 1.2;">MOB NO. ${bill.customer_phone || "N/A"} | Email: ${bill.customer_email || ""}</p>
+            <p style="margin: 1px 0; line-height: 1.2;">GST NO. ${bill.customer_gst_number || "N/A"}</p>
+        `;
 
         // Helper function to create spacer row
         function createSpacerRow() {
@@ -996,7 +1118,7 @@ const companyInfo = {
         ];
 
         // Add spacer before tax rows
-        tbody.appendChild(createSpacerRow());
+        // tbody.appendChild(createSpacerRow());
 
         // Add tax rows with right-aligned totals and proper styling
         taxRows.forEach((taxRow, index) => {
@@ -1030,7 +1152,6 @@ const companyInfo = {
         } else if (typeof bill.bank_details === "object" && bill.bank_details) {
             bankDetails = bill.bank_details;
         }
-        debugger
 
         // Use either structured bank_details or individual fields
         document.getElementById("bankName").textContent =
