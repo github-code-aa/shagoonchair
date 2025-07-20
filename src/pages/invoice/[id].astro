@@ -77,7 +77,9 @@ const companyInfo = {
                         </p>
                     </div>
                     <div class="document-type">
-                        <span contenteditable="">ORIGINAL / DUPLICATE / EXTRA</span>
+                        <span contenteditable=""
+                            >ORIGINAL / DUPLICATE / EXTRA</span
+                        >
                     </div>
                 </div>
 
@@ -983,8 +985,7 @@ const companyInfo = {
         console.log("Populating invoice with data:", bill);
 
         // Basic invoice details
-        document.getElementById("invoiceNumber").textContent =
-            bill.id || "-";
+        document.getElementById("invoiceNumber").textContent = bill.id || "-";
         document.getElementById("invoiceDate").textContent =
             formatDate(bill.invoice_date) || "-";
         document.getElementById("challanNumber").textContent =
@@ -1025,7 +1026,10 @@ const companyInfo = {
         function createSpacerRow() {
             const row = document.createElement("tr");
             row.className = "spacer-row";
-            row.innerHTML = '<td colspan="5">&nbsp;</td>';
+            row.style.height = "18px";
+            row.style.maxHeight = "18px";
+            row.innerHTML =
+                '<td colspan="5" style="height: 18px; max-height: 18px;">&nbsp;</td>';
             return row;
         }
 
@@ -1045,21 +1049,25 @@ const companyInfo = {
                     item.quantity ||
                     item.unit_price;
 
+                // Set fixed row height for all rows
+                row.style.height = "18px";
+                row.style.maxHeight = "18px";
+
                 if (hasData) {
                     row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">${item.sr_no || index + 1}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: left; font-size: 10px; font-weight: 600;">${item.product_description || item.product_name || ""}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">${item.quantity || 0}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.sr_no || index + 1}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: left; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.product_description || item.product_name || ""}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.quantity || 0}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
               `;
                 } else {
                     row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
               `;
                 }
                 tbody.appendChild(row);
@@ -1070,15 +1078,18 @@ const companyInfo = {
         // Add one empty row if no items
         if (itemIndex === 0) {
             const row = document.createElement("tr");
+            row.style.height = "18px";
+            row.style.maxHeight = "18px";
             row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
             `;
             tbody.appendChild(row);
         }
+        // Add spacer rows to ensure 15 total rows (including items)
 
         // Tax calculations and display
         const subtotal = parseFloat(bill.subtotal || 0);
@@ -1130,17 +1141,22 @@ const companyInfo = {
         taxRows.forEach((taxRow, index) => {
             const row = document.createElement("tr");
             row.className = taxRow.isTotal ? "total-row" : "tax-row";
+            // Set fixed row height for tax rows
+            row.style.height = "18px";
+            row.style.maxHeight = "18px";
             row.innerHTML = `
-                <td style="border: none"></td>
-                <td class="tax-label" style="border: none; text-align: right; padding-right: 20px; ${taxRow.isTotal ? "font-weight: bold;" : ""}">${taxRow.label}</td>
-                <td style="border: none"></td>
-                <td style="border: none"></td>
-                <td class="tax-amount" id="${taxRow.id}" style="border: 0.5px solid #666; text-align: right; padding-right: 6px; ${taxRow.isTotal ? "font-weight: bold; background: #f0f0f0;" : ""}">₹${taxRow.amount}</td>
+                <td style="border: none; height: 18px; max-height: 18px;"></td>
+                   <td style="border: none"></td>
+                <td style="border: 0.5px solid #666; height: 18px; max-height: 18px;" colspan=2>${taxRow.label}</td>
+                <td class="tax-amount" id="${taxRow.id}" style="border: 0.5px solid #666; text-align: right; padding-right: 6px; height: 18px; max-height: 18px; overflow: hidden; ${taxRow.isTotal ? "font-weight: bold; background: #f0f0f0;" : ""}">₹${taxRow.amount}</td>
             `;
             tbody.appendChild(row);
         });
 
-       
+        for (let i = 0; i < 15 - itemIndex; i++) {
+            tbody.appendChild(createSpacerRow());
+        }
+
         document.getElementById("amountInWords").textContent =
             numberToWords(totalAmount) + " RUPEES ONLY";
 
