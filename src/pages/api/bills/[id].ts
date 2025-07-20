@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { initializeDatabase } from '../../../config/database';
+import { initializeDatabase, extractNumericValue } from '../../../config/database';
 
 export const prerender = false;
 
@@ -35,7 +35,7 @@ export const PUT: APIRoute = async ({ request, params }) => {
     // Handle all possible bill fields - comprehensive list matching database schema
     // Exclude bank fields from main list as they will be handled separately
     const billFields = [
-      'bill_number', 'invoice_date', 'challan_number', 'challan_date', 
+      'invoice_date', 'challan_number', 'challan_date', 
       'po_number', 'po_date', 'dispatch_details',
       'customer_name', 'customer_code', 'customer_phone', 'customer_email', 
       'customer_address', 'customer_gst_number',
@@ -148,8 +148,8 @@ export const PUT: APIRoute = async ({ request, params }) => {
             item.product_category || 'General',
             item.hsn_code || '',
             parseFloat(item.unit_price) || 0,
-            parseInt(item.quantity) || 0,
-            parseFloat(item.total_price) || (parseFloat(item.quantity || 0) * parseFloat(item.unit_price || 0)),
+            item.quantity || '0', // Store the full text quantity
+            parseFloat(item.total_price) || (extractNumericValue(item.quantity || '0') * parseFloat(item.unit_price || '0')),
             item.unit || 'Nos'
           ]);
           console.log(`Item ${i + 1} inserted successfully`);
@@ -251,22 +251,24 @@ export const DELETE: APIRoute = async ({ params }) => {
     // Initialize database
     const db = await initializeDatabase();
 
-    // First, delete all bill items
-    await db.query('DELETE FROM bill_items WHERE bill_id = ?', [id]);
-
-    // Then delete the bill
-    const result = await db.query('DELETE FROM bills WHERE id = ?', [id]);
-
-    if (result.meta && result.meta.changes === 0) {
+    // Check if bill exists
+    const existingBillResult = await db.query('SELECT id FROM bills WHERE id = ?', [id]);
+    if (!existingBillResult.results || existingBillResult.results.length === 0) {
       return new Response(JSON.stringify({ error: 'Bill not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
+    // Delete bill items first (foreign key constraint)
+    await db.query('DELETE FROM bill_items WHERE bill_id = ?', [id]);
+    
+    // Delete the bill
+    await db.query('DELETE FROM bills WHERE id = ?', [id]);
+
     return new Response(JSON.stringify({ 
-      success: true, 
-      message: 'Bill deleted successfully' 
+      success: true,
+      message: 'Bill deleted successfully'
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

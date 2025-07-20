@@ -27,7 +27,7 @@ const companyInfo = {
                 <button onclick="window.print()" class="btn btn-primary"
                     >🖨️ Print Invoice</button
                 >
-             
+
                 <a href="/bills" class="btn btn-outline">← Back to Bills</a>
                 <button onclick="logout()" class="btn btn-danger"
                     >🚪 Logout</button
@@ -77,7 +77,7 @@ const companyInfo = {
                         </p>
                     </div>
                     <div class="document-type">
-                        <span>ORIGINAL / DUPLICATE / EXTRA</span>
+                        <span contenteditable="">ORIGINAL / DUPLICATE / EXTRA</span>
                     </div>
                 </div>
 
@@ -216,7 +216,8 @@ const companyInfo = {
                     <p>
                         <strong
                             >PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN
-                            MUMBAI</strong>
+                            MUMBAI</strong
+                        >
                     </p>
                 </div>
             </div>
@@ -412,19 +413,19 @@ const companyInfo = {
         page-break-after: always;
     }
 
-        .invoice-document {
-            padding: 6mm;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            font-size: 9px;
-            line-height: 1.2;
-            color: #333;
-            min-height: 297mm;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-            position: relative;
-        }
+    .invoice-document {
+        padding: 6mm;
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 9px;
+        line-height: 1.2;
+        color: #333;
+        min-height: 297mm;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        position: relative;
+    }
 
     /* Company Header */
     .company-header {
@@ -505,7 +506,7 @@ const companyInfo = {
         background: #f8f8f8;
         border: 1px solid #e0e0e0;
         border-radius: 4px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     .customer-section h3 {
@@ -540,7 +541,7 @@ const companyInfo = {
         background: #fff;
         border-radius: 4px;
         overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .meta-table td {
@@ -615,7 +616,7 @@ const companyInfo = {
         border: 1px solid #e0e0e0;
         border-radius: 4px;
         overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .items-table th,
@@ -677,7 +678,8 @@ const companyInfo = {
     }
 
     /* Tax and Total Rows */
-    .tax-row td, .total-row td {
+    .tax-row td,
+    .total-row td {
         padding: 3px 4px;
         font-size: 10px;
         font-weight: 600;
@@ -710,7 +712,6 @@ const companyInfo = {
         border: none !important;
     }
 
-
     /* Bank and Terms Section */
     .bank-section {
         margin: 00px 0;
@@ -724,7 +725,7 @@ const companyInfo = {
         border: 1px solid #e0e0e0;
         border-radius: 4px;
         overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .bank-details-cell {
@@ -792,7 +793,7 @@ const companyInfo = {
         align-items: flex-end;
         margin: 8px 0;
         border-top: 1px solid #e0e0e0;
-        padding-top: 15px;
+        padding-top: 06px;
         flex-shrink: 0;
     }
 
@@ -983,7 +984,7 @@ const companyInfo = {
 
         // Basic invoice details
         document.getElementById("invoiceNumber").textContent =
-            bill.bill_number || "-";
+            bill.id || "-";
         document.getElementById("invoiceDate").textContent =
             formatDate(bill.invoice_date) || "-";
         document.getElementById("challanNumber").textContent =
@@ -1002,13 +1003,16 @@ const companyInfo = {
         // Customer information
         const customerInfo = document.getElementById("customerInfo");
         // Format customer address with proper line breaks
-        const formattedAddress = bill.customer_address ? 
-            bill.customer_address.split('\n').map(line => 
-                line.includes('-----') ? 
-                    `<hr style="margin: 4px 0; border: none; border-top: 1px dashed #ccc; opacity: 0.5;">` :
-                    `<p style="margin: 1px 0; line-height: 1.2;">${line.trim()}</p>`
-            ).join('') : 
-            '<p style="margin: 1px 0; line-height: 1.2;">N/A</p>';
+        const formattedAddress = bill.customer_address
+            ? bill.customer_address
+                  .split("\n")
+                  .map((line) =>
+                      line.includes("-----")
+                          ? `<hr style="margin: 4px 0; border: none; border-top: 1px dashed #ccc; opacity: 0.5;">`
+                          : `<p style="margin: 1px 0; line-height: 1.2;">${line.trim()}</p>`,
+                  )
+                  .join("")
+            : '<p style="margin: 1px 0; line-height: 1.2;">N/A</p>';
 
         customerInfo.innerHTML = `
             <p style="margin: 1px 0; line-height: 1.2;"><strong>${bill.customer_name || "N/A"}</strong></p>
@@ -1034,31 +1038,33 @@ const companyInfo = {
         // Add actual items
         if (bill.items && Array.isArray(bill.items)) {
             bill.items.forEach((item, index) => {
-                    const row = document.createElement("tr");
-                    const hasData = item.product_description || item.product_name || item.quantity || item.unit_price;
-                    
-                    if (hasData) {
-                        row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">${item.sr_no || (index + 1)}</td>
+                const row = document.createElement("tr");
+                const hasData =
+                    item.product_description ||
+                    item.product_name ||
+                    item.quantity ||
+                    item.unit_price;
+
+                if (hasData) {
+                    row.innerHTML = `
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">${item.sr_no || index + 1}</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: left; font-size: 10px; font-weight: 600;">${item.product_description || item.product_name || ""}</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">${item.quantity || 0}</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
               `;
-                    } else {
-                        row.innerHTML = `
+                } else {
+                    row.innerHTML = `
                 <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600;">&nbsp;</td>
               `;
-                    }
-                    tbody.appendChild(row);
-                    itemIndex++;
                 }
-            );
-        
+                tbody.appendChild(row);
+                itemIndex++;
+            });
         }
 
         // Add one empty row if no items
@@ -1087,34 +1093,34 @@ const companyInfo = {
             {
                 label: "TOTAL AMOUNT BEFORE TAX",
                 amount: subtotal.toFixed(2),
-                id: "subtotalAmount"
+                id: "subtotalAmount",
             },
             {
                 label: `CGST@${bill.cgst_percentage || 9}%`,
                 amount: cgstAmount.toFixed(2),
-                id: "cgstAmount"
+                id: "cgstAmount",
             },
             {
                 label: `SGST@${bill.sgst_percentage || 9}%`,
                 amount: sgstAmount.toFixed(2),
-                id: "sgstAmount"
+                id: "sgstAmount",
             },
             {
                 label: `IGST @ ${bill.igst_percentage || 18}%`,
                 amount: igstAmount.toFixed(2),
-                id: "igstAmount"
+                id: "igstAmount",
             },
             {
                 label: "Discount",
                 amount: discountAmount.toFixed(2),
-                id: "discountAmount"
+                id: "discountAmount",
             },
             {
                 label: "TOTAL Rs.",
                 amount: totalAmount.toFixed(2),
                 id: "totalAmount",
-                isTotal: true
-            }
+                isTotal: true,
+            },
         ];
 
         // Add spacer before tax rows
@@ -1126,20 +1132,17 @@ const companyInfo = {
             row.className = taxRow.isTotal ? "total-row" : "tax-row";
             row.innerHTML = `
                 <td style="border: none"></td>
-                <td class="tax-label" style="border: none; text-align: right; padding-right: 20px; ${taxRow.isTotal ? 'font-weight: bold;' : ''}">${taxRow.label}</td>
+                <td class="tax-label" style="border: none; text-align: right; padding-right: 20px; ${taxRow.isTotal ? "font-weight: bold;" : ""}">${taxRow.label}</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
-                <td class="tax-amount" id="${taxRow.id}" style="border: 0.5px solid #666; text-align: right; padding-right: 6px; ${taxRow.isTotal ? 'font-weight: bold; background: #f0f0f0;' : ''}">₹${taxRow.amount}</td>
+                <td class="tax-amount" id="${taxRow.id}" style="border: 0.5px solid #666; text-align: right; padding-right: 6px; ${taxRow.isTotal ? "font-weight: bold; background: #f0f0f0;" : ""}">₹${taxRow.amount}</td>
             `;
             tbody.appendChild(row);
         });
 
-        // Add extra spacing after tax calculations
-        tbody.appendChild(createSpacerRow());
-
-        // Amount in words
+       
         document.getElementById("amountInWords").textContent =
-            numberToWords(totalAmount) + " RUPEES ONLY" ;
+            numberToWords(totalAmount) + " RUPEES ONLY";
 
         // Bank details
         let bankDetails = null;
@@ -1269,7 +1272,6 @@ const companyInfo = {
         return "AMOUNT TOO LARGE";
     }
 
- 
     function logout() {
         localStorage.removeItem("authenticated");
         window.location.href = "/login";

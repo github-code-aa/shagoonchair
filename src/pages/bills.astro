@@ -25,16 +25,26 @@ import { AUTH_CONFIG } from "../config/auth.js";
             <input
               type="text"
               id="searchInput"
-              placeholder="Invoice number, customer name..."
+              placeholder="Invoice ID, customer name..."
               onkeypress="if(event.key==='Enter') applyFilters()"
             />
           </div>
           <div class="filter-group">
             <label>Date Range:</label>
             <div class="date-range-inputs">
-              <input type="date" id="startDate" placeholder="Start Date" onchange="applyFilters()" />
+              <input
+                type="date"
+                id="startDate"
+                placeholder="Start Date"
+                onchange="applyFilters()"
+              />
               <span class="date-separator">to</span>
-              <input type="date" id="endDate" placeholder="End Date" onchange="applyFilters()" />
+              <input
+                type="date"
+                id="endDate"
+                placeholder="End Date"
+                onchange="applyFilters()"
+              />
             </div>
           </div>
         </div>
@@ -98,9 +108,15 @@ import { AUTH_CONFIG } from "../config/auth.js";
       </div>
 
       <div class="pagination">
-        <button id="prevBtn" onclick="goToPreviousPage()" class="btn btn-outline">← Previous</button>
+        <button
+          id="prevBtn"
+          onclick="goToPreviousPage()"
+          class="btn btn-outline">← Previous</button
+        >
         <span id="pageInfo" class="page-info">Page 1 of 1</span>
-        <button id="nextBtn" onclick="goToNextPage()" class="btn btn-outline">Next →</button>
+        <button id="nextBtn" onclick="goToNextPage()" class="btn btn-outline"
+          >Next →</button
+        >
       </div>
     </div>
 
@@ -113,24 +129,53 @@ import { AUTH_CONFIG } from "../config/auth.js";
         </div>
         <div class="modal-body">
           <div class="warning-icon">⚠️</div>
-          <p>Are you sure you want to delete invoice <strong id="deleteInvoiceNumber"></strong>?</p>
-          <p class="warning-text">This action cannot be undone and will permanently remove all invoice data.</p>
-          
+          <p>
+            Are you sure you want to delete invoice <strong
+              id="deleteInvoiceNumber"></strong>?
+          </p>
+          <p class="warning-text">
+            This action cannot be undone and will permanently remove all invoice
+            data.
+          </p>
+
           <!-- Success/Error Messages -->
-          <div id="deleteSuccessMessage" class="message-container success-message" style="display: none;">
+          <div
+            id="deleteSuccessMessage"
+            class="message-container success-message"
+            style="display: none;"
+          >
             <div class="message-icon">✅</div>
             <p>Invoice deleted successfully!</p>
           </div>
-          
-          <div id="deleteErrorMessage" class="message-container error-message" style="display: none;">
+
+          <div
+            id="deleteErrorMessage"
+            class="message-container error-message"
+            style="display: none;"
+          >
             <div class="message-icon">❌</div>
-            <p id="deleteErrorText">Failed to delete invoice. Please try again.</p>
+            <p id="deleteErrorText">
+              Failed to delete invoice. Please try again.
+            </p>
           </div>
         </div>
         <div class="modal-actions">
-          <button id="cancelBtn" onclick="closeDeleteModal()" class="btn btn-outline">Cancel</button>
-          <button id="deleteBtn" onclick="confirmDelete()" class="btn btn-danger">Delete Invoice</button>
-          <button id="closeAfterActionBtn" onclick="closeDeleteModal()" class="btn btn-primary" style="display: none;">Close</button>
+          <button
+            id="cancelBtn"
+            onclick="closeDeleteModal()"
+            class="btn btn-outline">Cancel</button
+          >
+          <button
+            id="deleteBtn"
+            onclick="confirmDelete()"
+            class="btn btn-danger">Delete Invoice</button
+          >
+          <button
+            id="closeAfterActionBtn"
+            onclick="closeDeleteModal()"
+            class="btn btn-primary"
+            style="display: none;">Close</button
+          >
         </div>
       </div>
     </div>
@@ -860,7 +905,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
     const itemCount = invoice.items ? invoice.items.length : 0;
 
     row.innerHTML = `
-      <td class="table-invoice-number">${invoice.bill_number}</td>
+      <td class="table-invoice-number">${invoice.id}</td>
       <td class="table-customer-name">${invoice.customer_name}</td>
       <td class="table-phone">${invoice.customer_phone || "N/A"}</td>
       <td class="table-amount">${formattedAmount}</td>
@@ -868,7 +913,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
       <td class="table-actions">
         <a href="/invoice/${invoice.id}" class="action-icon view-icon" title="View Invoice">👁️</a>
         <button onclick="editInvoice(${invoice.id})" class="action-icon edit-icon" title="Edit Invoice">✏️</button>
-        <button onclick="deleteInvoice(${invoice.id}, '${invoice.bill_number}')" class="action-icon delete-icon" title="Delete Invoice">🗑️</button>
+        <button onclick="deleteInvoice(${invoice.id}, '${invoice.id}')" class="action-icon delete-icon" title="Delete Invoice">🗑️</button>
       </td>
     `;
 
@@ -898,7 +943,8 @@ import { AUTH_CONFIG } from "../config/auth.js";
       // Store current filters for pagination
       currentFilters = { search, startDate, endDate };
 
-      const url = "/api/bills" + (params.toString() ? "?" + params.toString() : "");
+      const url =
+        "/api/bills" + (params.toString() ? "?" + params.toString() : "");
 
       const response = await fetch(url, {
         method: "GET",
@@ -922,7 +968,9 @@ import { AUTH_CONFIG } from "../config/auth.js";
     } catch (error) {
       console.error("Error loading invoices:", error);
       hideLoading();
-      showError("Failed to load invoices. Please check your connection and try again.");
+      showError(
+        "Failed to load invoices. Please check your connection and try again.",
+      );
     }
   }
 
@@ -946,7 +994,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
     const pageInfo = document.getElementById("pageInfo");
 
     pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    
+
     prevBtn.disabled = currentPage <= 1;
     nextBtn.disabled = currentPage >= totalPages;
 
@@ -976,140 +1024,150 @@ import { AUTH_CONFIG } from "../config/auth.js";
   }
 
   // Make all functions globally accessible
-  window.editInvoice = function(id) {
+  window.editInvoice = function (id) {
     window.location.href = `/bills/edit/${id}`;
-  }
+  };
 
-  window.deleteInvoice = function(id, billNumber) {
+  window.deleteInvoice = function (id, billId) {
     currentDeleteId = id;
-    document.getElementById('deleteInvoiceNumber').textContent = billNumber;
-    
+    document.getElementById("deleteInvoiceNumber").textContent = billId;
+
     // Reset modal state
     resetDeleteModal();
-    
-    document.getElementById('deleteModal').style.display = 'flex';
-    
+
+    document.getElementById("deleteModal").style.display = "flex";
+
     // Add event listeners for closing modal
-    document.addEventListener('keydown', handleEscapeKey);
-    document.getElementById('deleteModal').addEventListener('click', handleOutsideClick);
-  }
+    document.addEventListener("keydown", handleEscapeKey);
+    document
+      .getElementById("deleteModal")
+      .addEventListener("click", handleOutsideClick);
+  };
 
   function resetDeleteModal() {
     // Hide all messages
-    document.getElementById('deleteSuccessMessage').style.display = 'none';
-    document.getElementById('deleteErrorMessage').style.display = 'none';
-    
+    document.getElementById("deleteSuccessMessage").style.display = "none";
+    document.getElementById("deleteErrorMessage").style.display = "none";
+
     // Show confirmation elements
-    document.querySelector('.warning-icon').style.display = 'block';
-    document.querySelector('.modal-body p:nth-child(2)').style.display = 'block';
-    document.querySelector('.warning-text').style.display = 'block';
-    
+    document.querySelector(".warning-icon").style.display = "block";
+    document.querySelector(".modal-body p:nth-child(2)").style.display =
+      "block";
+    document.querySelector(".warning-text").style.display = "block";
+
     // Show/hide buttons
-    document.getElementById('cancelBtn').style.display = 'inline-flex';
-    document.getElementById('deleteBtn').style.display = 'inline-flex';
-    document.getElementById('closeAfterActionBtn').style.display = 'none';
-    
+    document.getElementById("cancelBtn").style.display = "inline-flex";
+    document.getElementById("deleteBtn").style.display = "inline-flex";
+    document.getElementById("closeAfterActionBtn").style.display = "none";
+
     // Reset button states
-    document.getElementById('deleteBtn').disabled = false;
-    document.getElementById('cancelBtn').disabled = false;
-    document.getElementById('deleteBtn').textContent = 'Delete Invoice';
+    document.getElementById("deleteBtn").disabled = false;
+    document.getElementById("cancelBtn").disabled = false;
+    document.getElementById("deleteBtn").textContent = "Delete Invoice";
   }
 
-  window.closeDeleteModal = function() {
-    document.getElementById('deleteModal').style.display = 'none';
+  window.closeDeleteModal = function () {
+    document.getElementById("deleteModal").style.display = "none";
     currentDeleteId = null;
-    
+
     // Remove event listeners
-    document.removeEventListener('keydown', handleEscapeKey);
-    document.getElementById('deleteModal').removeEventListener('click', handleOutsideClick);
-    
+    document.removeEventListener("keydown", handleEscapeKey);
+    document
+      .getElementById("deleteModal")
+      .removeEventListener("click", handleOutsideClick);
+
     // Reset modal state for next time
     resetDeleteModal();
-  }
+  };
 
   function handleEscapeKey(e) {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       closeDeleteModal();
     }
   }
 
   function handleOutsideClick(e) {
-    if (e.target === document.getElementById('deleteModal')) {
+    if (e.target === document.getElementById("deleteModal")) {
       closeDeleteModal();
     }
   }
 
-  window.confirmDelete = async function() {
+  window.confirmDelete = async function () {
     if (!currentDeleteId) return;
 
     // Disable buttons and show loading state
-    const deleteBtn = document.getElementById('deleteBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const closeBtn = document.getElementById('closeAfterActionBtn');
-    
+    const deleteBtn = document.getElementById("deleteBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const closeBtn = document.getElementById("closeAfterActionBtn");
+
     deleteBtn.disabled = true;
     cancelBtn.disabled = true;
-    deleteBtn.textContent = 'Deleting...';
+    deleteBtn.textContent = "Deleting...";
 
     try {
       const response = await fetch(`/api/bills/${currentDeleteId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`,
+        );
       }
 
       // Hide confirmation content and show success message
-      document.querySelector('.warning-icon').style.display = 'none';
-      document.querySelector('.modal-body p:nth-child(2)').style.display = 'none';
-      document.querySelector('.warning-text').style.display = 'none';
-      
-      document.getElementById('deleteSuccessMessage').style.display = 'flex';
-      
+      document.querySelector(".warning-icon").style.display = "none";
+      document.querySelector(".modal-body p:nth-child(2)").style.display =
+        "none";
+      document.querySelector(".warning-text").style.display = "none";
+
+      document.getElementById("deleteSuccessMessage").style.display = "flex";
+
       // Hide delete/cancel buttons, show close button
-      deleteBtn.style.display = 'none';
-      cancelBtn.style.display = 'none';
-      closeBtn.style.display = 'inline-block';
+      deleteBtn.style.display = "none";
+      cancelBtn.style.display = "none";
+      closeBtn.style.display = "inline-block";
 
       // Reload invoices to reflect the change
       await loadInvoicesWithFilters(currentPage);
     } catch (error) {
-      console.error('Error deleting invoice:', error);
-      
+      console.error("Error deleting invoice:", error);
+
       // Hide confirmation content and show error message
-      document.querySelector('.warning-icon').style.display = 'none';
-      document.querySelector('.modal-body p:nth-child(2)').style.display = 'none';
-      document.querySelector('.warning-text').style.display = 'none';
-      
-      document.getElementById('deleteErrorMessage').style.display = 'flex';
-      document.getElementById('deleteErrorText').textContent = `Failed to delete invoice: ${error.message}`;
-      
+      document.querySelector(".warning-icon").style.display = "none";
+      document.querySelector(".modal-body p:nth-child(2)").style.display =
+        "none";
+      document.querySelector(".warning-text").style.display = "none";
+
+      document.getElementById("deleteErrorMessage").style.display = "flex";
+      document.getElementById("deleteErrorText").textContent =
+        `Failed to delete invoice: ${error.message}`;
+
       // Hide delete/cancel buttons, show close button
-      deleteBtn.style.display = 'none';
-      cancelBtn.style.display = 'none';
-      closeBtn.style.display = 'inline-block';
+      deleteBtn.style.display = "none";
+      cancelBtn.style.display = "none";
+      closeBtn.style.display = "inline-block";
     }
-  }
-  
-  window.logout = function() {
-    if (confirm("Are you sure you want to logout?")) {
-      window.location.href = "/login";
-    }
-  }
-  
+  };
+
+  window.logout = function () {
+    localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+
+    window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+  };
+
   window.applyFilters = applyFilters;
-  
+
   window.clearFilters = clearFilters;
-  
+
   window.loadInvoices = loadInvoices;
 
   window.goToPreviousPage = goToPreviousPage;
-  
+
   window.goToNextPage = goToNextPage;
 
   function emailInvoice(id) {

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import type { Bill } from '../../../config/database';
-import { initializeDatabase, type D1DatabaseClient } from '../../../config/database';
+import { initializeDatabase, extractNumericValue, type D1DatabaseClient } from '../../../config/database';
 
 export const prerender = false;
 
@@ -18,14 +18,14 @@ export const GET: APIRoute = async ({ request }) => {
         return await getAllBills(db, url.searchParams);
       
       case 'get':
-        const billNumber = url.searchParams.get('billNumber');
-        if (!billNumber) {
-          return new Response(JSON.stringify({ error: 'Bill number required' }), {
+        const billId = url.searchParams.get('billId');
+        if (!billId) {
+          return new Response(JSON.stringify({ error: 'Bill ID required' }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' }
           });
         }
-        return await getBill(db, billNumber);
+        return await getBill(db, billId);
       
       default:
         return new Response(JSON.stringify({ error: 'Invalid action' }), {
@@ -111,7 +111,7 @@ export const POST: APIRoute = async ({ request }) => {
       billData = JSON.parse(rawBody);
       console.log('✅ Successfully parsed JSON data');
       console.log('📋 Received bill data keys:', Object.keys(billData));
-      console.log('📋 Bill number:', billData.bill_number);
+      console.log('📋 Customer name:', billData.customer_name);
       console.log('📋 Customer name:', billData.customer_name);
       console.log('📋 Items count:', billData.items?.length || 0);
     } catch (parseError) {
@@ -129,7 +129,7 @@ export const POST: APIRoute = async ({ request }) => {
     
     // Validate required fields
     console.log('🔍 Validating required fields...');
-    const requiredFields = ['bill_number', 'customer_name', 'customer_phone', 'invoice_date'];
+    const requiredFields = ['customer_name', 'customer_phone', 'invoice_date'];
     const missingFields = requiredFields.filter(field => !billData[field as keyof Bill]);
     
     if (missingFields.length > 0) {
@@ -231,10 +231,10 @@ export const PUT: APIRoute = async ({ request }) => {
 export const DELETE: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
-    const billNumber = url.searchParams.get('billNumber');
+    const billId = url.searchParams.get('billId');
     
-    if (!billNumber) {
-      return new Response(JSON.stringify({ error: 'Bill number required' }), {
+    if (!billId) {
+      return new Response(JSON.stringify({ error: 'Bill ID required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -242,30 +242,7 @@ export const DELETE: APIRoute = async ({ request }) => {
     
     const db = await initializeDatabase();
 
-    return await deleteBill(db, billNumber);
-  } catch (error) {
-    console.error('API Error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-};
-
-export const PATCH: APIRoute = async ({ request }) => {
-  try {
-    const url = new URL(request.url);
-    const action = url.searchParams.get('action');
-    
-    if (action === 'generate-bill-number') {
-      const db = await initializeDatabase();
-      return await generateUniqueBillNumber(db);
-    }
-    
-    return new Response(JSON.stringify({ error: 'Invalid action' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return await deleteBill(db, billId);
   } catch (error) {
     console.error('API Error:', error);
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
@@ -295,7 +272,7 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
     // Apply filters
     const search = searchParams.get('search');
     if (search) {
-      conditions.push('(b.customer_name LIKE ? OR b.bill_number LIKE ?)');
+      conditions.push('(b.customer_name LIKE ? OR CAST(b.id AS TEXT) LIKE ?)');
       params.push(`%${search}%`, `%${search}%`);
     }
     
@@ -369,10 +346,10 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
   }
 }
 
-async function getBill(db: D1DatabaseClient, billNumber: string) {
+async function getBill(db: D1DatabaseClient, billId: string) {
   try {
     // Get bill details
-    const billResult = await db.query('SELECT * FROM bills WHERE bill_number = ?', [billNumber]);
+    const billResult = await db.query('SELECT * FROM bills WHERE id = ?', [billId]);
     const bill = billResult.results?.[0];
     
     if (!bill) {
@@ -405,39 +382,20 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
   let billId: number | null = null;
   
   try {
-    // Check if bill number already exists
-    console.log('🔍 Checking if bill number exists:', billData.bill_number);
-    const existingBill = await db.query('SELECT bill_number FROM bills WHERE bill_number = ?', [billData.bill_number]);
-    
-    if (existingBill.results && existingBill.results.length > 0) {
-      console.log('❌ Bill number already exists:', billData.bill_number);
-      return new Response(JSON.stringify({ 
-        error: 'Bill number already exists',
-        billNumber: billData.bill_number,
-        message: 'A bill with this number already exists. Please use a different bill number.'
-      }), {
-        status: 409, // Conflict status code
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
-    console.log('✅ Bill number is unique, proceeding with creation');
-    
     // Execute bill insertion first to get the bill ID
     console.log('💾 Inserting bill record...');
     const billResult = await db.query(`
       INSERT INTO bills (
-        bill_number, invoice_date, challan_number, challan_date, po_number, po_date, dispatch_details,
+        invoice_date, challan_number, challan_date, po_number, po_date, dispatch_details,
         customer_name, customer_code, customer_phone, customer_email, customer_address,
         customer_gst_number, vendor_code, hsn_code, subtotal, 
         cgst_percentage, cgst_amount, sgst_percentage, sgst_amount, igst_percentage, igst_amount, total_tax_amount,
         discount_percentage, discount_amount, total_amount, payment_method, payment_status, payment_terms,
         bank_name, bank_account_number, bank_branch, bank_ifsc_code, bank_account_type, notes,
         terms_and_conditions, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       RETURNING id
     `, [
-      billData.bill_number,
       billData.invoice_date,
       billData.challan_number || null,
       billData.challan_date || null,
@@ -497,7 +455,8 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
           
           // Ensure all required fields are present and properly typed
           const unitPrice = parseFloat(item.unit_price?.toString() || '0');
-          const quantity = parseInt(item.quantity?.toString() || '1');
+          const quantityText = item.quantity?.toString() || '1'; // Store the full text
+          const quantityNumeric = extractNumericValue(quantityText); // Extract numeric for validation
           const totalPrice = parseFloat(item.total_price?.toString() || '0');
           const srNo = parseInt(item.sr_no?.toString() || (index + 1).toString());
           
@@ -506,7 +465,8 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
             product_name: item.product_name,
             product_description: item.product_description,
             product_category: item.product_category,
-            quantity: quantity,
+            quantity: quantityText,
+            quantity_numeric: quantityNumeric,
             unit_price: unitPrice,
             total_price: totalPrice,
             unit: item.unit || 'Nos'
@@ -522,7 +482,7 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
           if (unitPrice <= 0) {
             throw new Error(`Item ${index + 1}: Unit price must be greater than 0`);
           }
-          if (quantity <= 0) {
+          if (quantityNumeric <= 0) {
             throw new Error(`Item ${index + 1}: Quantity must be greater than 0`);
           }
           if (totalPrice <= 0) {
@@ -542,7 +502,7 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
               item.product_category.trim(),
               item.hsn_code?.trim() || null,
               unitPrice,
-              quantity,
+              quantityText,
               totalPrice,
               item.unit?.trim() || 'Nos'
             ]
@@ -572,7 +532,6 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     
     return new Response(JSON.stringify({ 
       success: true, 
-      billNumber: billData.bill_number,
       billId,
       itemsCount: billData.items?.length || 0
     }), {
@@ -583,11 +542,10 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     console.error('Database error:', error);
     
     // Handle specific constraint errors
-    if (error instanceof Error && error.message.includes('UNIQUE constraint failed: bills.bill_number')) {
+    if (error instanceof Error && error.message.includes('UNIQUE constraint failed')) {
       return new Response(JSON.stringify({ 
-        error: 'Bill number already exists',
-        billNumber: billData.bill_number,
-        message: 'A bill with this number already exists. Please use a different bill number.'
+        error: 'Constraint failed',
+        message: 'A database constraint was violated.'
       }), {
         status: 409,
         headers: { 'Content-Type': 'application/json' }
@@ -617,7 +575,7 @@ async function updateBill(db: D1DatabaseClient, billData: Bill) {
         payment_method = ?, payment_status = ?, payment_terms = ?,
         bank_name = ?, bank_account_number = ?, bank_branch = ?, bank_ifsc_code = ?, bank_account_type = ?,
         notes = ?, updated_at = ?
-      WHERE bill_number = ?
+      WHERE id = ?
     `, [
       billData.invoice_date,
       billData.customer_name,
@@ -648,12 +606,12 @@ async function updateBill(db: D1DatabaseClient, billData: Bill) {
       billData.bank_details?.account_type || null,
       billData.notes || null,
       new Date().toISOString(),
-      billData.bill_number
+      billData.id
     ]);
     
     return new Response(JSON.stringify({ 
       success: true, 
-      billNumber: billData.bill_number 
+      billId: billData.id 
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -667,10 +625,10 @@ async function updateBill(db: D1DatabaseClient, billData: Bill) {
   }
 }
 
-async function deleteBill(db: D1DatabaseClient, billNumber: string) {
+async function deleteBill(db: D1DatabaseClient, billId: string) {
   try {
-    // Get bill ID first
-    const billResult = await db.query('SELECT id FROM bills WHERE bill_number = ?', [billNumber]);
+    // Check if bill exists
+    const billResult = await db.query('SELECT id FROM bills WHERE id = ?', [billId]);
     const bill = billResult.results?.[0];
     
     if (!bill) {
@@ -684,11 +642,11 @@ async function deleteBill(db: D1DatabaseClient, billNumber: string) {
     const deleteStatements = [
       {
         sql: 'DELETE FROM bill_items WHERE bill_id = ?',
-        params: [bill.id]
+        params: [billId]
       },
       {
-        sql: 'DELETE FROM bills WHERE bill_number = ?',
-        params: [billNumber]
+        sql: 'DELETE FROM bills WHERE id = ?',
+        params: [billId]
       }
     ];
     
@@ -696,7 +654,7 @@ async function deleteBill(db: D1DatabaseClient, billNumber: string) {
     
     return new Response(JSON.stringify({ 
       success: true, 
-      billNumber 
+      billId 
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -704,61 +662,6 @@ async function deleteBill(db: D1DatabaseClient, billNumber: string) {
   } catch (error) {
     console.error('Database error:', error);
     return new Response(JSON.stringify({ error: 'Failed to delete bill' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-}
-
-async function generateUniqueBillNumber(db: D1DatabaseClient) {
-  try {
-    console.log('🔍 Generating unique bill number...');
-    
-    // Get the last bill number (most recently created by ID)
-    const latestBillResult = await db.query(`
-      SELECT bill_number 
-      FROM bills 
-      ORDER BY id DESC 
-      LIMIT 1
-    `);
-    
-    let newBillNumber: string;
-    
-    if (latestBillResult.results && latestBillResult.results.length > 0) {
-      const lastBillNumber = latestBillResult.results[0].bill_number;
-      console.log('📋 Latest bill number found:', lastBillNumber);
-      
-      // Parse the number and increment by 1
-      const currentNumber = parseInt(lastBillNumber);
-      if (!isNaN(currentNumber)) {
-        newBillNumber = (currentNumber + 1).toString();
-        console.log('📋 Incremented bill number:', newBillNumber);
-      } else {
-        // If the last bill number is not numeric, start from 1
-        console.log('📋 Last bill number is not numeric, starting from 1');
-        newBillNumber = '1';
-      }
-    } else {
-      // No bills exist, start from 1
-      console.log('📋 No bills found, starting from 1');
-      newBillNumber = '1';
-    }
-    
-    console.log('✅ Generated unique bill number:', newBillNumber);
-    
-    return new Response(JSON.stringify({ 
-      billNumber: newBillNumber,
-      message: 'Generated unique bill number'
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  } catch (error) {
-    console.error('Error generating bill number:', error);
-    return new Response(JSON.stringify({ 
-      error: 'Failed to generate bill number',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

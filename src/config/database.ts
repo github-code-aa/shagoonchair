@@ -44,7 +44,6 @@ function validateConfig(config: DatabaseConfig): void {
 // Database schema interfaces
 export interface Bill {
   id?: number;
-  bill_number: string;
   invoice_date: string;
   challan_number?: string;
   challan_date?: string;
@@ -90,7 +89,7 @@ export interface BillItem {
   product_category: string;
   hsn_code?: string;
   unit_price: number;
-  quantity: number;
+  quantity: string; // Changed from number to string to allow text + numbers
   total_price: number;
   unit: string; // Nos, Kg, Meter, etc.
 }
@@ -263,7 +262,6 @@ async function initializeTables(client: D1DatabaseClient) {
     const createBillsTable = `
       CREATE TABLE IF NOT EXISTS bills (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        bill_number TEXT UNIQUE NOT NULL,
         invoice_date DATE NOT NULL,
         challan_number TEXT,
         challan_date DATE,
@@ -314,7 +312,7 @@ async function initializeTables(client: D1DatabaseClient) {
         product_category TEXT NOT NULL,
         hsn_code TEXT,
         unit_price REAL NOT NULL,
-        quantity INTEGER NOT NULL,
+        quantity TEXT NOT NULL,
         total_price REAL NOT NULL,
         unit TEXT DEFAULT 'Nos',
         FOREIGN KEY (bill_id) REFERENCES bills (id) ON DELETE CASCADE
@@ -349,7 +347,6 @@ async function initializeTables(client: D1DatabaseClient) {
     // Create indexes for better performance
     console.log('Creating indexes...');
     const indexes = [
-      'CREATE INDEX IF NOT EXISTS idx_bills_bill_number ON bills(bill_number)',
       'CREATE INDEX IF NOT EXISTS idx_bills_customer_name ON bills(customer_name)',
       'CREATE INDEX IF NOT EXISTS idx_bills_customer_code ON bills(customer_code)',
       'CREATE INDEX IF NOT EXISTS idx_bills_invoice_date ON bills(invoice_date)',
@@ -407,4 +404,19 @@ async function insertCompanyInfo(client: D1DatabaseClient) {
   } catch (error) {
     console.error('Failed to insert company info:', error);
   }
+}
+
+// Utility function to extract numeric value from text
+export function extractNumericValue(value: string | number): number {
+  if (typeof value === 'number') {
+    return value;
+  }
+  
+  if (typeof value === 'string') {
+    // Extract first number found in the string
+    const match = value.match(/\d+\.?\d*/);
+    return match ? parseFloat(match[0]) : 0;
+  }
+  
+  return 0;
 }
