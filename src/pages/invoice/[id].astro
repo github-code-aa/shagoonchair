@@ -64,7 +64,7 @@ const companyInfo = {
                 <!-- Company Header -->
                 <div class="company-header">
                     <div class="company-logo">
-                        <div class="logo-circle">S</div>
+                        <img src="/logo.jpeg" alt="Shagoon Seating Chair Logo" class="logo-image">
                     </div>
                     <div class="company-info">
                         <h1 class="company-name">{companyInfo.name}</h1>
@@ -444,16 +444,11 @@ const companyInfo = {
         flex-shrink: 0;
     }
 
-    .logo-circle {
-        width: 30px;
-        height: 30px;
-        border: 1.5px solid #000;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
+    .logo-image {
+        width: 60px;
+        height: 60px;
+        border: 1px solid #000;
+        object-fit: cover;
         background: #f0f0f0;
     }
 
