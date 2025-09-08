@@ -84,7 +84,7 @@ const companyInfo = {
         <div class="invoice-header">
           <div class="customer-section">
             <h3>To,</h3>
-            <div id="customerInfo">
+            <div id="customerInfo" style="font-size: 12px;">
               <!-- Customer info will be populated here -->
             </div>
           </div>
@@ -149,8 +149,8 @@ const companyInfo = {
             </tbody>
           </table>
           <p class="amount-words">
-            <strong>TOTAL:</strong>
-            <span id="amountInWords">-</span>
+            <strong style="font-size: 10px;">TOTAL:</strong>
+            <span id="amountInWords" style="font-size: 10px;">-</span>
           </p>
         </div>
 
@@ -338,7 +338,7 @@ const companyInfo = {
   .invoice-document {
     padding: 6mm;
     font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 1.2;
     color: #333;
     min-height: 297mm;
@@ -365,8 +365,8 @@ const companyInfo = {
   }
 
   .logo-image {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border: 1px solid #000;
     object-fit: cover;
     background: #f0f0f0;
@@ -378,7 +378,7 @@ const companyInfo = {
   }
 
   .company-name {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 600;
     margin: 0 0 2px 0;
     letter-spacing: 0.5px;
@@ -386,7 +386,7 @@ const companyInfo = {
   }
 
   .company-subtitle {
-    font-size: 8px;
+    font-size: 12px;
     margin: 0 0 4px 0;
     font-weight: 500;
     color: #555;
@@ -395,7 +395,7 @@ const companyInfo = {
 
   .company-address,
   .company-contact {
-    font-size: 8px;
+    font-size: 12px;
     margin: 2px 0;
     line-height: 1.2;
   }
@@ -404,7 +404,7 @@ const companyInfo = {
     position: absolute;
     top: 0;
     right: 0;
-    font-size: 8px;
+    font-size: 10px;
     font-weight: bold;
   }
 
@@ -437,7 +437,7 @@ const companyInfo = {
   .customer-section p {
     margin: 2px 0;
     line-height: 1.2;
-    font-size: 9px;
+    font-size: 10px;
     color: #333;
   }
 
@@ -542,7 +542,7 @@ const companyInfo = {
     padding: 2px 4px;
     text-align: center;
     vertical-align: middle;
-    font-size: 8px;
+    font-size: 12px;
     line-height: 1.2;
     color: #333;
   }
@@ -647,7 +647,7 @@ const companyInfo = {
 
   .bank-details-cell {
     width: 50%;
-    font-size: 8px;
+    font-size: 12px;
     padding: 6px 8px;
     border-right: 1px solid #e0e0e0;
     vertical-align: top;
@@ -668,7 +668,7 @@ const companyInfo = {
 
   .terms-details-cell {
     width: 50%;
-    font-size: 8px;
+    font-size: 11px;
     padding: 6px 8px;
     vertical-align: top;
   }
@@ -683,7 +683,7 @@ const companyInfo = {
   }
 
   .terms-list {
-    font-size: 9px;
+    font-size: 11px;
     line-height: 1.5;
   }
 
@@ -716,7 +716,7 @@ const companyInfo = {
 
   .gst-info {
     flex: 1;
-    font-size: 9px;
+    font-size: 11px;
   }
 
   .gst-info p {
@@ -734,7 +734,7 @@ const companyInfo = {
   .signature-section {
     flex: 1;
     text-align: right;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .signature-section p {
@@ -756,7 +756,7 @@ const companyInfo = {
   /* Payment Terms */
   .payment-terms {
     text-align: center;
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 600;
     padding: 6px;
     background: #f8f8f8;
@@ -792,7 +792,7 @@ const companyInfo = {
 
     .invoice-document {
       padding: 10mm !important;
-      font-size: 9px !important;
+      font-size: 10px !important;
       height: auto !important;
     }
 
@@ -1100,19 +1100,19 @@ const companyInfo = {
 
         if (hasData) {
           row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.sr_no || index + 1}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: left; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.product_description || item.product_name || ""}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.quantity || 0}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.sr_no || index + 1}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: left; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.product_description || item.product_name || ""}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.quantity || 0}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
               `;
         } else {
           row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
               `;
         }
         tbody.appendChild(row);
@@ -1126,11 +1126,11 @@ const companyInfo = {
       row.style.height = "18px";
       row.style.maxHeight = "18px";
       row.innerHTML = `
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 10px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px;">&nbsp;</td>
             `;
       tbody.appendChild(row);
     }
@@ -1198,7 +1198,7 @@ const companyInfo = {
       tbody.appendChild(row);
     });
 
-    for (let i = 0; i < 15 - itemIndex; i++) {
+    for (let i = 0; i < 10 - itemIndex; i++) {
       tbody.appendChild(createSpacerRow());
     }
 
@@ -1368,7 +1368,7 @@ const companyInfo = {
 
       // Configure PDF options for guaranteed A4 single page
       const opt = {
-        margin: [2, 2, 2, 2], // 10mm margins all around for better centering
+        margin: [1, 1, 1, 1], // 10mm margins all around for better centering
         filename: `invoice-${currentInvoiceId || 'document'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
