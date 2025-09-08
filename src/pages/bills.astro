@@ -11,6 +11,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
         <p>Professional invoice system for Shagoon Seating Chair</p>
       </div>
       <div class="header-actions">
+        <button onclick="refreshInvoices()" class="btn btn-info">🔄 Refresh</button>
         <a href="/bills/new" class="btn btn-primary">+ New Invoice</a>
         <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
       </div>
@@ -843,21 +844,132 @@ import { AUTH_CONFIG } from "../config/auth.js";
 </style>
 
 <script define:vars={{ AUTH_CONFIG }}>
-  // Check authentication on page load
+  // Storage configuration for 24-hour cache
+  const STORAGE_KEYS = {
+    INVOICES_DATA: 'bills_invoices_data',
+    LAST_UPDATED: 'bills_last_updated',
+    CACHE_DURATION: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+  };
+
+  // Check authentication and load data on page load
   document.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== "true") {
       window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
       return;
     }
-    // Load invoices on page load
-    loadInvoices();
+    // Load invoices with localStorage check
+    loadInvoicesFromStorage();
   });
 
   let invoicesData = [];
   let currentDeleteId = null;
 
+  // Check if stored data is still valid (24-hour cache)
+  function isDataValid() {
+    const lastUpdated = localStorage.getItem(STORAGE_KEYS.LAST_UPDATED);
+    if (!lastUpdated) return false;
+
+    const timeDiff = Date.now() - parseInt(lastUpdated);
+    return timeDiff < STORAGE_KEYS.CACHE_DURATION;
+  }
+
+  // Load data from localStorage or API
+  async function loadInvoicesFromStorage() {
+    const storedData = localStorage.getItem(STORAGE_KEYS.INVOICES_DATA);
+
+    if (storedData && isDataValid()) {
+      // Use stored data (valid for 24 hours)
+      try {
+        const parsedData = JSON.parse(storedData);
+        invoicesData = parsedData.bills || [];
+        currentPage = parsedData.page || 1;
+        totalPages = parsedData.totalPages || 1;
+
+        hideLoading();
+        renderTableView();
+        updatePagination();
+        console.log('✅ Loaded invoices from localStorage (24h cache)');
+      } catch (error) {
+        console.error('Error parsing stored data:', error);
+        await loadInvoicesFromAPI(1);
+      }
+    } else {
+      // Load from API (cache expired or no data)
+      console.log('📡 Cache expired or no data, loading from API');
+      await loadInvoicesFromAPI(1);
+    }
+  }
+
+  // Force refresh from API (bypasses cache)
+  async function refreshInvoices() {
+    console.log('🔄 Manual refresh requested');
+    currentPage = 1; // Reset to first page on refresh
+    await loadInvoicesFromAPI(1);
+  }
+
+  // Load from API and store in localStorage
+  async function loadInvoicesFromAPI(page = 1) {
+    try {
+      showLoading();
+
+      const search = document.getElementById("searchInput").value.trim();
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+      if (startDate) params.append("startDate", startDate);
+      if (endDate) params.append("endDate", endDate);
+      params.append("page", page.toString());
+      params.append("limit", "10");
+
+      const url = "/api/bills" + (params.toString() ? "?" + params.toString() : "");
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      invoicesData = data.bills || [];
+      currentPage = data.page || 1;
+      totalPages = Math.ceil((data.total || 0) / (data.limit || 10));
+
+      // Store successful response with 24-hour expiry
+      const dataToStore = {
+        bills: invoicesData,
+        page: currentPage,
+        totalPages: totalPages,
+        timestamp: Date.now(),
+        cacheExpiry: Date.now() + STORAGE_KEYS.CACHE_DURATION
+      };
+
+      localStorage.setItem(STORAGE_KEYS.INVOICES_DATA, JSON.stringify(dataToStore));
+      localStorage.setItem(STORAGE_KEYS.LAST_UPDATED, Date.now().toString());
+
+      hideLoading();
+      renderTableView();
+      updatePagination();
+      console.log('💾 Data cached for 24 hours');
+
+    } catch (error) {
+      console.error("Error loading invoices:", error);
+      hideLoading();
+      showError(
+        "Failed to load invoices. Please check your connection and try again.",
+      );
+    }
+  }
+
   async function loadInvoices() {
-    await loadInvoicesWithFilters(1);
+    await loadInvoicesFromStorage();
   }
 
   function showLoading() {
@@ -924,59 +1036,10 @@ import { AUTH_CONFIG } from "../config/auth.js";
   let totalPages = 1;
   let currentFilters = {};
 
-  async function loadInvoicesWithFilters(page = 1) {
-    try {
-      showLoading();
-
-      const search = document.getElementById("searchInput").value.trim();
-      const startDate = document.getElementById("startDate").value;
-      const endDate = document.getElementById("endDate").value;
-
-      // Build query parameters
-      const params = new URLSearchParams();
-      if (search) params.append("search", search);
-      if (startDate) params.append("startDate", startDate);
-      if (endDate) params.append("endDate", endDate);
-      params.append("page", page.toString());
-      params.append("limit", "10"); // 10 items per page
-
-      // Store current filters for pagination
-      currentFilters = { search, startDate, endDate };
-
-      const url =
-        "/api/bills" + (params.toString() ? "?" + params.toString() : "");
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      invoicesData = data.bills || [];
-      currentPage = data.page || 1;
-      totalPages = Math.ceil((data.total || 0) / (data.limit || 10));
-
-      hideLoading();
-      renderTableView();
-      updatePagination();
-    } catch (error) {
-      console.error("Error loading invoices:", error);
-      hideLoading();
-      showError(
-        "Failed to load invoices. Please check your connection and try again.",
-      );
-    }
-  }
-
   async function applyFilters() {
     currentPage = 1; // Reset to first page when applying new filters
-    await loadInvoicesWithFilters(1);
+    // Force API call for filtered results (bypasses cache)
+    await loadInvoicesFromAPI(1);
   }
 
   function clearFilters() {
@@ -985,7 +1048,8 @@ import { AUTH_CONFIG } from "../config/auth.js";
     document.getElementById("endDate").value = "";
     currentPage = 1;
     currentFilters = {};
-    loadInvoices(); // Reload all invoices without filters
+    // Use localStorage if available, otherwise API
+    loadInvoicesFromStorage();
   }
 
   function updatePagination() {
@@ -1013,13 +1077,13 @@ import { AUTH_CONFIG } from "../config/auth.js";
 
   async function goToPreviousPage() {
     if (currentPage > 1) {
-      await loadInvoicesWithFilters(currentPage - 1);
+      await loadInvoicesFromAPI(currentPage - 1);
     }
   }
 
   async function goToNextPage() {
     if (currentPage < totalPages) {
-      await loadInvoicesWithFilters(currentPage + 1);
+      await loadInvoicesFromAPI(currentPage + 1);
     }
   }
 
@@ -1132,8 +1196,8 @@ import { AUTH_CONFIG } from "../config/auth.js";
       cancelBtn.style.display = "none";
       closeBtn.style.display = "inline-block";
 
-      // Reload invoices to reflect the change
-      await loadInvoicesWithFilters(currentPage);
+      // Reload invoices and update cache
+      await loadInvoicesFromAPI(1);
     } catch (error) {
       console.error("Error deleting invoice:", error);
 
@@ -1166,48 +1230,15 @@ import { AUTH_CONFIG } from "../config/auth.js";
 
   window.loadInvoices = loadInvoices;
 
+  window.loadInvoicesFromStorage = loadInvoicesFromStorage;
+
+  window.loadInvoicesFromAPI = loadInvoicesFromAPI;
+
+  window.refreshInvoices = refreshInvoices;
+
   window.goToPreviousPage = goToPreviousPage;
 
   window.goToNextPage = goToNextPage;
-
-  function emailInvoice(id) {
-    alert(`Email invoice ${id} functionality`);
-  }
-
-  function printInvoice(id) {
-    window.open(`/invoice?id=${id}&print=true`, "_blank");
-  }
-
-  async function markAsPaid(id) {
-    if (confirm("Mark this invoice as paid?")) {
-      try {
-        const response = await fetch(`/api/bills/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            payment_status: "paid",
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // Reload invoices to reflect the change
-        loadInvoices();
-        alert(`Invoice ${id} marked as paid successfully!`);
-      } catch (error) {
-        console.error("Error updating invoice:", error);
-        alert("Failed to update invoice status. Please try again.");
-      }
-    }
-  }
-
-  function followUp(id) {
-    alert(`Follow up functionality for invoice ${id}`);
-  }
 
   // Initialize filters with current date
   document.addEventListener("DOMContentLoaded", function () {

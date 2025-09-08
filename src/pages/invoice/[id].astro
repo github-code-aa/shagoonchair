@@ -24,8 +24,9 @@ const companyInfo = {
     <div class="invoice-controls no-print">
       <h1>📄 Invoice View</h1>
       <div class="button-group">
-        <button onclick="window.print()" class="btn btn-primary"
-          >🖨️ Print Invoice</button
+        <button onclick="refreshInvoice()" class="btn btn-info">🔄 Refresh</button>
+        <button onclick="downloadPDF()" class="btn btn-success"
+          >📄 Download PDF</button
         >
 
         <a href="/bills" class="btn btn-outline">← Back to Bills</a>
@@ -223,87 +224,7 @@ const companyInfo = {
 </Layout>
 
 <style>
-  /* No Print Styles */
-  @media print {
-    .no-print {
-      display: none !important;
-    }
 
-    * {
-      -webkit-print-color-adjust: exact !important;
-      color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-
-    @page {
-      size: A4 portrait;
-      margin: 0;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      width: 210mm;
-      height: 297mm;
-    }
-
-    .invoice-wrapper {
-      margin: 0 !important;
-      padding: 0 !important;
-      box-shadow: none !important;
-      border-radius: 0 !important;
-      width: 210mm !important;
-      min-height: 297mm !important;
-    }
-
-    .invoice-document {
-      padding: 5mm !important;
-      box-sizing: border-box !important;
-      font-size: 8px !important;
-      line-height: 1.2 !important;
-    }
-
-    .company-header {
-      margin-bottom: 10px !important;
-    }
-
-    .company-name {
-      font-size: 16px !important;
-    }
-
-    .invoice-header {
-      margin: 10px 0 !important;
-      gap: 10px !important;
-    }
-
-    .items-section {
-      min-height: 150mm !important;
-    }
-
-    .items-table tbody tr {
-      height: 13px !important;
-      max-height: 13px !important;
-      font-size: 8px !important;
-    }
-
-    .items-table th,
-    .items-table td {
-      font-size: 10px !important;
-      padding: 3px 4px !important;
-      border: 0.5px solid #666 !important;
-      font-weight: 600 !important;
-    }
-
-    .customer-section {
-      padding: 8px 10px !important;
-      box-shadow: none !important;
-    }
-
-    .customer-section hr {
-      margin: 3px 0 !important;
-      border-color: #ddd !important;
-    }
-  }
 
   /* General Styles */
   .invoice-controls {
@@ -342,6 +263,10 @@ const companyInfo = {
 
   .btn-primary {
     background: #3498db;
+    color: white;
+  }
+  .btn-success {
+    background: #27ae60;
     color: white;
   }
   .btn-secondary {
@@ -915,9 +840,112 @@ const companyInfo = {
 </style>
 
 <script define:vars={{ AUTH_CONFIG }}>
-  let currentInvoiceId = null;
+  // Reuse the same storage keys from bills.astro for consistency
+  const STORAGE_KEYS = {
+    INVOICES_DATA: 'bills_invoices_data',
+    LAST_UPDATED: 'bills_last_updated',
+    CACHE_DURATION: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+  };
 
-  // Load invoice data from API
+  let currentInvoiceId = null;
+  let html2pdf = null;
+
+  // Check if bills cache is still valid (reuse existing logic)
+  function isBillsCacheValid() {
+    const lastUpdated = localStorage.getItem(STORAGE_KEYS.LAST_UPDATED);
+    if (!lastUpdated) return false;
+
+    const timeDiff = Date.now() - parseInt(lastUpdated);
+    return timeDiff < STORAGE_KEYS.CACHE_DURATION;
+  }
+
+  // Find specific invoice in cached bills data
+  function findInvoiceInCache(invoiceId) {
+    const cachedData = localStorage.getItem(STORAGE_KEYS.INVOICES_DATA);
+    if (!cachedData) return null;
+
+    try {
+      const parsedData = JSON.parse(cachedData);
+      const bills = parsedData.bills || [];
+
+      // Find the specific invoice by ID
+      return bills.find(bill => bill.id == invoiceId) || null;
+    } catch (error) {
+      console.error('Error parsing bills cache:', error);
+      return null;
+    }
+  }
+
+  // Update bills cache with new invoice data
+  function updateBillsCacheWithInvoice(invoiceData) {
+    const cachedData = localStorage.getItem(STORAGE_KEYS.INVOICES_DATA);
+
+    if (cachedData) {
+      try {
+        const parsedData = JSON.parse(cachedData);
+        const bills = parsedData.bills || [];
+
+        // Find and update the invoice in the bills array
+        const invoiceIndex = bills.findIndex(bill => bill.id == invoiceData.id);
+
+        if (invoiceIndex !== -1) {
+          // Update existing invoice
+          bills[invoiceIndex] = invoiceData;
+        } else {
+          // Add new invoice to cache
+          bills.unshift(invoiceData); // Add to beginning
+        }
+
+        // Save updated cache
+        const updatedData = {
+          ...parsedData,
+          bills: bills
+        };
+
+        localStorage.setItem(STORAGE_KEYS.INVOICES_DATA, JSON.stringify(updatedData));
+        console.log('🔄 Updated bills cache with invoice data');
+
+      } catch (error) {
+        console.error('Error updating bills cache:', error);
+      }
+    }
+  }
+
+  // Refresh function that forces API call for current invoice
+  async function refreshInvoice() {
+    console.log('🔄 Refreshing invoice data...');
+    if (currentInvoiceId) {
+      await loadInvoiceFromAPI(currentInvoiceId);
+    } else {
+      // Fallback: get ID from URL and refresh
+      const urlParts = window.location.pathname.split("/");
+      const invoiceId = urlParts[urlParts.length - 1];
+      await loadInvoiceFromAPI(invoiceId);
+    }
+  }
+
+  // Load html2pdf from CDN
+  function loadHtml2Pdf() {
+    return new Promise((resolve, reject) => {
+      if (window.html2pdf) {
+        resolve(window.html2pdf);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      script.onload = () => {
+        html2pdf = window.html2pdf;
+        resolve(window.html2pdf);
+      };
+      script.onerror = () => {
+        reject(new Error('Failed to load html2pdf.js from CDN'));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  // Smart loading function that leverages existing bills cache
   async function loadInvoiceData() {
     try {
       document.getElementById("loadingState").style.display = "block";
@@ -929,7 +957,38 @@ const companyInfo = {
       currentInvoiceId = urlParts[urlParts.length - 1];
       console.log("Loading invoice with ID:", currentInvoiceId);
 
-      const apiUrl = `/api/bills/${currentInvoiceId}`;
+      // First, check if bills cache is valid and contains our invoice
+      if (isBillsCacheValid()) {
+        const cachedInvoice = findInvoiceInCache(currentInvoiceId);
+
+        if (cachedInvoice) {
+          console.log('✅ Loading invoice from bills cache');
+          populateInvoice(cachedInvoice);
+          showInvoiceContent();
+          return;
+        }
+      }
+
+      // Cache miss or invalid - fetch from API
+      console.log('📡 Invoice not in cache, fetching from API');
+      await loadInvoiceFromAPI(currentInvoiceId);
+
+    } catch (error) {
+      console.error("Error loading invoice:", error);
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("errorState").style.display = "block";
+
+      const errorMessageEl = document.getElementById("errorMessage");
+      if (errorMessageEl) {
+        errorMessageEl.textContent = `Failed to load invoice: ${error.message}`;
+      }
+    }
+  }
+
+  // Load invoice from API and update cache
+  async function loadInvoiceFromAPI(invoiceId) {
+    try {
+      const apiUrl = `/api/bills/${invoiceId}`;
       console.log("Making API request to:", apiUrl);
 
       const response = await fetch(apiUrl);
@@ -956,18 +1015,14 @@ const companyInfo = {
 
       // Populate invoice with data
       populateInvoice(billData);
+      showInvoiceContent();
 
-      document.getElementById("loadingState").style.display = "none";
-      document.getElementById("invoiceContent").style.display = "block";
+      // Update bills cache with the new invoice data
+      updateBillsCacheWithInvoice(billData);
+
     } catch (error) {
-      console.error("Error loading invoice:", error);
-      document.getElementById("loadingState").style.display = "none";
-      document.getElementById("errorState").style.display = "block";
-
-      const errorMessageEl = document.getElementById("errorMessage");
-      if (errorMessageEl) {
-        errorMessageEl.textContent = `Failed to load invoice: ${error.message}`;
-      }
+      console.error("Error loading invoice from API:", error);
+      throw error; // Re-throw to be handled by caller
     }
   }
 
@@ -1273,6 +1328,12 @@ const companyInfo = {
     return "AMOUNT TOO LARGE";
   }
 
+  function showInvoiceContent() {
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("errorState").style.display = "none";
+    document.getElementById("invoiceContent").style.display = "block";
+  }
+
   function logout() {
     localStorage.removeItem("authenticated");
     window.location.href = "/login";
@@ -1289,7 +1350,77 @@ const companyInfo = {
     loadInvoiceData();
   });
 
+  // PDF Download Function
+  async function downloadPDF() {
+    try {
+      // Show loading indicator
+      const button = document.querySelector('button[onclick="downloadPDF()"]');
+      const originalText = button.textContent;
+      button.textContent = '⏳ Generating PDF...';
+      button.disabled = true;
+
+      // Load html2pdf from CDN if not already loaded
+      if (!html2pdf) {
+        html2pdf = await loadHtml2Pdf();
+      }
+
+      const element = document.getElementById('invoiceContent');
+
+      // Configure PDF options for guaranteed A4 single page
+      const opt = {
+        margin: [2, 2, 2, 2], // 10mm margins all around for better centering
+        filename: `invoice-${currentInvoiceId || 'document'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          width: 794,  // A4 width in pixels at 96 DPI
+          height: 1123, // A4 height in pixels at 96 DPI
+          windowWidth: 794,
+          windowHeight: 1123,
+          x: 0,
+          y: 0,
+          scrollX: 0,
+          scrollY: 0,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: [210, 297], // Exact A4 dimensions
+          orientation: 'portrait',
+          compress: true,
+          putOnlyUsedFonts: true,
+          floatPrecision: 16
+        },
+        pagebreak: { mode: 'avoid-all' } // Prevent any page breaks
+      };
+
+      // Generate and download PDF
+      await html2pdf().set(opt).from(element).save();
+
+      console.log('PDF downloaded successfully');
+
+      // Reset button
+      button.textContent = originalText;
+      button.disabled = false;
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+
+      // Reset button on error
+      const button = document.querySelector('button[onclick="downloadPDF()"]');
+      if (button) {
+        button.textContent = '📄 Download PDF';
+        button.disabled = false;
+      }
+    }
+  }
+
   // Make functions available globally
   window.logout = logout;
   window.loadInvoiceData = loadInvoiceData;
+  window.refreshInvoice = refreshInvoice;
+  window.downloadPDF = downloadPDF;
 </script>
