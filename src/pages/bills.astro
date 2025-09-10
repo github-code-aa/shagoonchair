@@ -11,7 +11,9 @@ import { AUTH_CONFIG } from "../config/auth.js";
         <p>Professional invoice system for Shagoon Seating Chair</p>
       </div>
       <div class="header-actions">
-        <button onclick="refreshInvoices()" class="btn btn-info">🔄 Refresh</button>
+        <button onclick="refreshInvoices()" class="btn btn-info"
+          >🔄 Refresh</button
+        >
         <a href="/bills/new" class="btn btn-primary">+ New Invoice</a>
         <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
       </div>
@@ -94,6 +96,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
                 <tr>
                   <th>Bill ID</th>
                   <th>Customer Name</th>
+                  <th>Invoice Date</th>
                   <th>Phone Number</th>
                   <th>Total Amount</th>
                   <th>Item Count</th>
@@ -846,9 +849,9 @@ import { AUTH_CONFIG } from "../config/auth.js";
 <script define:vars={{ AUTH_CONFIG }}>
   // Storage configuration for 24-hour cache
   const STORAGE_KEYS = {
-    INVOICES_DATA: 'bills_invoices_data',
-    LAST_UPDATED: 'bills_last_updated',
-    CACHE_DURATION: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+    INVOICES_DATA: "bills_invoices_data",
+    LAST_UPDATED: "bills_last_updated",
+    CACHE_DURATION: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
   };
 
   // Check authentication and load data on page load
@@ -888,21 +891,21 @@ import { AUTH_CONFIG } from "../config/auth.js";
         hideLoading();
         renderTableView();
         updatePagination();
-        console.log('✅ Loaded invoices from localStorage (24h cache)');
+        console.log("✅ Loaded invoices from localStorage (24h cache)");
       } catch (error) {
-        console.error('Error parsing stored data:', error);
+        console.error("Error parsing stored data:", error);
         await loadInvoicesFromAPI(1);
       }
     } else {
       // Load from API (cache expired or no data)
-      console.log('📡 Cache expired or no data, loading from API');
+      console.log("📡 Cache expired or no data, loading from API");
       await loadInvoicesFromAPI(1);
     }
   }
 
   // Force refresh from API (bypasses cache)
   async function refreshInvoices() {
-    console.log('🔄 Manual refresh requested');
+    console.log("🔄 Manual refresh requested");
     currentPage = 1; // Reset to first page on refresh
     await loadInvoicesFromAPI(1);
   }
@@ -924,7 +927,8 @@ import { AUTH_CONFIG } from "../config/auth.js";
       params.append("page", page.toString());
       params.append("limit", "10");
 
-      const url = "/api/bills" + (params.toString() ? "?" + params.toString() : "");
+      const url =
+        "/api/bills" + (params.toString() ? "?" + params.toString() : "");
 
       const response = await fetch(url, {
         method: "GET",
@@ -948,22 +952,24 @@ import { AUTH_CONFIG } from "../config/auth.js";
         page: currentPage,
         totalPages: totalPages,
         timestamp: Date.now(),
-        cacheExpiry: Date.now() + STORAGE_KEYS.CACHE_DURATION
+        cacheExpiry: Date.now() + STORAGE_KEYS.CACHE_DURATION,
       };
 
-      localStorage.setItem(STORAGE_KEYS.INVOICES_DATA, JSON.stringify(dataToStore));
+      localStorage.setItem(
+        STORAGE_KEYS.INVOICES_DATA,
+        JSON.stringify(dataToStore)
+      );
       localStorage.setItem(STORAGE_KEYS.LAST_UPDATED, Date.now().toString());
 
       hideLoading();
       renderTableView();
       updatePagination();
-      console.log('💾 Data cached for 24 hours');
-
+      console.log("💾 Data cached for 24 hours");
     } catch (error) {
       console.error("Error loading invoices:", error);
       hideLoading();
       showError(
-        "Failed to load invoices. Please check your connection and try again.",
+        "Failed to load invoices. Please check your connection and try again."
       );
     }
   }
@@ -995,7 +1001,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
     if (invoicesData.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">
+          <td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">
             📄 No invoices found
           </td>
         </tr>
@@ -1011,14 +1017,43 @@ import { AUTH_CONFIG } from "../config/auth.js";
   }
 
   function createTableRow(invoice) {
+   console.log(invoice);
     const row = document.createElement("tr");
 
     const formattedAmount = `₹${parseFloat(invoice.total_amount || 0).toLocaleString()}`;
     const itemCount = invoice.items ? invoice.items.length : 0;
 
+    // Format the invoice date
+
+    const formattedDate = invoice.invoice_date
+      ? formatDate(new Date(invoice.invoice_date))
+      : "N/A";
+
+    function formatDate(date) {
+      const day = date.getDate();
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const month = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+
     row.innerHTML = `
       <td class="table-invoice-number">${invoice.id}</td>
       <td class="table-customer-name">${invoice.customer_name}</td>
+      <td class="table-invoice-date">${formattedDate}</td>
       <td class="table-phone">${invoice.customer_phone || "N/A"}</td>
       <td class="table-amount">${formattedAmount}</td>
       <td class="table-item-count">${itemCount} items</td>
@@ -1179,7 +1214,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`,
+          errorData.error || `HTTP error! status: ${response.status}`
         );
       }
 
@@ -1239,19 +1274,4 @@ import { AUTH_CONFIG } from "../config/auth.js";
   window.goToPreviousPage = goToPreviousPage;
 
   window.goToNextPage = goToNextPage;
-
-  // Initialize filters with current date
-  document.addEventListener("DOMContentLoaded", function () {
-    const today = new Date().toISOString().split("T")[0];
-    const firstDay = new Date(
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      1,
-    )
-      .toISOString()
-      .split("T")[0];
-
-    document.getElementById("startDate").value = firstDay;
-    document.getElementById("endDate").value = today;
-  });
 </script>

@@ -1032,14 +1032,14 @@ const companyInfo = {
     // Basic invoice details
     document.getElementById("invoiceNumber").textContent = bill.id || "-";
     document.getElementById("invoiceDate").textContent =
-      formatDate(bill.invoice_date) || "-";
+      formatDate(new Date(bill.invoice_date)) || "-";
     document.getElementById("challanNumber").textContent =
       bill.challan_number || "-";
     document.getElementById("challanDate").textContent =
-      formatDate(bill.challan_date) || "-";
+      formatDate(new Date(bill.challan_date)) || "-";
     document.getElementById("poNumber").textContent = bill.po_number || "-";
     document.getElementById("poDate").textContent =
-      formatDate(bill.po_date) || "-";
+      formatDate(new Date(bill.po_date)) || "-";
     document.getElementById("dispatchDetails").textContent =
       bill.dispatch_details || "-";
     document.getElementById("vendorCode").textContent =
@@ -1254,15 +1254,36 @@ const companyInfo = {
     }
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return "";
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("en-GB"); // DD/MM/YYYY format
-    } catch (e) {
-      return dateString;
+   function formatDate(dateString) {
+      const day = dateString.getDate();
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const month = monthNames[dateString.getMonth()];
+      const year = dateString.getFullYear();
+      return `${day}-${month}-${year}`;
     }
-  }
+
+  // function formatDate(dateString) {
+  //   if (!dateString) return "";
+  //   try {
+  //     const date = new Date(dateString);
+  //     return date.toLocaleDateString("en-GB"); // DD/MM/YYYY format
+  //   } catch (e) {
+  //     return dateString;
+  //   }
+  // }
 
   function numberToWords(amount) {
     // Simple number to words conversion (basic implementation)
