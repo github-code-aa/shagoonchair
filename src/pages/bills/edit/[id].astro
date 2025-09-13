@@ -1,7 +1,39 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
-import { AUTH_CONFIG } from '../../../config/auth.js';
+import Layout from "../../../layouts/Layout.astro";
+import { AUTH_CONFIG } from "../../../config/auth.js";
 ---
+
+<!-- jQuery and jQuery UI for Datepicker -->
+<link
+  rel="stylesheet"
+  href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"
+/>
+<script>
+  // Load jQuery first
+  (function () {
+    var script = document.createElement("script");
+    script.src = "https://code.jquery.com/jquery-3.7.1.min.js";
+    script.onload = function () {
+      console.log("jQuery loaded for edit bill");
+      // Load jQuery UI after jQuery is loaded
+      var uiScript = document.createElement("script");
+      uiScript.src = "https://code.jquery.com/ui/1.13.2/jquery-ui.min.js";
+      uiScript.onload = function () {
+        console.log("jQuery UI loaded for edit bill");
+        // Dispatch custom event when both are loaded
+        window.dispatchEvent(new Event("jqueryReady"));
+      };
+      uiScript.onerror = function () {
+        console.error("Failed to load jQuery UI for edit bill");
+      };
+      document.head.appendChild(uiScript);
+    };
+    script.onerror = function () {
+      console.error("Failed to load jQuery for edit bill");
+    };
+    document.head.appendChild(script);
+  })();
+</script>
 
 <Layout title="Edit Invoice - Shagoon Chair">
   <main>
@@ -16,259 +48,404 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
       <div class="error-message">
         <h4>⚠️ Error Loading Invoice</h4>
         <p id="errorMessage">Failed to load invoice. Please try again.</p>
-        <button onclick="loadInvoiceData()" class="btn btn-primary">🔄 Retry</button>
+        <button onclick="loadInvoiceData()" class="btn btn-primary"
+          >🔄 Retry</button
+        >
       </div>
     </div>
 
     <div id="editForm" style="display: none;">
       <div class="page-header">
         <h1>✏️ Edit Invoice</h1>
-      <div class="header-actions">
-        <a href="/bills" class="btn btn-outline">← Back to Bills</a>
-        <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
-      </div>
-    </div>
-
-    <form id="invoiceForm" class="invoice-form">
-      <div class="form-grid">
-        <!-- Invoice Details Section -->
-        <section class="form-section">
-          <h2>📋 Invoice Details</h2>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="bill_number">Bill Number</label>
-              <input type="text" id="bill_number" name="bill_number" placeholder="e.g., BILL-001">
-            </div>
-            <div class="form-group">
-              <label for="invoice_date">Invoice Date *</label>
-              <input type="date" id="invoice_date" name="invoice_date" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="challan_number">Challan Number</label>
-              <input type="text" id="challan_number" name="challan_number" placeholder="e.g., CH-001">
-            </div>
-            <div class="form-group">
-              <label for="challan_date">Challan Date</label>
-              <input type="date" id="challan_date" name="challan_date">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="po_number">P.O. Number</label>
-              <input type="text" id="po_number" name="po_number" placeholder="e.g., PO-2025-001">
-            </div>
-            <div class="form-group">
-              <label for="po_date">P.O. Date</label>
-              <input type="date" id="po_date" name="po_date">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="vendor_code">Vendor Code</label>
-              <input type="text" id="vendor_code" name="vendor_code" placeholder="e.g., VEN001">
-            </div>
-            <div class="form-group">
-              <label for="hsn_code">HSN Code</label>
-              <input type="text" id="hsn_code" name="hsn_code" placeholder="e.g., 9403">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="dispatch_details">Dispatch Details</label>
-            <textarea id="dispatch_details" name="dispatch_details" rows="2" placeholder="e.g., Dispatched through XYZ Transport, Vehicle No. MH-01-AB-1234"></textarea>
-          </div>
-        </section>
-
-        <!-- Customer Details Section -->
-        <section class="form-section">
-          <h2>👤 Customer Details</h2>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="customer_name">Customer Name *</label>
-              <input type="text" id="customer_name" name="customer_name" required placeholder="e.g., M/S. CUPS AND MOULDS LLP.">
-            </div>
-            <div class="form-group">
-              <label for="customer_code">Customer Code</label>
-              <input type="number" id="customer_code" name="customer_code" placeholder="e.g., 1001">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="customer_phone">Phone Number</label>
-              <input type="tel" id="customer_phone" name="customer_phone" placeholder="+91 9820732807">
-            </div>
-            <div class="form-group">
-              <label for="customer_email">Email</label>
-              <input type="email" id="customer_email" name="customer_email" placeholder="customer@example.com">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="customer_address">Customer Address *</label>
-            <textarea id="customer_address" name="customer_address" required rows="3" placeholder="Complete billing address"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="customer_gst_number">Customer GST Number</label>
-            <input type="text" id="customer_gst_number" name="customer_gst_number" placeholder="27AAQFC3444C1ZK">
-          </div>
-        </section>
-      </div>
-
-      <!-- Items Section -->
-      <section class="form-section">
-        <h2>🛍️ Invoice Items</h2>
-        <div class="items-container">
-          <div class="items-header">
-            <span>Sr. No</span>
-            <span>Description</span>
-            <span>Unit Price (₹)</span>
-            <span>Qty</span>
-            <span>Amount (₹)</span>
-            <span>Action</span>
-          </div>
-          <div id="itemsList">
-            <!-- Items will be dynamically added here -->
-          </div>
-          <button type="button" id="addItemBtn" class="btn btn-success">+ Add Item</button>
+        <div class="header-actions">
+          <a href="/bills" class="btn btn-outline">← Back to Bills</a>
+          <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
         </div>
-      </section>
-
-      <!-- Tax & Payment Section -->
-      <div class="form-grid">
-        <section class="form-section">
-          <h2>💰 Tax Calculation</h2>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="cgst_percentage">CGST % *</label>
-              <input type="number" id="cgst_percentage" name="cgst_percentage" value="9" step="0.01" required>
-            </div>
-            <div class="form-group">
-              <label for="sgst_percentage">SGST % *</label>
-              <input type="number" id="sgst_percentage" name="sgst_percentage" value="9" step="0.01" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="igst_percentage">IGST %</label>
-              <input type="number" id="igst_percentage" name="igst_percentage" value="0" step="0.01">
-            </div>
-            <div class="form-group">
-              <label for="discount_percentage">Discount %</label>
-              <input type="number" id="discount_percentage" name="discount_percentage" value="0" step="0.01">
-            </div>
-          </div>
-          
-          <div class="calculation-summary">
-            <div class="calc-row">
-              <span>Subtotal:</span>
-              <span id="subtotalDisplay">₹0.00</span>
-            </div>
-            <div class="calc-row">
-              <span>CGST:</span>
-              <span id="cgstDisplay">₹0.00</span>
-            </div>
-            <div class="calc-row">
-              <span>SGST:</span>
-              <span id="sgstDisplay">₹0.00</span>
-            </div>
-            <div class="calc-row">
-              <span>IGST:</span>
-              <span id="igstDisplay">₹0.00</span>
-            </div>
-            <div class="calc-row">
-              <span>Discount:</span>
-              <span id="discountDisplay">₹0.00</span>
-            </div>
-            <div class="calc-row total-row">
-              <span><strong>Total Amount:</strong></span>
-              <span id="totalDisplay"><strong>₹0.00</strong></span>
-            </div>
-          </div>
-        </section>
-
-        <section class="form-section">
-          <h2>💳 Payment Details</h2>
-          <div class="form-group">
-            <label for="payment_method">Payment Method *</label>
-            <select id="payment_method" name="payment_method" required>
-              <option value="cash">Cash</option>
-              <option value="card">Card</option>
-              <option value="upi">UPI</option>
-              <option value="bank_transfer">Bank Transfer</option>
-              <option value="cheque">Cheque</option>
-              <option value="dd">Demand Draft</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="payment_status">Payment Status *</label>
-            <select id="payment_status" name="payment_status" required>
-              <option value="pending">Pending</option>
-              <option value="paid">Paid</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="payment_terms">Payment Terms</label>
-            <textarea id="payment_terms" name="payment_terms" rows="2">PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN MUMBAI</textarea>
-          </div>
-        </section>
       </div>
 
-      <!-- Bank Details Section -->
-      <section class="form-section">
-        <h2>🏦 Bank Details</h2>
+      <form id="invoiceForm" class="invoice-form">
         <div class="form-grid">
-          <div class="form-group">
-            <label for="bank_name">Bank Name</label>
-            <input type="text" id="bank_name" name="bank_name" placeholder="Bank Name">
-          </div>
-          <div class="form-group">
-            <label for="bank_account_number">Account Number</label>
-            <input type="text" id="bank_account_number" name="bank_account_number" placeholder="Account Number">
-          </div>
-          <div class="form-group">
-            <label for="bank_branch">Branch</label>
-            <input type="text" id="bank_branch" name="bank_branch" placeholder="Branch Name">
-          </div>
-          <div class="form-group">
-            <label for="bank_ifsc_code">IFSC Code</label>
-            <input type="text" id="bank_ifsc_code" name="bank_ifsc_code" placeholder="IFSC Code">
-          </div>
-          <div class="form-group">
-            <label for="bank_account_type">Account Type</label>
-            <input type="text" id="bank_account_type" name="bank_account_type" placeholder="Account Type">
-          </div>
+          <!-- Invoice Details Section -->
+          <section class="form-section">
+            <h2>📋 Invoice Details</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="bill_number">Bill Number</label>
+                <input
+                  type="text"
+                  id="bill_number"
+                  name="bill_number"
+                  placeholder="e.g., BILL-001"
+                />
+              </div>
+              <div class="form-group">
+                <label for="invoice_date">Invoice Date *</label>
+                <input
+                  type="text"
+                  id="invoice_date"
+                  name="invoice_date"
+                  class="datepicker"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="challan_number">Challan Number</label>
+                <input
+                  type="text"
+                  id="challan_number"
+                  name="challan_number"
+                  placeholder="e.g., CH-001"
+                />
+              </div>
+              <div class="form-group">
+                <label for="challan_date">Challan Date</label>
+                <input
+                  type="text"
+                  id="challan_date"
+                  name="challan_date"
+                  class="datepicker"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="po_number">P.O. Number</label>
+                <input
+                  type="text"
+                  id="po_number"
+                  name="po_number"
+                  placeholder="e.g., PO-2025-001"
+                />
+              </div>
+              <div class="form-group">
+                <label for="po_date">P.O. Date</label>
+                <input
+                  type="text"
+                  id="po_date"
+                  name="po_date"
+                  class="datepicker"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="vendor_code">Vendor Code</label>
+                <input
+                  type="text"
+                  id="vendor_code"
+                  name="vendor_code"
+                  placeholder="e.g., VEN001"
+                />
+              </div>
+              <div class="form-group">
+                <label for="hsn_code">HSN Code</label>
+                <input
+                  type="text"
+                  id="hsn_code"
+                  name="hsn_code"
+                  placeholder="e.g., 9403"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="dispatch_details">Dispatch Details</label>
+              <textarea
+                id="dispatch_details"
+                name="dispatch_details"
+                rows="2"
+                placeholder="e.g., Dispatched through XYZ Transport, Vehicle No. MH-01-AB-1234"
+              ></textarea>
+            </div>
+          </section>
+
+          <!-- Customer Details Section -->
+          <section class="form-section">
+            <h2>👤 Customer Details</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="customer_name">Customer Name *</label>
+                <input
+                  type="text"
+                  id="customer_name"
+                  name="customer_name"
+                  required
+                  placeholder="e.g., M/S. CUPS AND MOULDS LLP."
+                />
+              </div>
+              <div class="form-group">
+                <label for="customer_code">Customer Code</label>
+                <input
+                  type="number"
+                  id="customer_code"
+                  name="customer_code"
+                  placeholder="e.g., 1001"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="customer_phone">Phone Number</label>
+                <input
+                  type="tel"
+                  id="customer_phone"
+                  name="customer_phone"
+                  placeholder="+91 9820732807"
+                />
+              </div>
+              <div class="form-group">
+                <label for="customer_email">Email</label>
+                <input
+                  type="email"
+                  id="customer_email"
+                  name="customer_email"
+                  placeholder="customer@example.com"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="customer_address">Customer Address *</label>
+              <textarea
+                id="customer_address"
+                name="customer_address"
+                required
+                rows="3"
+                placeholder="Complete billing address"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="customer_gst_number">Customer GST Number</label>
+              <input
+                type="text"
+                id="customer_gst_number"
+                name="customer_gst_number"
+                placeholder="27AAQFC3444C1ZK"
+              />
+            </div>
+          </section>
         </div>
-      </section>
 
-      <!-- Notes Section -->
-      <section class="form-section">
-        <h2>📝 Additional Notes</h2>
-        <div class="form-group">
-          <label for="notes">Notes</label>
-          <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes or comments"></textarea>
+        <!-- Items Section -->
+        <section class="form-section">
+          <h2>🛍️ Invoice Items</h2>
+          <div class="items-container">
+            <div class="items-header">
+              <span>Sr. No</span>
+              <span>Description</span>
+              <span>Unit Price (₹)</span>
+              <span>Qty</span>
+              <span>Amount (₹)</span>
+              <span>Action</span>
+            </div>
+            <div id="itemsList">
+              <!-- Items will be dynamically added here -->
+            </div>
+            <button type="button" id="addItemBtn" class="btn btn-success"
+              >+ Add Item</button
+            >
+          </div>
+        </section>
+
+        <!-- Tax & Payment Section -->
+        <div class="form-grid">
+          <section class="form-section">
+            <h2>💰 Tax Calculation</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cgst_percentage">CGST % *</label>
+                <input
+                  type="number"
+                  id="cgst_percentage"
+                  name="cgst_percentage"
+                  value="9"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="sgst_percentage">SGST % *</label>
+                <input
+                  type="number"
+                  id="sgst_percentage"
+                  name="sgst_percentage"
+                  value="9"
+                  step="0.01"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="igst_percentage">IGST %</label>
+                <input
+                  type="number"
+                  id="igst_percentage"
+                  name="igst_percentage"
+                  value="0"
+                  step="0.01"
+                />
+              </div>
+              <div class="form-group">
+                <label for="discount_percentage">Discount %</label>
+                <input
+                  type="number"
+                  id="discount_percentage"
+                  name="discount_percentage"
+                  value="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
+            <div class="calculation-summary">
+              <div class="calc-row">
+                <span>Subtotal:</span>
+                <span id="subtotalDisplay">₹0.00</span>
+              </div>
+              <div class="calc-row">
+                <span>CGST:</span>
+                <span id="cgstDisplay">₹0.00</span>
+              </div>
+              <div class="calc-row">
+                <span>SGST:</span>
+                <span id="sgstDisplay">₹0.00</span>
+              </div>
+              <div class="calc-row">
+                <span>IGST:</span>
+                <span id="igstDisplay">₹0.00</span>
+              </div>
+              <div class="calc-row">
+                <span>Discount:</span>
+                <span id="discountDisplay">₹0.00</span>
+              </div>
+              <div class="calc-row total-row">
+                <span><strong>Total Amount:</strong></span>
+                <span id="totalDisplay"><strong>₹0.00</strong></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h2>💳 Payment Details</h2>
+            <div class="form-group">
+              <label for="payment_method">Payment Method *</label>
+              <select id="payment_method" name="payment_method" required>
+                <option value="cash">Cash</option>
+                <option value="card">Card</option>
+                <option value="upi">UPI</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="cheque">Cheque</option>
+                <option value="dd">Demand Draft</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="payment_status">Payment Status *</label>
+              <select id="payment_status" name="payment_status" required>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="payment_terms">Payment Terms</label>
+              <textarea id="payment_terms" name="payment_terms" rows="2"
+                >PAYMENT ONLY BY CROSSED CHEQUES / DD PAYABLE IN MUMBAI</textarea
+              >
+            </div>
+          </section>
         </div>
-      </section>
 
-      <!-- Terms and Conditions Section -->
-      <section class="form-section">
-        <h2>📋 Terms and Conditions</h2>
-        <div class="form-group">
-          <label for="terms_and_conditions">Terms and Conditions</label>
-          <textarea id="terms_and_conditions" name="terms_and_conditions" rows="6">• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.
-• Inspection prior to dispatch if desire will be at our factory premises.
-• 50% advance with confirm order & balance against delivery.
-• Warranty period 12 Months against manufacturing defect.
-• Payment of the bill must every month of 15th.
-• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.</textarea>
+        <!-- Bank Details Section -->
+        <section class="form-section">
+          <h2>🏦 Bank Details</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="bank_name">Bank Name</label>
+              <input
+                type="text"
+                id="bank_name"
+                name="bank_name"
+                placeholder="Bank Name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="bank_account_number">Account Number</label>
+              <input
+                type="text"
+                id="bank_account_number"
+                name="bank_account_number"
+                placeholder="Account Number"
+              />
+            </div>
+            <div class="form-group">
+              <label for="bank_branch">Branch</label>
+              <input
+                type="text"
+                id="bank_branch"
+                name="bank_branch"
+                placeholder="Branch Name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="bank_ifsc_code">IFSC Code</label>
+              <input
+                type="text"
+                id="bank_ifsc_code"
+                name="bank_ifsc_code"
+                placeholder="IFSC Code"
+              />
+            </div>
+            <div class="form-group">
+              <label for="bank_account_type">Account Type</label>
+              <input
+                type="text"
+                id="bank_account_type"
+                name="bank_account_type"
+                placeholder="Account Type"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- Notes Section -->
+        <section class="form-section">
+          <h2>📝 Additional Notes</h2>
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea
+              id="notes"
+              name="notes"
+              rows="3"
+              placeholder="Any additional notes or comments"></textarea>
+          </div>
+        </section>
+
+        <!-- Terms and Conditions Section -->
+        <section class="form-section">
+          <h2>📋 Terms and Conditions</h2>
+          <div class="form-group">
+            <label for="terms_and_conditions">Terms and Conditions</label>
+            <textarea
+              id="terms_and_conditions"
+              name="terms_and_conditions"
+              rows="6"
+              >• Price including Fabric/guts-Tax per Mtr. Party will have to
+              give Two alternative. • Inspection prior to dispatch if desire
+              will be at our factory premises. • 50% advance with confirm order
+              & balance against delivery. • Warranty period 12 Months against
+              manufacturing defect. • Payment of the bill must every month of
+              15th. • Interest will be charged @ 20% on all accounts remaining
+              unpaid after credit time.</textarea
+            >
+          </div>
+        </section>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn"
+            >� Update Invoice</button
+          >
         </div>
-      </section>
-
-      <!-- Form Actions -->
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary" id="submitBtn">� Update Invoice</button>
-
-      </div>
-    </form>
+      </form>
     </div>
 
     <!-- Loading Overlay -->
@@ -292,7 +469,11 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
         </div>
         <div class="message-actions">
           <button id="messageOk" class="btn btn-primary">OK</button>
-          <button id="messageCancel" class="btn btn-outline" style="display: none;">Cancel</button>
+          <button
+            id="messageCancel"
+            class="btn btn-outline"
+            style="display: none;">Cancel</button
+          >
         </div>
       </div>
     </div>
@@ -301,7 +482,8 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
 
 <style>
   /* Loading and Error States */
-  .loading-container, .error-container {
+  .loading-container,
+  .error-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -310,7 +492,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
     background: white;
     padding: 40px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     text-align: center;
   }
 
@@ -336,7 +518,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
   }
 
@@ -354,7 +536,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
     background: white;
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .form-grid {
@@ -590,7 +772,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
 
   .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
 
   .form-actions {
@@ -669,7 +851,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .items-header {
@@ -837,8 +1019,12 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   .loading-content p {
@@ -1020,155 +1206,156 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
   const MAX_ITEMS = 15;
 
   // Message box and loader functions
-  function showLoader(message = 'Processing...') {
-    const overlay = document.getElementById('loadingOverlay');
-    const text = overlay.querySelector('p');
+  function showLoader(message = "Processing...") {
+    const overlay = document.getElementById("loadingOverlay");
+    const text = overlay.querySelector("p");
     text.textContent = message;
-    overlay.classList.add('show');
-    
+    overlay.classList.add("show");
+
     // Disable form submission button
-    const submitBtn = document.getElementById('submitBtn');
+    const submitBtn = document.getElementById("submitBtn");
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.style.opacity = '0.6';
-      submitBtn.style.cursor = 'not-allowed';
+      submitBtn.style.opacity = "0.6";
+      submitBtn.style.cursor = "not-allowed";
     }
   }
 
   function hideLoader() {
-    const overlay = document.getElementById('loadingOverlay');
-    overlay.classList.remove('show');
-    
+    const overlay = document.getElementById("loadingOverlay");
+    overlay.classList.remove("show");
+
     // Re-enable form submission button
-    const submitBtn = document.getElementById('submitBtn');
+    const submitBtn = document.getElementById("submitBtn");
     if (submitBtn) {
       submitBtn.disabled = false;
-      submitBtn.style.opacity = '1';
-      submitBtn.style.cursor = 'pointer';
+      submitBtn.style.opacity = "1";
+      submitBtn.style.cursor = "pointer";
     }
   }
 
   function showMessage(type, title, message, showCancel = false) {
     return new Promise((resolve) => {
-      const messageBox = document.getElementById('messageBox');
-      const messageTitle = document.getElementById('messageTitle');
-      const messageIcon = document.getElementById('messageIcon');
-      const messageText = document.getElementById('messageText');
-      const messageOk = document.getElementById('messageOk');
-      const messageCancel = document.getElementById('messageCancel');
-      const messageClose = document.getElementById('messageClose');
-      
+      const messageBox = document.getElementById("messageBox");
+      const messageTitle = document.getElementById("messageTitle");
+      const messageIcon = document.getElementById("messageIcon");
+      const messageText = document.getElementById("messageText");
+      const messageOk = document.getElementById("messageOk");
+      const messageCancel = document.getElementById("messageCancel");
+      const messageClose = document.getElementById("messageClose");
+
       // Set content
       messageTitle.textContent = title;
       messageText.textContent = message;
-      
+
       // Set icon type
       messageIcon.className = `message-icon ${type}`;
-      
+
       // Show/hide cancel button
       if (showCancel) {
-        messageCancel.style.display = 'inline-flex';
-        messageOk.textContent = 'Yes';
-        messageCancel.textContent = 'No';
+        messageCancel.style.display = "inline-flex";
+        messageOk.textContent = "Yes";
+        messageCancel.textContent = "No";
       } else {
-        messageCancel.style.display = 'none';
-        messageOk.textContent = 'OK';
+        messageCancel.style.display = "none";
+        messageOk.textContent = "OK";
       }
-      
+
       // Show message box
-      messageBox.classList.add('show');
-      
+      messageBox.classList.add("show");
+
       // Handle button clicks
       function handleOk() {
-        messageBox.classList.remove('show');
+        messageBox.classList.remove("show");
         cleanup();
         resolve(true);
       }
-      
+
       function handleCancel() {
-        messageBox.classList.remove('show');
+        messageBox.classList.remove("show");
         cleanup();
         resolve(false);
       }
-      
+
       function handleClose() {
-        messageBox.classList.remove('show');
+        messageBox.classList.remove("show");
         cleanup();
         resolve(false);
       }
-      
+
       function cleanup() {
-        messageOk.removeEventListener('click', handleOk);
-        messageCancel.removeEventListener('click', handleCancel);
-        messageClose.removeEventListener('click', handleClose);
+        messageOk.removeEventListener("click", handleOk);
+        messageCancel.removeEventListener("click", handleCancel);
+        messageClose.removeEventListener("click", handleClose);
       }
-      
+
       // Add event listeners
-      messageOk.addEventListener('click', handleOk);
-      messageCancel.addEventListener('click', handleCancel);
-      messageClose.addEventListener('click', handleClose);
-      
+      messageOk.addEventListener("click", handleOk);
+      messageCancel.addEventListener("click", handleCancel);
+      messageClose.addEventListener("click", handleClose);
+
       // Handle escape key
       function handleEscape(e) {
-        if (e.key === 'Escape') {
-          messageBox.classList.remove('show');
+        if (e.key === "Escape") {
+          messageBox.classList.remove("show");
           cleanup();
-          document.removeEventListener('keydown', handleEscape);
+          document.removeEventListener("keydown", handleEscape);
           resolve(false);
         }
       }
-      
-      document.addEventListener('keydown', handleEscape);
+
+      document.addEventListener("keydown", handleEscape);
     });
   }
 
   // Load invoice data from API
   async function loadInvoiceData() {
     try {
-      document.getElementById('loadingState').style.display = 'block';
-      document.getElementById('errorState').style.display = 'none';
-      document.getElementById('editForm').style.display = 'none';
+      document.getElementById("loadingState").style.display = "block";
+      document.getElementById("errorState").style.display = "none";
+      document.getElementById("editForm").style.display = "none";
 
       // Get invoice ID from URL
-      const urlParts = window.location.pathname.split('/');
+      const urlParts = window.location.pathname.split("/");
       currentInvoiceId = urlParts[urlParts.length - 1];
-      console.log('Loading invoice with ID:', currentInvoiceId);
-      
+      console.log("Loading invoice with ID:", currentInvoiceId);
+
       const apiUrl = `/api/bills/${currentInvoiceId}`;
-      console.log('Making API request to:', apiUrl);
-      
+      console.log("Making API request to:", apiUrl);
+
       const response = await fetch(apiUrl);
-      console.log('API response status:', response.status);
-      
+      console.log("API response status:", response.status);
+
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('API error response:', errorText);
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        console.error("API error response:", errorText);
+        throw new Error(
+          `HTTP error! status: ${response.status} - ${errorText}`
+        );
       }
-      
+
       const responseData = await response.json();
-      console.log('Full API response:', responseData);
-      
+      console.log("Full API response:", responseData);
+
       // Extract the bill data from the API response
       const billData = responseData.bill || responseData;
-      console.log('Extracted bill data:', billData);
-      
+      console.log("Extracted bill data:", billData);
+
       if (!billData) {
-        throw new Error('No bill data found in API response');
+        throw new Error("No bill data found in API response");
       }
-      
+
       // Populate form with invoice data
       populateForm(billData);
-      
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('editForm').style.display = 'block';
-      
+
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("editForm").style.display = "block";
     } catch (error) {
-      console.error('Error loading invoice:', error);
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('errorState').style.display = 'block';
-      
-      const errorMessageEl = document.getElementById('errorMessage');
+      console.error("Error loading invoice:", error);
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("errorState").style.display = "block";
+
+      const errorMessageEl = document.getElementById("errorMessage");
       if (errorMessageEl) {
         errorMessageEl.textContent = `Failed to load invoice: ${error.message}`;
       }
@@ -1176,135 +1363,165 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
   }
 
   function populateForm(invoice) {
-    console.log('Populating form with data:', invoice);
-    
+    console.log("Populating form with data:", invoice);
+
     // Basic invoice fields mapping (form field ID -> database field name)
     const fieldMappings = {
-      'bill_number': 'bill_number',
-      'invoice_date': 'invoice_date', 
-      'challan_number': 'challan_number',
-      'challan_date': 'challan_date',
-      'po_number': 'po_number',
-      'po_date': 'po_date',
-      'vendor_code': 'vendor_code',
-      'hsn_code': 'hsn_code',
-      'dispatch_details': 'dispatch_details',
-      'customer_name': 'customer_name',
-      'customer_code': 'customer_code',
-      'customer_phone': 'customer_phone',
-      'customer_email': 'customer_email',
-      'customer_address': 'customer_address',
-      'customer_gst_number': 'customer_gst_number',
-      'cgst_percentage': 'cgst_percentage',
-      'sgst_percentage': 'sgst_percentage',
-      'igst_percentage': 'igst_percentage',
-      'discount_percentage': 'discount_percentage',
-      'payment_method': 'payment_method',
-      'payment_status': 'payment_status',
-      'payment_terms': 'payment_terms',
-      'notes': 'notes',
-      'terms_and_conditions': 'terms_and_conditions'
+      bill_number: "bill_number",
+      invoice_date: "invoice_date",
+      challan_number: "challan_number",
+      challan_date: "challan_date",
+      po_number: "po_number",
+      po_date: "po_date",
+      vendor_code: "vendor_code",
+      hsn_code: "hsn_code",
+      dispatch_details: "dispatch_details",
+      customer_name: "customer_name",
+      customer_code: "customer_code",
+      customer_phone: "customer_phone",
+      customer_email: "customer_email",
+      customer_address: "customer_address",
+      customer_gst_number: "customer_gst_number",
+      cgst_percentage: "cgst_percentage",
+      sgst_percentage: "sgst_percentage",
+      igst_percentage: "igst_percentage",
+      discount_percentage: "discount_percentage",
+      payment_method: "payment_method",
+      payment_status: "payment_status",
+      payment_terms: "payment_terms",
+      notes: "notes",
+      terms_and_conditions: "terms_and_conditions",
     };
 
     // Populate basic fields
     Object.entries(fieldMappings).forEach(([elementId, invoiceKey]) => {
       const element = document.getElementById(elementId);
-      if (element && invoice[invoiceKey] !== undefined && invoice[invoiceKey] !== null) {
+      if (
+        element &&
+        invoice[invoiceKey] !== undefined &&
+        invoice[invoiceKey] !== null
+      ) {
         element.value = invoice[invoiceKey];
         console.log(`Set ${elementId} = ${invoice[invoiceKey]}`);
       }
     });
 
     // Handle bank details (check multiple sources)
-    console.log('=== BANK DETAILS LOADING ===');
-    console.log('Invoice bank_details field:', invoice.bank_details);
-    console.log('Individual bank fields from invoice:');
-    console.log('  bank_name:', invoice.bank_name);
-    console.log('  bank_account_number:', invoice.bank_account_number);
-    console.log('  bank_branch:', invoice.bank_branch);
-    console.log('  bank_ifsc_code:', invoice.bank_ifsc_code);
-    console.log('  bank_account_type:', invoice.bank_account_type);
-    
+    console.log("=== BANK DETAILS LOADING ===");
+    console.log("Invoice bank_details field:", invoice.bank_details);
+    console.log("Individual bank fields from invoice:");
+    console.log("  bank_name:", invoice.bank_name);
+    console.log("  bank_account_number:", invoice.bank_account_number);
+    console.log("  bank_branch:", invoice.bank_branch);
+    console.log("  bank_ifsc_code:", invoice.bank_ifsc_code);
+    console.log("  bank_account_type:", invoice.bank_account_type);
+
     let bankDetails = null;
-    
+
     // First try to get from bank_details field
-    if (typeof invoice.bank_details === 'string') {
+    if (typeof invoice.bank_details === "string") {
       try {
         bankDetails = JSON.parse(invoice.bank_details);
-        console.log('Parsed bank_details from JSON string:', bankDetails);
+        console.log("Parsed bank_details from JSON string:", bankDetails);
       } catch (e) {
-        console.warn('Failed to parse bank_details JSON:', e);
+        console.warn("Failed to parse bank_details JSON:", e);
       }
-    } else if (typeof invoice.bank_details === 'object' && invoice.bank_details) {
+    } else if (
+      typeof invoice.bank_details === "object" &&
+      invoice.bank_details
+    ) {
       bankDetails = invoice.bank_details;
-      console.log('Using bank_details object directly:', bankDetails);
+      console.log("Using bank_details object directly:", bankDetails);
     }
-    
+
     // If no bank_details object, try individual fields
     if (!bankDetails) {
-      console.log('No bank_details object found, using individual fields');
+      console.log("No bank_details object found, using individual fields");
       bankDetails = {
         bank_name: invoice.bank_name,
         account_number: invoice.bank_account_number,
         branch: invoice.bank_branch,
         ifsc_code: invoice.bank_ifsc_code,
-        account_type: invoice.bank_account_type
+        account_type: invoice.bank_account_type,
       };
-      console.log('Constructed bank details from individual fields:', bankDetails);
+      console.log(
+        "Constructed bank details from individual fields:",
+        bankDetails
+      );
     }
 
     // Populate bank fields regardless of source
     const bankFieldMappings = {
-      'bank_name': bankDetails?.bank_name || invoice.bank_name || 'INDIAN BANK',
-      'bank_account_number': bankDetails?.account_number || invoice.bank_account_number || '6412057355',
-      'bank_branch': bankDetails?.branch || invoice.bank_branch || 'MALAD EAST',
-      'bank_ifsc_code': bankDetails?.ifsc_code || invoice.bank_ifsc_code || 'IDIB000M202',
-      'bank_account_type': bankDetails?.account_type || invoice.bank_account_type || 'CURRENT A/C'
+      bank_name: bankDetails?.bank_name || invoice.bank_name || "INDIAN BANK",
+      bank_account_number:
+        bankDetails?.account_number ||
+        invoice.bank_account_number ||
+        "6412057355",
+      bank_branch: bankDetails?.branch || invoice.bank_branch || "MALAD EAST",
+      bank_ifsc_code:
+        bankDetails?.ifsc_code || invoice.bank_ifsc_code || "IDIB000M202",
+      bank_account_type:
+        bankDetails?.account_type || invoice.bank_account_type || "CURRENT A/C",
     };
 
     Object.entries(bankFieldMappings).forEach(([elementId, value]) => {
       const element = document.getElementById(elementId);
       if (element) {
-        element.value = value || '';
+        element.value = value || "";
         console.log(`Set ${elementId} = ${value}`);
       }
     });
 
-    // Format and populate date fields  
-    const dateFields = ['invoice_date', 'challan_date', 'po_date'];
-    dateFields.forEach(field => {
+    // Format and populate date fields with jQuery datepicker
+    const dateFields = ["invoice_date", "challan_date", "po_date"];
+    dateFields.forEach((field) => {
       if (invoice[field]) {
         const dateEl = document.getElementById(field);
         if (dateEl) {
           try {
             const date = new Date(invoice[field]);
-            dateEl.value = date.toISOString().split('T')[0];
-            console.log(`Set ${field} = ${date.toISOString().split('T')[0]}`);
+
+            // Set display format for user (dd M, yy)
+            const displayFormat = $.datepicker.formatDate("dd M, yy", date);
+            dateEl.value = displayFormat;
+
+            // Store backend format for form submission (yy-mm-dd)
+            const backendFormat = $.datepicker.formatDate("yy-mm-dd", date);
+            $(dateEl).data("backend-value", backendFormat);
+
+            console.log(
+              `Set ${field} = ${displayFormat} (backend: ${backendFormat})`
+            );
           } catch (e) {
             console.warn(`Failed to parse date ${field}:`, e);
+            dateEl.value = "";
           }
         }
       }
     });
 
     // Clear existing items and populate with invoice items
-    document.getElementById('itemsList').innerHTML = '';
+    document.getElementById("itemsList").innerHTML = "";
     itemCounter = 0;
 
-    if (invoice.items && Array.isArray(invoice.items) && invoice.items.length > 0) {
-      console.log('Loading items:', invoice.items);
-      invoice.items.forEach(item => {
+    if (
+      invoice.items &&
+      Array.isArray(invoice.items) &&
+      invoice.items.length > 0
+    ) {
+      console.log("Loading items:", invoice.items);
+      invoice.items.forEach((item) => {
         addItemWithData(item);
       });
     } else {
-      console.log('No items found, adding empty item');
+      console.log("No items found, adding empty item");
       // Add one empty item if no items exist
       addItem();
     }
 
     // Calculate totals
     calculateTotals();
-    console.log('Form population completed');
+    console.log("Form population completed");
   }
 
   function addItem() {
@@ -1313,17 +1530,21 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
 
   function addItemWithData(itemData = {}) {
     // Check if we've reached the maximum number of items
-    const currentItemCount = document.querySelectorAll('.item-row').length;
-    
+    const currentItemCount = document.querySelectorAll(".item-row").length;
+
     if (currentItemCount >= MAX_ITEMS) {
-      showMessage('warning', 'Item Limit Reached', `You can only add a maximum of ${MAX_ITEMS} items to an invoice.`);
+      showMessage(
+        "warning",
+        "Item Limit Reached",
+        `You can only add a maximum of ${MAX_ITEMS} items to an invoice.`
+      );
       return;
     }
-    
+
     itemCounter++;
-    const itemsList = document.getElementById('itemsList');
-    const itemRow = document.createElement('div');
-    itemRow.className = 'item-row';
+    const itemsList = document.getElementById("itemsList");
+    const itemRow = document.createElement("div");
+    itemRow.className = "item-row";
     itemRow.dataset.itemId = itemCounter;
     itemRow.style.cssText = `
       display: grid !important;
@@ -1335,7 +1556,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
       background: white !important;
       transition: background-color 0.2s ease;
     `;
-    
+
     itemRow.innerHTML = `
       <span class="sr-no" style="
         font-weight: 600 !important;
@@ -1351,7 +1572,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
         justify-content: center !important;
       ">${itemCounter}</span>
       <input type="text" name="items[${itemCounter}][product_description]" placeholder="Item description" required
-        class="item-description" value="${itemData.product_description || itemData.product_name || ''}"
+        class="item-description" value="${itemData.product_description || itemData.product_name || ""}"
         style="
           padding: 12px !important;
           border: 1px solid #dee2e6 !important;
@@ -1365,7 +1586,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
           box-sizing: border-box !important;
         ">
       <input type="number" name="items[${itemCounter}][unit_price]" placeholder="450.00" required step="0.01"
-        class="item-unit-price" value="${itemData.unit_price || ''}"
+        class="item-unit-price" value="${itemData.unit_price || ""}"
         style="
           padding: 12px !important;
           border: 1px solid #dee2e6 !important;
@@ -1379,7 +1600,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
           box-sizing: border-box !important;
         ">
       <input type="text" name="items[${itemCounter}][quantity]" placeholder="e.g., 2, 1 PC, 5 units" required
-        class="item-quantity" value="${itemData.quantity || ''}"
+        class="item-quantity" value="${itemData.quantity || ""}"
         style="
           padding: 12px !important;
           border: 1px solid #dee2e6 !important;
@@ -1419,7 +1640,7 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
         box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2) !important;
       ">✕</button>
     `;
-    
+
     itemsList.appendChild(itemRow);
     setupItemRowEventListeners(itemRow);
     updateAddItemButton();
@@ -1435,90 +1656,92 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
   }
 
   function renumberItems() {
-    const itemRows = document.querySelectorAll('.item-row');
-    
+    const itemRows = document.querySelectorAll(".item-row");
+
     itemRows.forEach((row, index) => {
-      const srNoSpan = row.querySelector('.sr-no');
+      const srNoSpan = row.querySelector(".sr-no");
       if (srNoSpan) {
         srNoSpan.textContent = index + 1;
       }
-      
-      const inputs = row.querySelectorAll('input');
-      inputs.forEach(input => {
+
+      const inputs = row.querySelectorAll("input");
+      inputs.forEach((input) => {
         if (input.name) {
           input.name = input.name.replace(/\[\d+\]/, `[${index + 1}]`);
         }
       });
-      
+
       row.dataset.itemId = index + 1;
       setupItemRowEventListeners(row);
     });
-    
+
     itemCounter = itemRows.length;
     updateAddItemButton();
   }
 
   function updateAddItemButton() {
-    const addItemBtn = document.getElementById('addItemBtn');
-    const currentItemCount = document.querySelectorAll('.item-row').length;
-    
+    const addItemBtn = document.getElementById("addItemBtn");
+    const currentItemCount = document.querySelectorAll(".item-row").length;
+
     if (addItemBtn) {
       if (currentItemCount >= MAX_ITEMS) {
         addItemBtn.textContent = `Maximum ${MAX_ITEMS} Items Reached`;
         addItemBtn.disabled = true;
-        addItemBtn.style.opacity = '0.6';
-        addItemBtn.style.cursor = 'not-allowed';
-        addItemBtn.style.background = 'linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%)';
+        addItemBtn.style.opacity = "0.6";
+        addItemBtn.style.cursor = "not-allowed";
+        addItemBtn.style.background =
+          "linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%)";
       } else {
         addItemBtn.textContent = `+ Add Item (${currentItemCount}/${MAX_ITEMS})`;
         addItemBtn.disabled = false;
-        addItemBtn.style.opacity = '1';
-        addItemBtn.style.cursor = 'pointer';
-        addItemBtn.style.background = 'linear-gradient(135deg, #27ae60 0%, #229954 100%)';
+        addItemBtn.style.opacity = "1";
+        addItemBtn.style.cursor = "pointer";
+        addItemBtn.style.background =
+          "linear-gradient(135deg, #27ae60 0%, #229954 100%)";
       }
     }
   }
 
   function setupItemRowEventListeners(itemRow) {
-    const unitPriceInput = itemRow.querySelector('.item-unit-price');
-    const quantityInput = itemRow.querySelector('.item-quantity');
-    const removeBtn = itemRow.querySelector('.remove-item');
-    
+    const unitPriceInput = itemRow.querySelector(".item-unit-price");
+    const quantityInput = itemRow.querySelector(".item-quantity");
+    const removeBtn = itemRow.querySelector(".remove-item");
+
     if (unitPriceInput) {
-      unitPriceInput.addEventListener('change', function() {
+      unitPriceInput.addEventListener("change", function () {
         calculateItemTotalByRow(itemRow);
       });
-      unitPriceInput.addEventListener('input', function() {
+      unitPriceInput.addEventListener("input", function () {
         calculateItemTotalByRow(itemRow);
       });
     }
-    
+
     if (quantityInput) {
-      quantityInput.addEventListener('change', function() {
+      quantityInput.addEventListener("change", function () {
         calculateItemTotalByRow(itemRow);
       });
-      quantityInput.addEventListener('input', function() {
+      quantityInput.addEventListener("input", function () {
         calculateItemTotalByRow(itemRow);
       });
     }
-    
+
     if (removeBtn) {
-      removeBtn.addEventListener('click', function() {
+      removeBtn.addEventListener("click", function () {
         removeItem(this);
       });
     }
   }
 
   function calculateItemTotalByRow(itemRow) {
-    const unitPriceInput = itemRow.querySelector('.item-unit-price');
-    const quantityInput = itemRow.querySelector('.item-quantity');
-    const totalSpan = itemRow.querySelector('.item-total');
-    
+    const unitPriceInput = itemRow.querySelector(".item-unit-price");
+    const quantityInput = itemRow.querySelector(".item-quantity");
+    const totalSpan = itemRow.querySelector(".item-total");
+
     if (unitPriceInput && quantityInput && totalSpan) {
       const unitPrice = parseFloat(unitPriceInput.value) || 0;
       const quantity = extractNumericValue(quantityInput.value);
       const total = unitPrice * quantity;
-      
+
       totalSpan.textContent = `₹${total.toFixed(2)}`;
       calculateTotals();
     }
@@ -1526,24 +1749,32 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
 
   function calculateTotals() {
     let subtotal = 0;
-    
-    document.querySelectorAll('.item-total').forEach((element) => {
-      const valueText = element.textContent.replace('₹', '').replace(',', '').trim();
+
+    document.querySelectorAll(".item-total").forEach((element) => {
+      const valueText = element.textContent
+        .replace("₹", "")
+        .replace(",", "")
+        .trim();
       const value = parseFloat(valueText) || 0;
       subtotal += value;
     });
 
-    const cgstPercentage = parseFloat(document.getElementById('cgst_percentage')?.value) || 0;
-    const sgstPercentage = parseFloat(document.getElementById('sgst_percentage')?.value) || 0;
-    const igstPercentage = parseFloat(document.getElementById('igst_percentage')?.value) || 0;
-    const discountPercentage = parseFloat(document.getElementById('discount_percentage')?.value) || 0;
+    const cgstPercentage =
+      parseFloat(document.getElementById("cgst_percentage")?.value) || 0;
+    const sgstPercentage =
+      parseFloat(document.getElementById("sgst_percentage")?.value) || 0;
+    const igstPercentage =
+      parseFloat(document.getElementById("igst_percentage")?.value) || 0;
+    const discountPercentage =
+      parseFloat(document.getElementById("discount_percentage")?.value) || 0;
 
     const cgstAmount = (subtotal * cgstPercentage) / 100;
     const sgstAmount = (subtotal * sgstPercentage) / 100;
     const igstAmount = (subtotal * igstPercentage) / 100;
     const discountAmount = (subtotal * discountPercentage) / 100;
-    
-    const totalAmount = subtotal + cgstAmount + sgstAmount + igstAmount - discountAmount;
+
+    const totalAmount =
+      subtotal + cgstAmount + sgstAmount + igstAmount - discountAmount;
 
     const updateElement = (id, value) => {
       const element = document.getElementById(id);
@@ -1552,17 +1783,17 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
       }
     };
 
-    updateElement('subtotalDisplay', subtotal);
-    updateElement('cgstDisplay', cgstAmount);
-    updateElement('sgstDisplay', sgstAmount);
-    updateElement('igstDisplay', igstAmount);
-    updateElement('discountDisplay', discountAmount);
-    updateElement('totalDisplay', totalAmount);
+    updateElement("subtotalDisplay", subtotal);
+    updateElement("cgstDisplay", cgstAmount);
+    updateElement("sgstDisplay", sgstAmount);
+    updateElement("igstDisplay", igstAmount);
+    updateElement("discountDisplay", discountAmount);
+    updateElement("totalDisplay", totalAmount);
   }
 
   // Check authentication and load invoice data on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== 'true') {
+  document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== "true") {
       window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
       return;
     }
@@ -1571,180 +1802,236 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
     loadInvoiceData();
 
     // Setup form event listeners
-    const addItemBtn = document.getElementById('addItemBtn');
+    const addItemBtn = document.getElementById("addItemBtn");
     if (addItemBtn) {
-      addItemBtn.addEventListener('click', addItem);
+      addItemBtn.addEventListener("click", addItem);
     }
 
-    ['cgst_percentage', 'sgst_percentage', 'igst_percentage', 'discount_percentage'].forEach(id => {
+    [
+      "cgst_percentage",
+      "sgst_percentage",
+      "igst_percentage",
+      "discount_percentage",
+    ].forEach((id) => {
       const element = document.getElementById(id);
       if (element) {
-        element.addEventListener('change', calculateTotals);
-        element.addEventListener('input', calculateTotals);
+        element.addEventListener("change", calculateTotals);
+        element.addEventListener("input", calculateTotals);
       }
     });
   });
 
-  // Form submission
-  document.getElementById('invoiceForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    showLoader('Updating Invoice...');
-    
-    try {
-      const formData = new FormData(this);
-      const invoiceData = Object.fromEntries(formData.entries());
-      
-      // Collect items data
-      const items = [];
-      const itemRows = document.querySelectorAll('.item-row');
-      
-      console.log('=== COLLECTING ITEMS FROM DOM ===');
-      console.log('Found item rows:', itemRows.length);
-      
-      itemRows.forEach((row, index) => {
-        console.log(`Processing item row ${index + 1}:`);
-        
-        // Try multiple selectors to ensure we find the inputs
-        const descriptionInput = row.querySelector('.item-description') || 
-                                row.querySelector('input[name*="product_description"]');
-        const unitPriceInput = row.querySelector('.item-unit-price') || 
-                              row.querySelector('input[name*="unit_price"]');
-        const quantityInput = row.querySelector('.item-quantity') || 
-                             row.querySelector('input[name*="quantity"]');
-        
-        console.log(`  Description input:`, descriptionInput?.value);
-        console.log(`  Unit price input:`, unitPriceInput?.value);
-        console.log(`  Quantity input:`, quantityInput?.value);
-        
-        if (descriptionInput && descriptionInput.value.trim()) {
-          const unitPrice = parseFloat(unitPriceInput?.value) || 0;
-          const quantityText = quantityInput?.value.trim() || '0';
-          const quantityNumeric = extractNumericValue(quantityText);
-          const totalPrice = unitPrice * quantityNumeric;
-          
-          const item = {
-            sr_no: index + 1,
-            product_name: descriptionInput.value.trim(),
-            product_description: descriptionInput.value.trim(),
-            product_category: 'General',
-            hsn_code: '',
-            unit_price: unitPrice,
-            quantity: quantityText, // Store the full text
-            total_price: totalPrice, // Calculate using numeric value
-            unit: 'Nos'
-          };
-          
-          console.log(`  Adding item:`, item);
-          items.push(item);
-        } else {
-          console.log(`  Skipping row ${index + 1} - no description or description empty`);
-        }
-      });
-      
-      console.log('=== ITEMS COLLECTION SUMMARY ===');
-      console.log('Total items collected:', items.length);
-      console.log('Items array:', items);
-      
-      if (items.length === 0) {
-        hideLoader();
-        console.error('No items found to update invoice with');
-        await showMessage('warning', 'Missing Items', 'Please add at least one item to the invoice. Make sure all item fields (description, price, quantity) are filled.');
-        return;
-      }
-      
-      // Calculate totals
-      const subtotal = items.reduce((sum, item) => sum + item.total_price, 0);
-      const cgstPercentage = parseFloat(document.getElementById('cgst_percentage').value) || 0;
-      const sgstPercentage = parseFloat(document.getElementById('sgst_percentage').value) || 0;
-      const igstPercentage = parseFloat(document.getElementById('igst_percentage').value) || 0;
-      const discountPercentage = parseFloat(document.getElementById('discount_percentage').value) || 0;
-      
-      const cgstAmount = (subtotal * cgstPercentage) / 100;
-      const sgstAmount = (subtotal * sgstPercentage) / 100;
-      const igstAmount = (subtotal * igstPercentage) / 100;
-      const discountAmount = (subtotal * discountPercentage) / 100;
-      const totalTaxAmount = cgstAmount + sgstAmount + igstAmount;
-      const totalAmount = subtotal + totalTaxAmount - discountAmount;
-      
-      // Prepare update data
-      invoiceData.items = items;
-      invoiceData.subtotal = subtotal;
-      invoiceData.cgst_amount = cgstAmount;
-      invoiceData.sgst_amount = sgstAmount;
-      invoiceData.igst_amount = igstAmount;
-      invoiceData.total_tax_amount = totalTaxAmount;
-      invoiceData.discount_amount = discountAmount;
-      invoiceData.total_amount = totalAmount;
-      
-      // Structure bank details
-      invoiceData.bank_details = {
-        bank_name: invoiceData.bank_name || '',
-        account_number: invoiceData.bank_account_number || '',
-        branch: invoiceData.bank_branch || '',
-        ifsc_code: invoiceData.bank_ifsc_code || '',
-        account_type: invoiceData.bank_account_type || ''
-      };
-      
-      console.log('=== BANK DETAILS PROCESSING ===');
-      console.log('Original bank fields from form:');
-      console.log('  bank_name:', invoiceData.bank_name);
-      console.log('  bank_account_number:', invoiceData.bank_account_number);
-      console.log('  bank_branch:', invoiceData.bank_branch);
-      console.log('  bank_ifsc_code:', invoiceData.bank_ifsc_code);
-      console.log('  bank_account_type:', invoiceData.bank_account_type);
-      console.log('Structured bank_details object:', invoiceData.bank_details);
-      
-      // Clean up flat bank fields
-      delete invoiceData.bank_name;
-      delete invoiceData.bank_account_number;
-      delete invoiceData.bank_branch;
-      delete invoiceData.bank_ifsc_code;
-      delete invoiceData.bank_account_type;
-      
-      // Remove flat item fields
-      Object.keys(invoiceData).forEach(key => {
-        if (key.startsWith('items[') && key.includes('][')) {
-          delete invoiceData[key];
-        }
-      });
-      
-      invoiceData.updated_at = new Date().toISOString();
-      
-      console.log('=== FINAL UPDATE DATA ===');
-      console.log('Items count:', invoiceData.items?.length || 0);
-      console.log('Items data:', invoiceData.items);
-      console.log('Full payload:', JSON.stringify(invoiceData, null, 2));
-      
-      // Submit update
-      const response = await fetch(`/api/bills/${currentInvoiceId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(invoiceData)
-      });
-      
-      hideLoader();
-      
-      if (response.ok) {
-        const result = await response.json();
-        await showMessage('success', 'Success!', `Invoice  has been updated successfully!`);
-        window.location.href = '/bills';
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        await showMessage('error', 'Error', `Failed to update invoice: ${errorData.error || 'Unknown error'}`);
-      }
-    } catch (error) {
-      hideLoader();
-      console.error('Invoice update error:', error);
-      await showMessage('error', 'Error', `Error updating invoice: ${error.message}`);
-    }
+  // Initialize datepicker when jQuery is ready
+  window.addEventListener("jqueryReady", function() {
+    console.log("jQuery ready event received, initializing datepicker...");
+    initializeDatepicker();
   });
+
+  // Form submission
+  document
+    .getElementById("invoiceForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      showLoader("Updating Invoice...");
+
+      try {
+        // Prepare dates for backend submission
+        prepareDatesForSubmission();
+        const formData = new FormData(this);
+        const invoiceData = Object.fromEntries(formData.entries());
+
+        // Collect items data
+        const items = [];
+        const itemRows = document.querySelectorAll(".item-row");
+
+        console.log("=== COLLECTING ITEMS FROM DOM ===");
+        console.log("Found item rows:", itemRows.length);
+
+        itemRows.forEach((row, index) => {
+          console.log(`Processing item row ${index + 1}:`);
+
+          // Try multiple selectors to ensure we find the inputs
+          const descriptionInput =
+            row.querySelector(".item-description") ||
+            row.querySelector('input[name*="product_description"]');
+          const unitPriceInput =
+            row.querySelector(".item-unit-price") ||
+            row.querySelector('input[name*="unit_price"]');
+          const quantityInput =
+            row.querySelector(".item-quantity") ||
+            row.querySelector('input[name*="quantity"]');
+
+          console.log(`  Description input:`, descriptionInput?.value);
+          console.log(`  Unit price input:`, unitPriceInput?.value);
+          console.log(`  Quantity input:`, quantityInput?.value);
+
+          if (descriptionInput && descriptionInput.value.trim()) {
+            const unitPrice = parseFloat(unitPriceInput?.value) || 0;
+            const quantityText = quantityInput?.value.trim() || "0";
+            const quantityNumeric = extractNumericValue(quantityText);
+            const totalPrice = unitPrice * quantityNumeric;
+
+            const item = {
+              sr_no: index + 1,
+              product_name: descriptionInput.value.trim(),
+              product_description: descriptionInput.value.trim(),
+              product_category: "General",
+              hsn_code: "",
+              unit_price: unitPrice,
+              quantity: quantityText, // Store the full text
+              total_price: totalPrice, // Calculate using numeric value
+              unit: "Nos",
+            };
+
+            console.log(`  Adding item:`, item);
+            items.push(item);
+          } else {
+            console.log(
+              `  Skipping row ${index + 1} - no description or description empty`
+            );
+          }
+        });
+
+        console.log("=== ITEMS COLLECTION SUMMARY ===");
+        console.log("Total items collected:", items.length);
+        console.log("Items array:", items);
+
+        if (items.length === 0) {
+          hideLoader();
+          console.error("No items found to update invoice with");
+          await showMessage(
+            "warning",
+            "Missing Items",
+            "Please add at least one item to the invoice. Make sure all item fields (description, price, quantity) are filled."
+          );
+          return;
+        }
+
+        // Calculate totals
+        const subtotal = items.reduce((sum, item) => sum + item.total_price, 0);
+        const cgstPercentage =
+          parseFloat(document.getElementById("cgst_percentage").value) || 0;
+        const sgstPercentage =
+          parseFloat(document.getElementById("sgst_percentage").value) || 0;
+        const igstPercentage =
+          parseFloat(document.getElementById("igst_percentage").value) || 0;
+        const discountPercentage =
+          parseFloat(document.getElementById("discount_percentage").value) || 0;
+
+        const cgstAmount = (subtotal * cgstPercentage) / 100;
+        const sgstAmount = (subtotal * sgstPercentage) / 100;
+        const igstAmount = (subtotal * igstPercentage) / 100;
+        const discountAmount = (subtotal * discountPercentage) / 100;
+        const totalTaxAmount = cgstAmount + sgstAmount + igstAmount;
+        const totalAmount = subtotal + totalTaxAmount - discountAmount;
+
+        // Prepare update data
+        invoiceData.items = items;
+        invoiceData.subtotal = subtotal;
+        invoiceData.cgst_amount = cgstAmount;
+        invoiceData.sgst_amount = sgstAmount;
+        invoiceData.igst_amount = igstAmount;
+        invoiceData.total_tax_amount = totalTaxAmount;
+        invoiceData.discount_amount = discountAmount;
+        invoiceData.total_amount = totalAmount;
+
+        // Structure bank details
+        invoiceData.bank_details = {
+          bank_name: invoiceData.bank_name || "",
+          account_number: invoiceData.bank_account_number || "",
+          branch: invoiceData.bank_branch || "",
+          ifsc_code: invoiceData.bank_ifsc_code || "",
+          account_type: invoiceData.bank_account_type || "",
+        };
+
+        console.log("=== BANK DETAILS PROCESSING ===");
+        console.log("Original bank fields from form:");
+        console.log("  bank_name:", invoiceData.bank_name);
+        console.log("  bank_account_number:", invoiceData.bank_account_number);
+        console.log("  bank_branch:", invoiceData.bank_branch);
+        console.log("  bank_ifsc_code:", invoiceData.bank_ifsc_code);
+        console.log("  bank_account_type:", invoiceData.bank_account_type);
+        console.log(
+          "Structured bank_details object:",
+          invoiceData.bank_details
+        );
+
+        // Clean up flat bank fields
+        delete invoiceData.bank_name;
+        delete invoiceData.bank_account_number;
+        delete invoiceData.bank_branch;
+        delete invoiceData.bank_ifsc_code;
+        delete invoiceData.bank_account_type;
+
+        // Remove flat item fields
+        Object.keys(invoiceData).forEach((key) => {
+          if (key.startsWith("items[") && key.includes("][")) {
+            delete invoiceData[key];
+          }
+        });
+
+        invoiceData.updated_at = new Date().toISOString();
+
+        console.log("=== FINAL UPDATE DATA ===");
+        console.log("Items count:", invoiceData.items?.length || 0);
+        console.log("Items data:", invoiceData.items);
+        console.log("Full payload:", JSON.stringify(invoiceData, null, 2));
+
+        // Submit update
+        const response = await fetch(`/api/bills/${currentInvoiceId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(invoiceData),
+        });
+
+        hideLoader();
+
+        if (response.ok) {
+          const result = await response.json();
+          await showMessage(
+            "success",
+            "Success!",
+            `Invoice  has been updated successfully!`
+          );
+
+          // Clear cached invoice data so fresh data loads on bills page
+          localStorage.removeItem("bills_invoices_data");
+          localStorage.removeItem("bills_last_updated");
+
+          window.location.href = "/bills";
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          await showMessage(
+            "error",
+            "Error",
+            `Failed to update invoice: ${errorData.error || "Unknown error"}`
+          );
+          // Restore display format on error
+          restoreDisplayFormat();
+        }
+      } catch (error) {
+        hideLoader();
+        console.error("Invoice update error:", error);
+        await showMessage(
+          "error",
+          "Error",
+          `Error updating invoice: ${error.message}`
+        );
+        // Restore display format on error
+        restoreDisplayFormat();
+      }
+    });
 
   function logout() {
     localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-    showMessage('success', 'Logged Out', 'You have been logged out successfully.').then(() => {
+    showMessage(
+      "success",
+      "Logged Out",
+      "You have been logged out successfully."
+    ).then(() => {
       window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
     });
   }
@@ -1759,11 +2046,60 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
   // Utility function to extract numeric value from text (e.g., "1 PC" -> 1)
   function extractNumericValue(value) {
     if (!value) return 0;
-    if (typeof value === 'number') return value;
-    
+    if (typeof value === "number") return value;
+
     // Convert to string and extract numbers
     const str = String(value);
     const matches = str.match(/\d+(?:\.\d+)?/);
     return matches ? parseFloat(matches[0]) : 0;
+  }
+
+  // Initialize jQuery Datepicker with proper loading check
+  function initializeDatepicker() {
+    if (typeof $ !== "undefined" && typeof $.datepicker !== "undefined") {
+      $(".datepicker").datepicker({
+        dateFormat: "dd M, yy",
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        yearRange: "c-10:c+10",
+        maxDate: 0,
+        onSelect: function (dateText, inst) {
+          // Store backend format for form submission
+          const selectedDate = $(this).datepicker("getDate");
+          const backendFormat = $.datepicker.formatDate(
+            "yy-mm-dd",
+            selectedDate
+          );
+          $(this).data("backend-value", backendFormat);
+        },
+      });
+      console.log("Datepicker initialized for edit bill form");
+    } else {
+      console.log("jQuery or jQuery UI not loaded yet, retrying...");
+      setTimeout(initializeDatepicker, 100);
+    }
+  }
+
+  // Function to prepare dates for backend submission
+  function prepareDatesForSubmission() {
+    $(".datepicker").each(function () {
+      const backendValue = $(this).data("backend-value");
+      if (backendValue) {
+        $(this).val(backendValue); // Temporarily change to backend format
+      }
+    });
+  }
+
+  // Function to restore display format after submission
+  function restoreDisplayFormat() {
+    $(".datepicker").each(function () {
+      const backendValue = $(this).data("backend-value");
+      if (backendValue) {
+        const dateObj = $.datepicker.parseDate("yy-mm-dd", backendValue);
+        const displayValue = $.datepicker.formatDate("dd M, yy", dateObj);
+        $(this).val(displayValue); // Back to display format
+      }
+    });
   }
 </script>

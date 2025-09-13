@@ -3,6 +3,35 @@ import Layout from "../../layouts/Layout.astro";
 import { AUTH_CONFIG } from "../../config/auth.js";
 ---
 
+<!-- jQuery and jQuery UI for Datepicker -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script>
+  // Load jQuery first
+  (function() {
+    var script = document.createElement('script');
+    script.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
+    script.onload = function() {
+      console.log('jQuery loaded');
+      // Load jQuery UI after jQuery is loaded
+      var uiScript = document.createElement('script');
+      uiScript.src = 'https://code.jquery.com/ui/1.13.2/jquery-ui.min.js';
+      uiScript.onload = function() {
+        console.log('jQuery UI loaded');
+        // Dispatch custom event when both are loaded
+        window.dispatchEvent(new Event('jqueryReady'));
+      };
+      uiScript.onerror = function() {
+        console.error('Failed to load jQuery UI');
+      };
+      document.head.appendChild(uiScript);
+    };
+    script.onerror = function() {
+      console.error('Failed to load jQuery');
+    };
+    document.head.appendChild(script);
+  })();
+</script>
+
 <Layout title="Create New Invoice - Shagoon Chair">
   <main>
     <div class="page-header">
@@ -31,10 +60,12 @@ import { AUTH_CONFIG } from "../../config/auth.js";
             <div class="form-group">
               <label for="invoice_date">Invoice Date *</label>
               <input
-                type="date"
+                type="text"
                 id="invoice_date"
                 name="invoice_date"
+                class="datepicker"
                 required
+                readonly
               />
             </div>
           </div>
@@ -50,7 +81,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
             </div>
             <div class="form-group">
               <label for="challan_date">Challan Date</label>
-              <input type="date" id="challan_date" name="challan_date" />
+              <input type="text" id="challan_date" name="challan_date" class="datepicker" readonly />
             </div>
           </div>
           <div class="form-row">
@@ -65,7 +96,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
             </div>
             <div class="form-group">
               <label for="po_date">P.O. Date</label>
-              <input type="date" id="po_date" name="po_date" />
+              <input type="text" id="po_date" name="po_date" class="datepicker" readonly />
             </div>
           </div>
           <div class="form-row">
@@ -1446,11 +1477,36 @@ import { AUTH_CONFIG } from "../../config/auth.js";
       }
     });
 
+    // Function to prepare dates for backend submission
+    function prepareDatesForSubmission() {
+      $('.datepicker').each(function() {
+        const backendValue = $(this).data('backend-value');
+        if (backendValue) {
+          $(this).val(backendValue); // Temporarily change to backend format
+        }
+      });
+    }
+
+    // Function to restore display format after submission
+    function restoreDisplayFormat() {
+      $('.datepicker').each(function() {
+        const backendValue = $(this).data('backend-value');
+        if (backendValue) {
+          const dateObj = $.datepicker.parseDate('yy-mm-dd', backendValue);
+          const displayValue = $.datepicker.formatDate('dd M, yy', dateObj);
+          $(this).val(displayValue);
+        }
+      });
+    }
+
     invoiceForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       showLoader("Creating Invoice...");
 
       try {
+        // Prepare dates for backend submission
+        prepareDatesForSubmission();
+
         const formData = new FormData(invoiceForm);
         const invoiceData = Object.fromEntries(formData.entries());
 
@@ -1544,6 +1600,11 @@ import { AUTH_CONFIG } from "../../config/auth.js";
             "Success!",
             "Invoice created successfully!"
           );
+
+          // Clear cached invoice data so fresh data loads on bills page
+          localStorage.removeItem("bills_invoices_data");
+          localStorage.removeItem("bills_last_updated");
+
           window.location.href = "/bills";
         } else {
           const errorText = await response.text();
@@ -1564,10 +1625,40 @@ import { AUTH_CONFIG } from "../../config/auth.js";
       }
     });
 
-    // Initial setup
-    document.getElementById("invoice_date").value = new Date()
-      .toISOString()
-      .split("T")[0];
+    // Initialize jQuery Datepicker with proper loading check
+    function initializeDatepicker() {
+      if (typeof $ !== 'undefined' && typeof $.datepicker !== 'undefined') {
+        $('.datepicker').datepicker({
+          dateFormat: 'dd M, yy',
+          changeMonth: true,
+          changeYear: true,
+          showButtonPanel: true,
+          yearRange: 'c-10:c+10',
+          maxDate: 0,
+          onSelect: function(dateText, inst) {
+            // Store backend format for form submission
+            const selectedDate = $(this).datepicker('getDate');
+            const backendFormat = $.datepicker.formatDate('yy-mm-dd', selectedDate);
+            $(this).data('backend-value', backendFormat);
+          }
+        });
+
+        // Set default date for invoice_date
+        const today = new Date();
+        const displayFormat = $.datepicker.formatDate('dd M, yy', today);
+        document.getElementById("invoice_date").value = displayFormat;
+        $('#invoice_date').data('backend-value', $.datepicker.formatDate('yy-mm-dd', today));
+
+        console.log('Datepicker initialized successfully');
+      } else {
+        console.log('jQuery or jQuery UI not loaded yet, retrying...');
+        setTimeout(initializeDatepicker, 100);
+      }
+    }
+
+    // Start initialization
+    initializeDatepicker();
+
     addItem();
     calculateTotals();
     updateAddItemButton();

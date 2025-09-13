@@ -1027,7 +1027,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
 
     const formattedDate = invoice.invoice_date
       ? formatDate(new Date(invoice.invoice_date))
-      : "N/A";
+      : "";
 
     function formatDate(date) {
       const day = date.getDate();
@@ -1054,7 +1054,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
       <td class="table-invoice-number">${invoice.bill_number}</td>
       <td class="table-customer-name">${invoice.customer_name}</td>
       <td class="table-invoice-date">${formattedDate}</td>
-      <td class="table-phone">${invoice.customer_phone || "N/A"}</td>
+      <td class="table-phone">${invoice.customer_phone || ""}</td>
       <td class="table-amount">${formattedAmount}</td>
       <td class="table-item-count">${itemCount} items</td>
       <td class="table-actions">

@@ -1065,13 +1065,13 @@ const companyInfo = {
               : `<p style="margin: 1px 0; line-height: 1.2;">${line.trim()}</p>`
           )
           .join("")
-      : '<p style="margin: 1px 0; line-height: 1.2;">N/A</p>';
+      : '<p style="margin: 1px 0; line-height: 1.2;"></p>';
 
     customerInfo.innerHTML = `
-            <p style="margin: 1px 0; line-height: 1.2;"><strong>${bill.customer_name || "N/A"}</strong></p>
+            <p style="margin: 1px 0; line-height: 1.2;"><strong>${bill.customer_name || ""}</strong></p>
             ${formattedAddress}
-            <p style="margin: 1px 0; line-height: 1.2;">MOB NO. <strong>${bill.customer_phone || "N/A"}</strong> | Email: <strong>${bill.customer_email || ""}</strong></p>
-            <p style="margin: 1px 0; line-height: 1.2;">GST NO. <strong>${bill.customer_gst_number || "N/A"}</strong></p>
+            <p style="margin: 1px 0; line-height: 1.2;">MOB NO. <strong>${bill.customer_phone || ""}</strong> | Email: <strong>${bill.customer_email || ""}</strong></p>
+            <p style="margin: 1px 0; line-height: 1.2;">GST NO. <strong>${bill.customer_gst_number || ""}</strong></p>
         `;
 
     // Helper function to create spacer row
