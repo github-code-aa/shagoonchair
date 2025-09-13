@@ -69,7 +69,7 @@ const companyInfo = {
           </div>
           <div class="company-info">
             <h1 class="company-name">{companyInfo.name}</h1>
-            <p class="company-subtitle">{companyInfo.subtitle}</p>
+            <p><strong class="company-subtitle">{companyInfo.subtitle}</strong></p>
             <p class="company-address">{companyInfo.address}</p>
             <p class="company-contact">
               Ph.: MOB.: {companyInfo.phone}, Email: {companyInfo.email}
@@ -92,13 +92,14 @@ const companyInfo = {
           <div class="invoice-meta">
             <table class="meta-table">
               <tr>
-                <td><strong>INVOICE No:</strong></td>
+                <td><strong>Invoice No:</strong></td>
                 <td id="invoiceNumber">-</td>
                 <td><strong>Date:</strong></td>
                 <td id="invoiceDate">-</td>
               </tr>
               <tr>
-                <td><strong>CHALLAN No.</strong></td>
+         
+                <td><strong>Challan No:</strong></td>
                 <td id="challanNumber">-</td>
                 <td><strong>Date:</strong></td>
                 <td id="challanDate">-</td>
@@ -124,11 +125,11 @@ const companyInfo = {
         <div class="vendor-hsn-section">
           <div class="vendor-info">
             <strong>VENDOR CODE:</strong>
-            <span id="vendorCode">*****</span>
+            <strong><span id="vendorCode">*****</span></strong>
           </div>
           <div class="hsn-info">
             <strong>HSN CODE:</strong>
-            <span id="hsnCode">-</span>
+            <strong><span id="hsnCode">-</span></strong>
           </div>
         </div>
 
@@ -161,23 +162,23 @@ const companyInfo = {
               <td class="bank-details-cell">
                 <p>
                   <strong>Bank Name:</strong>
-                  <span id="bankName">-</span>
+                  <strong><span id="bankName">-</span></strong>
                 </p>
                 <p>
                   <strong>Bank A/c:</strong>
-                  <span id="bankAccount">-</span>
+                  <strong><span id="bankAccount">-</span></strong>
                 </p>
                 <p>
                   <strong>Bank Branch:</strong>
-                  <span id="bankBranch">-</span>
+                  <strong><span id="bankBranch">-</span></strong>
                 </p>
                 <p>
                   <strong>Bank IFSC:</strong>
-                  <span id="bankIFSC">-</span>
+                  <strong><span id="bankIFSC">-</span></strong>
                 </p>
                 <p>
                   <strong>Type of A/C:</strong>
-                  <span id="bankAccountType">-</span>
+                  <strong><span id="bankAccountType">-</span></strong>
                 </p>
               </td>
               <td class="terms-details-cell">
@@ -336,9 +337,10 @@ const companyInfo = {
   }
 
   .invoice-document {
-    padding: 6mm;
+    font-weight: 600;
+    padding: 8mm;
     font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.2;
     color: #333;
     min-height: 297mm;
@@ -375,6 +377,8 @@ const companyInfo = {
   .company-info {
     flex: 1;
     text-align: center;
+    font-weight: 600;
+
   }
 
   .company-name {
@@ -388,7 +392,7 @@ const companyInfo = {
   .company-subtitle {
     font-size: 12px;
     margin: 0 0 4px 0;
-    font-weight: 500;
+    font-weight: 600;
     color: #555;
     text-transform: uppercase;
   }
@@ -398,6 +402,8 @@ const companyInfo = {
     font-size: 12px;
     margin: 2px 0;
     line-height: 1.2;
+    font-weight: 600;
+
   }
 
   .document-type {
@@ -472,7 +478,7 @@ const companyInfo = {
   .meta-table td:nth-child(3) {
     background: #f4f4f4;
     font-weight: 600;
-    width: 30%;
+    width: 10%;
     color: #444;
   }
 
@@ -1030,16 +1036,17 @@ const companyInfo = {
     console.log("Populating invoice with data:", bill);
 
     // Basic invoice details
-    document.getElementById("invoiceNumber").textContent = bill.id || "-";
+
+    document.getElementById("invoiceNumber").textContent = bill.bill_number || "-";
     document.getElementById("invoiceDate").textContent =
-      formatDate(new Date(bill.invoice_date)) || "-";
+      bill.invoice_date && !isNaN(new Date(bill.invoice_date).getTime()) ? formatDate(new Date(bill.invoice_date)) : "";
     document.getElementById("challanNumber").textContent =
       bill.challan_number || "-";
     document.getElementById("challanDate").textContent =
-      formatDate(new Date(bill.challan_date)) || "-";
+      bill.challan_date && !isNaN(new Date(bill.challan_date).getTime()) ? formatDate(new Date(bill.challan_date)) : "";
     document.getElementById("poNumber").textContent = bill.po_number || "-";
     document.getElementById("poDate").textContent =
-      formatDate(new Date(bill.po_date)) || "-";
+      bill.po_date && !isNaN(new Date(bill.po_date).getTime()) ? formatDate(new Date(bill.po_date)) : "";
     document.getElementById("dispatchDetails").textContent =
       bill.dispatch_details || "-";
     document.getElementById("vendorCode").textContent =
@@ -1063,8 +1070,8 @@ const companyInfo = {
     customerInfo.innerHTML = `
             <p style="margin: 1px 0; line-height: 1.2;"><strong>${bill.customer_name || "N/A"}</strong></p>
             ${formattedAddress}
-            <p style="margin: 1px 0; line-height: 1.2;">MOB NO. ${bill.customer_phone || "N/A"} | Email: ${bill.customer_email || ""}</p>
-            <p style="margin: 1px 0; line-height: 1.2;">GST NO. ${bill.customer_gst_number || "N/A"}</p>
+            <p style="margin: 1px 0; line-height: 1.2;">MOB NO. <strong>${bill.customer_phone || "N/A"}</strong> | Email: <strong>${bill.customer_email || ""}</strong></p>
+            <p style="margin: 1px 0; line-height: 1.2;">GST NO. <strong>${bill.customer_gst_number || "N/A"}</strong></p>
         `;
 
     // Helper function to create spacer row
@@ -1243,12 +1250,12 @@ const companyInfo = {
     } else {
       termsContent.innerHTML = `
         <div class="terms-list">
-          <p>• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.</p>
-          <p>• Inspection prior to dispatch if desire will be at our factory premises.</p>
-          <p>• 50% advance with confirm order & balance against delivery.</p>
-          <p>• Warranty period 12 Months against manufacturing defect.</p>
-          <p>• Payment of the bill must every month of 15th.</p>
-          <p>• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.</p>
+          <p><strong>• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.</strong></p>
+          <p><strong>• Inspection prior to dispatch if desire will be at our factory premises.</strong></p>
+          <p><strong>• 50% advance with confirm order & balance against delivery.</strong></p>
+          <p><strong>• Warranty period 12 Months against manufacturing defect.</strong></p>
+          <p><strong>• Payment of the bill must every month of 15th.</strong></p>
+          <p><strong>• Interest will be charged @ 20% on all accounts remaining unpaid after credit time.</strong></p>
         </div>
       `;
     }

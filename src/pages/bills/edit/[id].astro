@@ -36,6 +36,10 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
           <h2>📋 Invoice Details</h2>
           <div class="form-row">
             <div class="form-group">
+              <label for="bill_number">Bill Number</label>
+              <input type="text" id="bill_number" name="bill_number" placeholder="e.g., BILL-001">
+            </div>
+            <div class="form-group">
               <label for="invoice_date">Invoice Date *</label>
               <input type="date" id="invoice_date" name="invoice_date" required>
             </div>
@@ -91,8 +95,8 @@ import { AUTH_CONFIG } from '../../../config/auth.js';
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="customer_phone">Phone Number *</label>
-              <input type="tel" id="customer_phone" name="customer_phone" required placeholder="+91 9820732807">
+              <label for="customer_phone">Phone Number</label>
+              <input type="tel" id="customer_phone" name="customer_phone" placeholder="+91 9820732807">
             </div>
             <div class="form-group">
               <label for="customer_email">Email</label>

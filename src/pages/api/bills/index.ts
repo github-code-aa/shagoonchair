@@ -386,16 +386,17 @@ async function createBill(db: D1DatabaseClient, billData: Bill) {
     console.log('💾 Inserting bill record...');
     const billResult = await db.query(`
       INSERT INTO bills (
-        invoice_date, challan_number, challan_date, po_number, po_date, dispatch_details,
+        bill_number, invoice_date, challan_number, challan_date, po_number, po_date, dispatch_details,
         customer_name, customer_code, customer_phone, customer_email, customer_address,
-        customer_gst_number, vendor_code, hsn_code, subtotal, 
+        customer_gst_number, vendor_code, hsn_code, subtotal,
         cgst_percentage, cgst_amount, sgst_percentage, sgst_amount, igst_percentage, igst_amount, total_tax_amount,
         discount_percentage, discount_amount, total_amount, payment_method, payment_status, payment_terms,
         bank_name, bank_account_number, bank_branch, bank_ifsc_code, bank_account_type, notes,
         terms_and_conditions, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       RETURNING id
     `, [
+      billData.bill_number || null,
       billData.invoice_date,
       billData.challan_number || null,
       billData.challan_date || null,
@@ -566,8 +567,8 @@ async function updateBill(db: D1DatabaseClient, billData: Bill) {
   try {
     // Update bill
     await db.query(`
-      UPDATE bills SET 
-        invoice_date = ?, customer_name = ?, customer_phone = ?, customer_email = ?, customer_address = ?,
+      UPDATE bills SET
+        bill_number = ?, invoice_date = ?, customer_name = ?, customer_phone = ?, customer_email = ?, customer_address = ?,
         customer_gst_number = ?, vendor_code = ?, hsn_code = ?, subtotal = ?,
         cgst_percentage = ?, cgst_amount = ?, sgst_percentage = ?, sgst_amount = ?,
         igst_percentage = ?, igst_amount = ?, total_tax_amount = ?,
@@ -577,6 +578,7 @@ async function updateBill(db: D1DatabaseClient, billData: Bill) {
         notes = ?, updated_at = ?
       WHERE id = ?
     `, [
+      billData.bill_number || null,
       billData.invoice_date,
       billData.customer_name,
       billData.customer_phone,

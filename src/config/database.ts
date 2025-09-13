@@ -44,6 +44,7 @@ function validateConfig(config: DatabaseConfig): void {
 // Database schema interfaces
 export interface Bill {
   id?: number;
+  bill_number?: string;
   invoice_date: string;
   challan_number?: string;
   challan_date?: string;
@@ -262,6 +263,7 @@ async function initializeTables(client: D1DatabaseClient) {
     const createBillsTable = `
       CREATE TABLE IF NOT EXISTS bills (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        bill_number TEXT,
         invoice_date DATE NOT NULL,
         challan_number TEXT,
         challan_date DATE,
