@@ -856,6 +856,82 @@ const companyInfo = {
   let currentInvoiceId = null;
   let html2pdf = null;
 
+  function numberToWords(amount) {
+    // Extended number to words conversion with Indian numbering system (lakhs and crores)
+    const ones = [
+      "",
+      "ONE",
+      "TWO",
+      "THREE",
+      "FOUR",
+      "FIVE",
+      "SIX",
+      "SEVEN",
+      "EIGHT",
+      "NINE",
+    ];
+    const teens = [
+      "TEN",
+      "ELEVEN",
+      "TWELVE",
+      "THIRTEEN",
+      "FOURTEEN",
+      "FIFTEEN",
+      "SIXTEEN",
+      "SEVENTEEN",
+      "EIGHTEEN",
+      "NINETEEN",
+    ];
+    const tens = [
+      "",
+      "",
+      "TWENTY",
+      "THIRTY",
+      "FORTY",
+      "FIFTY",
+      "SIXTY",
+      "SEVENTY",
+      "EIGHTY",
+      "NINETY",
+    ];
+
+    if (amount === 0) return "ZERO";
+
+    const num = Math.floor(amount);
+    if (num < 10) return ones[num];
+    if (num < 20) return teens[num - 10];
+    if (num < 100)
+      return (
+        tens[Math.floor(num / 10)] + (num % 10 ? " " + ones[num % 10] : "")
+      );
+    if (num < 1000)
+      return (
+        ones[Math.floor(num / 100)] +
+        " HUNDRED" +
+        (num % 100 ? " " + numberToWords(num % 100) : "")
+      );
+    if (num < 100000)
+      return (
+        numberToWords(Math.floor(num / 1000)) +
+        " THOUSAND" +
+        (num % 1000 ? " " + numberToWords(num % 1000) : "")
+      );
+    if (num < 10000000) // Less than 1 crore (10,000,000)
+      return (
+        numberToWords(Math.floor(num / 100000)) +
+        " LAKH" +
+        (num % 100000 ? " " + numberToWords(num % 100000) : "")
+      );
+    if (num < 1000000000) // Less than 100 crores
+      return (
+        numberToWords(Math.floor(num / 10000000)) +
+        " CRORE" +
+        (num % 10000000 ? " " + numberToWords(num % 10000000) : "")
+      );
+
+    return "AMOUNT TOO LARGE";
+  }
+
   // Check if bills cache is still valid (reuse existing logic)
   function isBillsCacheValid() {
     const lastUpdated = localStorage.getItem(STORAGE_KEYS.LAST_UPDATED);
@@ -1293,7 +1369,7 @@ const companyInfo = {
   // }
 
   function numberToWords(amount) {
-    // Simple number to words conversion (basic implementation)
+    // Extended number to words conversion with Indian numbering system (lakhs and crores)
     const ones = [
       "",
       "ONE",
@@ -1351,6 +1427,18 @@ const companyInfo = {
         numberToWords(Math.floor(num / 1000)) +
         " THOUSAND" +
         (num % 1000 ? " " + numberToWords(num % 1000) : "")
+      );
+    if (num < 10000000) // Less than 1 crore (10,000,000)
+      return (
+        numberToWords(Math.floor(num / 100000)) +
+        " LAKH" +
+        (num % 100000 ? " " + numberToWords(num % 100000) : "")
+      );
+    if (num < 1000000000) // Less than 100 crores
+      return (
+        numberToWords(Math.floor(num / 10000000)) +
+        " CRORE" +
+        (num % 10000000 ? " " + numberToWords(num % 10000000) : "")
       );
 
     return "AMOUNT TOO LARGE";
