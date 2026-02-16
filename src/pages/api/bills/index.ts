@@ -339,7 +339,13 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
     });
   } catch (error) {
     console.error('Database error:', error);
-    return new Response(JSON.stringify({ error: error }), {
+    // Return the whole error object with all properties
+    const errorObj = {
+      name: error instanceof Error ? error.name : 'UnknownError',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    };
+    return new Response(JSON.stringify({ error: errorObj }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
