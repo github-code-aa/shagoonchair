@@ -339,7 +339,7 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
     });
   } catch (error) {
     console.error('Database error:', error);
-    return new Response(JSON.stringify({ error: 'Database query failed' }), {
+    return new Response(JSON.stringify({ error: error }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
