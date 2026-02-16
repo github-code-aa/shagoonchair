@@ -57,9 +57,6 @@ import { AUTH_CONFIG } from "../config/auth.js";
           >
           <button onclick="clearFilters()" class="btn btn-outline">Clear</button
           >
-          <button onclick="downloadExcel()" class="btn btn-success" id="downloadBtn" title="Download Excel">
-            📥 Download Excel
-          </button>
         </div>
       </div>
     </div>
@@ -928,7 +925,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
       params.append("page", page.toString());
-      params.append("limit", "50");
+      params.append("limit", "10");
 
       const url =
         "/api/bills" + (params.toString() ? "?" + params.toString() : "");
@@ -1277,68 +1274,4 @@ import { AUTH_CONFIG } from "../config/auth.js";
   window.goToPreviousPage = goToPreviousPage;
 
   window.goToNextPage = goToNextPage;
-
-  // Excel download functionality
-  window.downloadExcel = async function () {
-    try {
-      // Get current filter parameters
-      const search = document.getElementById("searchInput").value.trim();
-      const startDate = document.getElementById("startDate").value;
-      const endDate = document.getElementById("endDate").value;
-
-      // Build query parameters for export
-      const params = new URLSearchParams();
-      if (search) params.append("search", search);
-      if (startDate) params.append("startDate", startDate);
-      if (endDate) params.append("endDate", endDate);
-      params.append("format", "excel");
-
-      const url = "/api/bills/export" + (params.toString() ? "?" + params.toString() : "");
-
-      // Show loading state
-      const downloadBtn = document.getElementById("downloadBtn");
-      const originalText = downloadBtn.innerHTML;
-      downloadBtn.innerHTML = "⏳ Downloading...";
-      downloadBtn.disabled = true;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Get the blob response
-      const blob = await response.blob();
-      
-      // Create download link
-      const urlBlob = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      link.href = urlBlob;
-      link.download = `invoices_${timestamp}.xlsx`;
-      
-      // Trigger download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up
-      window.URL.revokeObjectURL(urlBlob);
-      
-      console.log("✅ Excel download completed");
-    } catch (error) {
-      console.error("❌ Excel download failed:", error);
-      alert("Failed to download Excel file. Please try again.");
-    } finally {
-      // Reset button state
-      const downloadBtn = document.getElementById("downloadBtn");
-      downloadBtn.innerHTML = "📥 Download Excel";
-      downloadBtn.disabled = false;
-    }
-  };
 </script>

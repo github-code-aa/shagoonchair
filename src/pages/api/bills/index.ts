@@ -14,24 +14,24 @@ export const GET: APIRoute = async ({ request }) => {
     const db = await initializeDatabase();
     
     switch (action) {
-    case 'list':
-      return await getAllBills(db, url.searchParams);
-    
-    case 'get':
-      const billId = url.searchParams.get('billId');
-      if (!billId) {
-        return new Response(JSON.stringify({ error: 'Bill ID required' }), {
+      case 'list':
+        return await getAllBills(db, url.searchParams);
+      
+      case 'get':
+        const billId = url.searchParams.get('billId');
+        if (!billId) {
+          return new Response(JSON.stringify({ error: 'Bill ID required' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+        return await getBill(db, billId);
+      
+      default:
+        return new Response(JSON.stringify({ error: 'Invalid action' }), {
           status: 400,
           headers: { 'Content-Type': 'application/json' }
         });
-      }
-      return await getBill(db, billId);
-    
-    default:
-      return new Response(JSON.stringify({ error: 'Invalid action' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
     }
   } catch (error) {
     console.error('API Error:', error);
@@ -309,7 +309,7 @@ async function getAllBills(db: D1DatabaseClient, searchParams: URLSearchParams) 
     
     // Add pagination
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = parseInt(searchParams.get('limit') || '10');
     const offset = (page - 1) * limit;
     
     query += ` LIMIT ${limit} OFFSET ${offset}`;
@@ -669,4 +669,3 @@ async function deleteBill(db: D1DatabaseClient, billId: string) {
     });
   }
 }
-
