@@ -846,15 +846,17 @@ const companyInfo = {
 </style>
 
 <script define:vars={{ AUTH_CONFIG }}>
-  // Reuse the same storage keys from bills.astro for consistency
-  const STORAGE_KEYS = {
-    INVOICES_DATA: 'bills_invoices_data',
-    LAST_UPDATED: 'bills_last_updated',
-    CACHE_DURATION: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
-  };
-
   let currentInvoiceId = null;
   let html2pdf = null;
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
   function numberToWords(amount) {
     // Extended number to words conversion with Indian numbering system (lakhs and crores)
@@ -932,67 +934,6 @@ const companyInfo = {
     return "AMOUNT TOO LARGE";
   }
 
-  // Check if bills cache is still valid (reuse existing logic)
-  function isBillsCacheValid() {
-    const lastUpdated = localStorage.getItem(STORAGE_KEYS.LAST_UPDATED);
-    if (!lastUpdated) return false;
-
-    const timeDiff = Date.now() - parseInt(lastUpdated);
-    return timeDiff < STORAGE_KEYS.CACHE_DURATION;
-  }
-
-  // Find specific invoice in cached bills data
-  function findInvoiceInCache(invoiceId) {
-    const cachedData = localStorage.getItem(STORAGE_KEYS.INVOICES_DATA);
-    if (!cachedData) return null;
-
-    try {
-      const parsedData = JSON.parse(cachedData);
-      const bills = parsedData.bills || [];
-
-      // Find the specific invoice by ID
-      return bills.find(bill => bill.id == invoiceId) || null;
-    } catch (error) {
-      console.error('Error parsing bills cache:', error);
-      return null;
-    }
-  }
-
-  // Update bills cache with new invoice data
-  function updateBillsCacheWithInvoice(invoiceData) {
-    const cachedData = localStorage.getItem(STORAGE_KEYS.INVOICES_DATA);
-
-    if (cachedData) {
-      try {
-        const parsedData = JSON.parse(cachedData);
-        const bills = parsedData.bills || [];
-
-        // Find and update the invoice in the bills array
-        const invoiceIndex = bills.findIndex(bill => bill.id == invoiceData.id);
-
-        if (invoiceIndex !== -1) {
-          // Update existing invoice
-          bills[invoiceIndex] = invoiceData;
-        } else {
-          // Add new invoice to cache
-          bills.unshift(invoiceData); // Add to beginning
-        }
-
-        // Save updated cache
-        const updatedData = {
-          ...parsedData,
-          bills: bills
-        };
-
-        localStorage.setItem(STORAGE_KEYS.INVOICES_DATA, JSON.stringify(updatedData));
-        console.log('🔄 Updated bills cache with invoice data');
-
-      } catch (error) {
-        console.error('Error updating bills cache:', error);
-      }
-    }
-  }
-
   // Refresh function that forces API call for current invoice
   async function refreshInvoice() {
     console.log('🔄 Refreshing invoice data...');
@@ -1039,20 +980,6 @@ const companyInfo = {
       currentInvoiceId = urlParts[urlParts.length - 1];
       console.log("Loading invoice with ID:", currentInvoiceId);
 
-      // First, check if bills cache is valid and contains our invoice
-      if (isBillsCacheValid()) {
-        const cachedInvoice = findInvoiceInCache(currentInvoiceId);
-
-        if (cachedInvoice) {
-          console.log('✅ Loading invoice from bills cache');
-          populateInvoice(cachedInvoice);
-          showInvoiceContent();
-          return;
-        }
-      }
-
-      // Cache miss or invalid - fetch from API
-      console.log('📡 Invoice not in cache, fetching from API');
       await loadInvoiceFromAPI(currentInvoiceId);
 
     } catch (error) {
@@ -1099,9 +1026,6 @@ const companyInfo = {
       populateInvoice(billData);
       showInvoiceContent();
 
-      // Update bills cache with the new invoice data
-      updateBillsCacheWithInvoice(billData);
-
     } catch (error) {
       console.error("Error loading invoice from API:", error);
       throw error; // Re-throw to be handled by caller
@@ -1138,16 +1062,16 @@ const companyInfo = {
           .map((line) =>
             line.includes("-----")
               ? `<hr style="margin: 4px 0; border: none; border-top: 1px dashed #ccc; opacity: 0.5;">`
-              : `<p style="margin: 1px 0; line-height: 1.2;">${line.trim()}</p>`
+              : `<p style="margin: 1px 0; line-height: 1.2;">${escapeHtml(line.trim())}</p>`
           )
           .join("")
       : '<p style="margin: 1px 0; line-height: 1.2;"></p>';
 
     customerInfo.innerHTML = `
-            <p style="margin: 1px 0; line-height: 1.2;"><strong>${bill.customer_name || ""}</strong></p>
+            <p style="margin: 1px 0; line-height: 1.2;"><strong>${escapeHtml(bill.customer_name)}</strong></p>
             ${formattedAddress}
-            <p style="margin: 1px 0; line-height: 1.2;">MOB NO. <strong>${bill.customer_phone || ""}</strong> | Email: <strong>${bill.customer_email || ""}</strong></p>
-            <p style="margin: 1px 0; line-height: 1.2;">GST NO. <strong>${bill.customer_gst_number || ""}</strong></p>
+            <p style="margin: 1px 0; line-height: 1.2;">MOB NO. <strong>${escapeHtml(bill.customer_phone)}</strong> | Email: <strong>${escapeHtml(bill.customer_email)}</strong></p>
+            <p style="margin: 1px 0; line-height: 1.2;">GST NO. <strong>${escapeHtml(bill.customer_gst_number)}</strong></p>
         `;
 
     // Helper function to create spacer row
@@ -1184,9 +1108,9 @@ const companyInfo = {
         if (hasData) {
           row.innerHTML = `
                 <td style="border: 0.5px solid #666; padding: 3px 4px; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.sr_no || index + 1}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: left; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.product_description || item.product_name || ""}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: left; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${escapeHtml(item.product_description || item.product_name)}</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">₹${parseFloat(item.unit_price || 0).toFixed(2)}</td>
-                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${item.quantity || 0}</td>
+                <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">${escapeHtml(item.quantity || 0)}</td>
                 <td style="border: 0.5px solid #666; padding: 3px 4px; text-align: right; font-size: 12px; font-weight: 600; height: 18px; max-height: 18px; overflow: hidden;">₹${parseFloat(item.total_price || 0).toFixed(2)}</td>
               `;
         } else {
@@ -1321,7 +1245,7 @@ const companyInfo = {
         .filter((term) => term);
       termsContent.innerHTML =
         '<div class="terms-list">' +
-        terms.map((term) => `<p>${term}</p>`).join("") +
+        terms.map((term) => `<p>${escapeHtml(term)}</p>`).join("") +
         "</div>";
     } else {
       termsContent.innerHTML = `
@@ -1450,19 +1374,20 @@ const companyInfo = {
     document.getElementById("invoiceContent").style.display = "block";
   }
 
-  function logout() {
-    localStorage.removeItem("authenticated");
-    window.location.href = "/login";
+  async function logout() {
+    try {
+      await fetch(AUTH_CONFIG.API_PATHS.LOGOUT, { method: "POST" });
+    } finally {
+      localStorage.removeItem("bills_invoices_data");
+      localStorage.removeItem("bills_last_updated");
+      Object.keys(sessionStorage)
+        .filter((key) => key.startsWith("bills_cache_v2:"))
+        .forEach((key) => sessionStorage.removeItem(key));
+      window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+    }
   }
 
-  // Check authentication and load invoice data on page load
   document.addEventListener("DOMContentLoaded", function () {
-    if (localStorage.getItem("authenticated") !== "true") {
-      window.location.href = "/login";
-      return;
-    }
-
-    // Load invoice data
     loadInvoiceData();
   });
 

@@ -1,7 +1,5 @@
 // Authentication configuration
 export const AUTH_CONFIG = {
-    CORRECT_PIN: '841425',
-    SESSION_KEY: 'authenticated',
     REDIRECT_PATHS: {
         LOGIN: '/login',
         BILLS: '/bills',
@@ -9,6 +7,9 @@ export const AUTH_CONFIG = {
         INVOICE: '/invoice',
         HOME: '/'
     },
-    // Use localStorage instead of sessionStorage for persistent authentication
-    STORAGE_TYPE: 'localStorage'
+    API_PATHS: {
+        LOGIN: '/api/auth/login',
+        LOGOUT: '/api/auth/logout',
+        SESSION: '/api/auth/session'
+    }
 };

@@ -162,8 +162,6 @@ import { AUTH_CONFIG } from '../config/auth.js';
     </div>
 
     <script define:vars={{ AUTH_CONFIG }}>
-        const CORRECT_PIN = AUTH_CONFIG.CORRECT_PIN;
-        
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('loginForm');
             const pinInput = document.getElementById('pin');
@@ -171,36 +169,49 @@ import { AUTH_CONFIG } from '../config/auth.js';
             const errorMessage = document.getElementById('errorMessage');
             const loadingMessage = document.getElementById('loadingMessage');
 
-            // Check if already authenticated
-            if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true') {
-                window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILLS;
-                return;
-            }
+            fetch(AUTH_CONFIG.API_PATHS.SESSION)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.authenticated) {
+                        window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILLS;
+                    }
+                })
+                .catch(() => {});
 
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
                 const pin = pinInput.value.trim();
                 
-                // Hide previous messages
                 errorMessage.classList.remove('show');
-                
-                if (pin === CORRECT_PIN) {
-                    // Set authentication flag
-                    localStorage.setItem(AUTH_CONFIG.SESSION_KEY, 'true');
-                    
-                    // Show success feedback
+                loadingMessage.classList.add('show');
+                loginBtn.disabled = true;
+
+                try {
+                    const response = await fetch(AUTH_CONFIG.API_PATHS.LOGIN, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pin })
+                    });
+
+                    if (!response.ok) {
+                        const data = await response.json().catch(() => ({}));
+                        throw new Error(data.error || 'Unable to authenticate');
+                    }
+
                     loginBtn.textContent = 'Access Granted...';
                     loginBtn.style.background = '#27ae60';
-                    loginBtn.disabled = true;
-                    
-                    // Redirect to bill page
                     window.location.href = AUTH_CONFIG.REDIRECT_PATHS.BILLS;
-                } else {
-                    // Show error
+                } catch (error) {
+                    errorMessage.textContent = error instanceof Error
+                        ? error.message
+                        : 'Unable to authenticate';
                     errorMessage.classList.add('show');
                     pinInput.value = '';
                     pinInput.focus();
+                    loginBtn.disabled = false;
+                } finally {
+                    loadingMessage.classList.remove('show');
                 }
             });
 
@@ -217,12 +228,6 @@ import { AUTH_CONFIG } from '../config/auth.js';
                 }
             });
 
-            // Submit on Enter key
-            pinInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    form.dispatchEvent(new Event('submit'));
-                }
-            });
         });
     </script>
 </body>

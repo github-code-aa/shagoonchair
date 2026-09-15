@@ -163,6 +163,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
                 type="tel"
                 id="customer_phone"
                 name="customer_phone"
+                required
                 placeholder="+91 9820732807"
               />
             </div>
@@ -832,29 +833,40 @@ import { AUTH_CONFIG } from "../../config/auth.js";
     }
 
     .items-container {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: visible;
     }
 
-    .items-header,
+    .items-header {
+      display: none;
+    }
+
     .item-row {
-      min-width: 750px;
+      grid-template-columns: 1fr !important;
+      min-width: 0;
+      gap: 10px !important;
+      margin-bottom: 12px;
+      border: 1px solid #dee2e6 !important;
+      border-radius: 8px;
     }
 
-    .items-container::after {
-      content: "← Scroll horizontally to view all columns →";
-      display: block;
-      text-align: center;
-      padding: 8px;
-      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-      color: #856404;
-      font-size: 12px;
-      font-weight: 500;
-      border-top: 1px solid #f0e68c;
+    .item-row .remove-item {
+      min-height: 44px;
     }
 
     .form-actions {
       flex-direction: column;
+    }
+
+    .header-actions {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .header-actions > *,
+    .form-actions > * {
+      flex: 1 1 100%;
+      justify-content: center;
+      min-height: 44px;
     }
 
     .form-group input,
@@ -1084,12 +1096,6 @@ import { AUTH_CONFIG } from "../../config/auth.js";
 
 <script define:vars={{ AUTH_CONFIG }}>
   document.addEventListener("DOMContentLoaded", () => {
-    // Authenticate user
-    if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== "true") {
-      window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
-      return;
-    }
-
     // UI Elements
     const invoiceForm = document.getElementById("invoiceForm");
     const itemsList = document.getElementById("itemsList");
@@ -1429,10 +1435,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
       customers.forEach((customer) => {
         const item = document.createElement("div");
         item.className = "suggestion-item";
-        item.innerHTML = customer.customer_name.replace(
-          new RegExp(`(${query})`, "gi"),
-          "<strong>$1</strong>"
-        );
+        item.textContent = customer.customer_name;
         item.addEventListener("click", () => selectCustomer(customer));
         suggestionsContainer.appendChild(item);
       });
@@ -1604,6 +1607,9 @@ import { AUTH_CONFIG } from "../../config/auth.js";
           // Clear cached invoice data so fresh data loads on bills page
           localStorage.removeItem("bills_invoices_data");
           localStorage.removeItem("bills_last_updated");
+          Object.keys(sessionStorage)
+            .filter((key) => key.startsWith("bills_cache_v2:"))
+            .forEach((key) => sessionStorage.removeItem(key));
 
           window.location.href = "/bills";
         } else {
@@ -1664,15 +1670,17 @@ import { AUTH_CONFIG } from "../../config/auth.js";
     updateAddItemButton();
   });
 
-  function logout() {
-    localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-    showMessage(
-      "success",
-      "Logged Out",
-      "You have been logged out successfully."
-    ).then(() => {
+  async function logout() {
+    try {
+      await fetch(AUTH_CONFIG.API_PATHS.LOGOUT, { method: "POST" });
+    } finally {
+      localStorage.removeItem("bills_invoices_data");
+      localStorage.removeItem("bills_last_updated");
+      Object.keys(sessionStorage)
+        .filter((key) => key.startsWith("bills_cache_v2:"))
+        .forEach((key) => sessionStorage.removeItem(key));
       window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
-    });
+    }
   }
 
   window.logout = logout;

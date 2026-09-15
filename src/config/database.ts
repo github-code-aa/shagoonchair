@@ -373,6 +373,7 @@ async function initializeTables(client: D1DatabaseClient) {
     console.log('D1 Database initialized successfully');
   } catch (error) {
     console.error('Failed to initialize D1 database tables:', error);
+    throw error;
   }
 }
 

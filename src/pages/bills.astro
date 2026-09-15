@@ -825,11 +825,21 @@ import { AUTH_CONFIG } from "../config/auth.js";
     .header-actions {
       flex-wrap: wrap;
       justify-content: center;
+      width: 100%;
+    }
+
+    .header-actions > * {
+      flex: 1 1 140px;
+      justify-content: center;
     }
 
     .table-actions {
-      flex-direction: column;
-      gap: 5px;
+      gap: 8px;
+    }
+
+    .action-icon {
+      width: 44px;
+      height: 44px;
     }
 
     .invoices-table th,
@@ -855,130 +865,172 @@ import { AUTH_CONFIG } from "../config/auth.js";
 </style>
 
 <script define:vars={{ AUTH_CONFIG }}>
-  // Storage configuration for 24-hour cache
-  const STORAGE_KEYS = {
-    INVOICES_DATA: "bills_invoices_data",
-    LAST_UPDATED: "bills_last_updated",
-    CACHE_DURATION: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-  };
+  const CACHE_PREFIX = "bills_cache_v2:";
+  const REVALIDATE_INTERVAL = 30_000;
+  const MIN_REVALIDATE_INTERVAL = 10_000;
 
-  // Check authentication and load data on page load
   document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem(AUTH_CONFIG.SESSION_KEY) !== "true") {
-      window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
-      return;
-    }
-    // Load invoices with localStorage check
     loadInvoicesFromStorage();
+
+    window.addEventListener("focus", revalidateVisibleBills);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        revalidateVisibleBills();
+      }
+    });
+
+    window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        revalidateVisibleBills();
+      }
+    }, REVALIDATE_INTERVAL);
   });
 
   let invoicesData = [];
   let currentDeleteId = null;
+  let activeBillsRequest = null;
+  let lastRevalidatedAt = 0;
 
-  // Check if stored data is still valid (24-hour cache)
-  function isDataValid() {
-    const lastUpdated = localStorage.getItem(STORAGE_KEYS.LAST_UPDATED);
-    if (!lastUpdated) return false;
+  function getBillsRequest(page) {
+    const search = document.getElementById("searchInput").value.trim();
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const params = new URLSearchParams();
 
-    const timeDiff = Date.now() - parseInt(lastUpdated);
-    return timeDiff < STORAGE_KEYS.CACHE_DURATION;
+    if (search) params.set("search", search);
+    if (startDate) params.set("startDate", startDate);
+    if (endDate) params.set("endDate", endDate);
+    params.set("page", page.toString());
+    params.set("limit", "50");
+
+    return {
+      url: `/api/bills?${params.toString()}`,
+      cacheKey: `${CACHE_PREFIX}${params.toString()}`,
+    };
   }
 
-  // Load data from localStorage or API
-  async function loadInvoicesFromStorage() {
-    const storedData = localStorage.getItem(STORAGE_KEYS.INVOICES_DATA);
+  function readBillsCache(cacheKey) {
+    const value = sessionStorage.getItem(cacheKey);
+    if (!value) return null;
 
-    if (storedData && isDataValid()) {
-      // Use stored data (valid for 24 hours)
-      try {
-        const parsedData = JSON.parse(storedData);
-        invoicesData = parsedData.bills || [];
-        currentPage = parsedData.page || 1;
-        totalPages = parsedData.totalPages || 1;
-
-        hideLoading();
-        renderTableView();
-        updatePagination();
-        console.log("✅ Loaded invoices from localStorage (24h cache)");
-      } catch (error) {
-        console.error("Error parsing stored data:", error);
-        await loadInvoicesFromAPI(1);
-      }
-    } else {
-      // Load from API (cache expired or no data)
-      console.log("📡 Cache expired or no data, loading from API");
-      await loadInvoicesFromAPI(1);
+    try {
+      return JSON.parse(value);
+    } catch {
+      sessionStorage.removeItem(cacheKey);
+      return null;
     }
   }
 
-  // Force refresh from API (bypasses cache)
-  async function refreshInvoices() {
-    console.log("🔄 Manual refresh requested");
-    currentPage = 1; // Reset to first page on refresh
-    await loadInvoicesFromAPI(1);
+  function writeBillsCache(cacheKey, data) {
+    sessionStorage.setItem(cacheKey, JSON.stringify(data));
   }
 
-  // Load from API and store in localStorage
-  async function loadInvoicesFromAPI(page = 1) {
-    try {
+  function clearBillsCache() {
+    Object.keys(sessionStorage)
+      .filter((key) => key.startsWith(CACHE_PREFIX))
+      .forEach((key) => sessionStorage.removeItem(key));
+  }
+
+  function applyBillsData(data) {
+    invoicesData = data.bills || [];
+    currentPage = data.page || 1;
+    totalPages =
+      data.totalPages ||
+      Math.max(1, Math.ceil((data.total || 0) / (data.limit || 50)));
+    hideLoading();
+    renderTableView();
+    updatePagination();
+  }
+
+  async function loadInvoicesFromStorage() {
+    await loadInvoicesFromAPI(1, { useCache: true });
+  }
+
+  async function refreshInvoices() {
+    await loadInvoicesFromAPI(currentPage, { useCache: false });
+  }
+
+  async function revalidateVisibleBills() {
+    if (Date.now() - lastRevalidatedAt < MIN_REVALIDATE_INTERVAL) return;
+    await loadInvoicesFromAPI(currentPage, {
+      useCache: true,
+      background: true,
+    });
+  }
+
+  async function loadInvoicesFromAPI(
+    page = 1,
+    { useCache = true, background = false } = {},
+  ) {
+    const { url, cacheKey } = getBillsRequest(page);
+    const cachedData = useCache ? readBillsCache(cacheKey) : null;
+    let renderedCache = false;
+
+    if (cachedData) {
+      applyBillsData(cachedData);
+      renderedCache = true;
+    } else if (!background) {
       showLoading();
+    }
 
-      const search = document.getElementById("searchInput").value.trim();
-      const startDate = document.getElementById("startDate").value;
-      const endDate = document.getElementById("endDate").value;
+    activeBillsRequest?.abort();
+    const controller = new AbortController();
+    activeBillsRequest = controller;
 
-      // Build query parameters
-      const params = new URLSearchParams();
-      if (search) params.append("search", search);
-      if (startDate) params.append("startDate", startDate);
-      if (endDate) params.append("endDate", endDate);
-      params.append("page", page.toString());
-      params.append("limit", "50");
-
-      const url =
-        "/api/bills" + (params.toString() ? "?" + params.toString() : "");
-
+    try {
+      const headers = { Accept: "application/json" };
+      if (cachedData?.etag) {
+        headers["If-None-Match"] = cachedData.etag;
+      }
       const response = await fetch(url, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
+        signal: controller.signal,
       });
+
+      if (response.status === 401) {
+        window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+        return;
+      }
+
+      if (response.status === 304 && cachedData) {
+        cachedData.fetchedAt = Date.now();
+        writeBillsCache(cacheKey, cachedData);
+        lastRevalidatedAt = Date.now();
+        hideLoading();
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      invoicesData = data.bills || [];
-      currentPage = data.page || 1;
-      totalPages = Math.ceil((data.total || 0) / (data.limit || 10));
-
-      // Store successful response with 24-hour expiry
-      const dataToStore = {
-        bills: invoicesData,
-        page: currentPage,
-        totalPages: totalPages,
-        timestamp: Date.now(),
-        cacheExpiry: Date.now() + STORAGE_KEYS.CACHE_DURATION,
+      const cacheEntry = {
+        ...data,
+        totalPages: Math.max(
+          1,
+          Math.ceil((data.total || 0) / (data.limit || 50)),
+        ),
+        etag: response.headers.get("ETag"),
+        fetchedAt: Date.now(),
       };
-
-      localStorage.setItem(
-        STORAGE_KEYS.INVOICES_DATA,
-        JSON.stringify(dataToStore),
-      );
-      localStorage.setItem(STORAGE_KEYS.LAST_UPDATED, Date.now().toString());
-
-      hideLoading();
-      renderTableView();
-      updatePagination();
-      console.log("💾 Data cached for 24 hours");
+      writeBillsCache(cacheKey, cacheEntry);
+      applyBillsData(cacheEntry);
+      lastRevalidatedAt = Date.now();
     } catch (error) {
+      if (error.name === "AbortError") return;
       console.error("Error loading invoices:", error);
       hideLoading();
-      showError(
-        "Failed to load invoices. Please check your connection and try again.",
-      );
+      if (!renderedCache) {
+        showError(
+          "Failed to load invoices. Please check your connection and try again.",
+        );
+      }
+    } finally {
+      if (activeBillsRequest === controller) {
+        activeBillsRequest = null;
+      }
     }
   }
 
@@ -1025,11 +1077,10 @@ import { AUTH_CONFIG } from "../config/auth.js";
   }
 
   function createTableRow(invoice) {
-    console.log(invoice);
     const row = document.createElement("tr");
 
     const formattedAmount = `₹${parseFloat(invoice.total_amount || 0).toLocaleString()}`;
-    const itemCount = invoice.items ? invoice.items.length : 0;
+    const itemCount = Number(invoice.item_count || 0);
 
     // Format the invoice date
 
@@ -1058,19 +1109,50 @@ import { AUTH_CONFIG } from "../config/auth.js";
       return `${day}-${month}-${year}`;
     }
 
-    row.innerHTML = `
-      <td class="table-invoice-number">${invoice.bill_number}</td>
-      <td class="table-customer-name">${invoice.customer_name}</td>
-      <td class="table-invoice-date">${formattedDate}</td>
-      <td class="table-phone">${invoice.customer_phone || ""}</td>
-      <td class="table-amount">${formattedAmount}</td>
-      <td class="table-item-count">${itemCount} items</td>
-      <td class="table-actions">
-        <a href="/invoice/${invoice.id}" class="action-icon view-icon" title="View Invoice">👁️</a>
-        <button onclick="editInvoice(${invoice.id})" class="action-icon edit-icon" title="Edit Invoice">✏️</button>
-        <button onclick="deleteInvoice(${invoice.id}, '${invoice.id}')" class="action-icon delete-icon" title="Delete Invoice">🗑️</button>
-      </td>
-    `;
+    const addCell = (text, className) => {
+      const cell = document.createElement("td");
+      cell.className = className;
+      cell.textContent = text;
+      row.appendChild(cell);
+    };
+
+    addCell(invoice.bill_number || `#${invoice.id}`, "table-invoice-number");
+    addCell(invoice.customer_name || "", "table-customer-name");
+    addCell(formattedDate, "table-invoice-date");
+    addCell(invoice.customer_phone || "", "table-phone");
+    addCell(formattedAmount, "table-amount");
+    addCell(`${itemCount} items`, "table-item-count");
+
+    const actions = document.createElement("td");
+    actions.className = "table-actions";
+
+    const viewLink = document.createElement("a");
+    viewLink.href = `/invoice/${invoice.id}`;
+    viewLink.className = "action-icon view-icon";
+    viewLink.title = "View Invoice";
+    viewLink.setAttribute("aria-label", `View invoice ${invoice.bill_number || invoice.id}`);
+    viewLink.textContent = "👁️";
+
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "action-icon edit-icon";
+    editButton.title = "Edit Invoice";
+    editButton.setAttribute("aria-label", `Edit invoice ${invoice.bill_number || invoice.id}`);
+    editButton.textContent = "✏️";
+    editButton.addEventListener("click", () => window.editInvoice(invoice.id));
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "action-icon delete-icon";
+    deleteButton.title = "Delete Invoice";
+    deleteButton.setAttribute("aria-label", `Delete invoice ${invoice.bill_number || invoice.id}`);
+    deleteButton.textContent = "🗑️";
+    deleteButton.addEventListener("click", () =>
+      window.deleteInvoice(invoice.id, invoice.bill_number || invoice.id),
+    );
+
+    actions.append(viewLink, editButton, deleteButton);
+    row.appendChild(actions);
 
     return row;
   }
@@ -1091,8 +1173,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
     document.getElementById("endDate").value = "";
     currentPage = 1;
     currentFilters = {};
-    // Use localStorage if available, otherwise API
-    loadInvoicesFromStorage();
+    loadInvoicesFromAPI(1);
   }
 
   function updatePagination() {
@@ -1239,7 +1320,11 @@ import { AUTH_CONFIG } from "../config/auth.js";
       cancelBtn.style.display = "none";
       closeBtn.style.display = "inline-block";
 
-      // Reload invoices and update cache
+      invoicesData = invoicesData.filter(
+        (invoice) => invoice.id !== currentDeleteId,
+      );
+      renderTableView();
+      clearBillsCache();
       await loadInvoicesFromAPI(1);
     } catch (error) {
       console.error("Error deleting invoice:", error);
@@ -1261,10 +1346,15 @@ import { AUTH_CONFIG } from "../config/auth.js";
     }
   };
 
-  window.logout = function () {
-    localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-
-    window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+  window.logout = async function () {
+    try {
+      await fetch(AUTH_CONFIG.API_PATHS.LOGOUT, { method: "POST" });
+    } finally {
+      clearBillsCache();
+      localStorage.removeItem("bills_invoices_data");
+      localStorage.removeItem("bills_last_updated");
+      window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+    }
   };
 
   window.applyFilters = applyFilters;

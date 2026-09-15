@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { initializeDatabase, extractNumericValue } from '../../../config/database';
+import { calculateInvoiceTotals } from '../../../lib/billing/calculations';
 
 export const prerender = false;
 
@@ -15,6 +16,24 @@ export const PUT: APIRoute = async ({ request, params }) => {
 
     const updateData = await request.json();
     console.log('Updating bill ID:', id, 'with data:', updateData);
+
+    if (updateData.items && Array.isArray(updateData.items)) {
+      const totals = calculateInvoiceTotals(updateData.items, {
+        cgst: updateData.cgst_percentage,
+        sgst: updateData.sgst_percentage,
+        igst: updateData.igst_percentage,
+        discount: updateData.discount_percentage || 0
+      });
+      Object.assign(updateData, {
+        subtotal: totals.subtotal,
+        cgst_amount: totals.cgstAmount,
+        sgst_amount: totals.sgstAmount,
+        igst_amount: totals.igstAmount,
+        total_tax_amount: totals.totalTaxAmount,
+        discount_amount: totals.discountAmount,
+        total_amount: totals.totalAmount
+      });
+    }
 
     // Initialize database
     const db = await initializeDatabase();
@@ -35,7 +54,7 @@ export const PUT: APIRoute = async ({ request, params }) => {
     // Handle all possible bill fields - comprehensive list matching database schema
     // Exclude bank fields from main list as they will be handled separately
     const billFields = [
-      'invoice_date', 'challan_number', 'challan_date', 
+      'bill_number', 'invoice_date', 'challan_number', 'challan_date',
       'po_number', 'po_date', 'dispatch_details',
       'customer_name', 'customer_code', 'customer_phone', 'customer_email', 
       'customer_address', 'customer_gst_number',

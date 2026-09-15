@@ -5,6 +5,7 @@ import {
   extractNumericValue,
   type D1DatabaseClient,
 } from "../../../config/database";
+import { calculateInvoiceTotals } from "../../../lib/billing/calculations";
 
 export const prerender = false;
 
@@ -19,7 +20,7 @@ export const GET: APIRoute = async ({ request }) => {
 
     switch (action) {
       case "list":
-        return await getAllBills(db, url.searchParams);
+        return await getAllBills(db, url.searchParams, request);
 
       case "get":
         const billId = url.searchParams.get("billId");
@@ -194,6 +195,24 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    const totals = calculateInvoiceTotals(billData.items, {
+      cgst: billData.cgst_percentage,
+      sgst: billData.sgst_percentage,
+      igst: billData.igst_percentage,
+      discount: billData.discount_percentage || 0,
+    });
+    Object.assign(billData, {
+      subtotal: totals.subtotal,
+      cgst_amount: totals.cgstAmount,
+      sgst_amount: totals.sgstAmount,
+      igst_amount: totals.igstAmount,
+      total_tax_amount: totals.totalTaxAmount,
+      discount_amount: totals.discountAmount,
+      total_amount: totals.totalAmount,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
     console.log("✅ Validation passed");
 
     // Initialize database
@@ -304,16 +323,29 @@ export const DELETE: APIRoute = async ({ request }) => {
 async function getAllBills(
   db: D1DatabaseClient,
   searchParams: URLSearchParams,
+  request: Request,
 ) {
   try {
     let query = `
-      SELECT 
-        b.*
+      SELECT
+        b.id,
+        b.bill_number,
+        b.customer_name,
+        b.customer_phone,
+        b.invoice_date,
+        b.total_amount,
+        b.payment_method,
+        b.payment_status,
+        b.created_at,
+        b.updated_at,
+        (SELECT COUNT(*) FROM bill_items bi WHERE bi.bill_id = b.id) AS item_count
       FROM bills b
     `;
 
     let countQuery = `
-      SELECT COUNT(*) as total
+      SELECT
+        COUNT(*) as total,
+        COALESCE(MAX(b.updated_at), '') as latest_updated_at
       FROM bills b
     `;
 
@@ -323,8 +355,15 @@ async function getAllBills(
     // Apply filters
     const search = searchParams.get("search");
     if (search) {
-      conditions.push("(b.customer_name LIKE ? OR CAST(b.id AS TEXT) LIKE ?)");
-      params.push(`%${search}%`, `%${search}%`);
+      conditions.push(
+        "(b.customer_name LIKE ? OR b.bill_number LIKE ? OR b.customer_phone LIKE ? OR CAST(b.id AS TEXT) LIKE ?)",
+      );
+      params.push(
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+      );
     }
 
     // Date range filtering
@@ -360,56 +399,59 @@ async function getAllBills(
     query += " ORDER BY b.created_at DESC";
 
     // Add pagination
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
+    const requestedPage = Number.parseInt(searchParams.get("page") || "1", 10);
+    const requestedLimit = Number.parseInt(searchParams.get("limit") || "10", 10);
+    const page = Number.isFinite(requestedPage) ? Math.max(1, requestedPage) : 1;
+    const limit = Number.isFinite(requestedLimit)
+      ? Math.min(100, Math.max(1, requestedLimit))
+      : 10;
     const offset = (page - 1) * limit;
 
     query += ` LIMIT ${limit} OFFSET ${offset}`;
 
-    // Get total count for pagination
     const countResult = await db.query(countQuery, params);
     const total = countResult.results?.[0]?.total || 0;
+    const latestUpdatedAt =
+      countResult.results?.[0]?.latest_updated_at || "";
+    const etag = await createEtag(
+      JSON.stringify({
+        total,
+        latestUpdatedAt,
+        page,
+        limit,
+        query: searchParams.toString(),
+      }),
+    );
+
+    if (request.headers.get("If-None-Match") === etag) {
+      return new Response(null, {
+        status: 304,
+        headers: {
+          ETag: etag,
+          "Cache-Control": "private, no-cache",
+          Vary: "Cookie",
+        },
+      });
+    }
 
     const result = await db.query(query, params);
     const bills = result.results || [];
 
-    let billsWithItems: any[];
-
-    // Get items for each bill - optimized to single query
-    if (bills.length > 0) {
-      const billIds = bills.map((bill: any) => bill.id);
-      const placeholders = billIds.map(() => "?").join(",");
-      const itemsResult = await db.query(
-        `SELECT * FROM bill_items WHERE bill_id IN (${placeholders})`,
-        billIds,
-      );
-      const allItems = itemsResult.results || [];
-
-      // Group items by bill_id
-      const itemsByBillId = allItems.reduce((acc: any, item: any) => {
-        if (!acc[item.bill_id]) acc[item.bill_id] = [];
-        acc[item.bill_id].push(item);
-        return acc;
-      }, {});
-
-      billsWithItems = bills.map((bill: any) => ({
-        ...bill,
-        items: itemsByBillId[bill.id] || [],
-      }));
-    } else {
-      billsWithItems = bills.map((bill: any) => ({ ...bill, items: [] }));
-    }
-
     return new Response(
       JSON.stringify({
-        bills: billsWithItems,
+        bills,
         page,
         limit,
         total: parseInt(total.toString()),
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ETag: etag,
+          "Cache-Control": "private, no-cache",
+          Vary: "Cookie",
+        },
       },
     );
   } catch (error) {
@@ -424,6 +466,18 @@ async function getAllBills(
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  async function createEtag(value: string): Promise<string> {
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(value),
+    );
+    const hash = Array.from(new Uint8Array(digest), (byte) =>
+      byte.toString(16).padStart(2, "0"),
+    ).join("");
+
+    return `"${hash}"`;
   }
 }
 // ...existing code...
