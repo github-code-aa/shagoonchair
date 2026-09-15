@@ -4,6 +4,7 @@ import {
   AuthConfigurationError,
   isValidSessionToken,
 } from "./lib/auth/session";
+import { createRequestLogger } from "./lib/server/logging";
 
 const protectedPagePrefixes = ["/bills", "/invoice"];
 const protectedApiPrefixes = ["/api/bills", "/api/customers", "/api/debug"];
@@ -21,6 +22,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
+  const log = createRequestLogger("middleware.auth", context.request);
   const token = context.cookies.get(adminSessionCookie.name)?.value;
   let authenticated = false;
 
@@ -28,9 +30,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     authenticated = await isValidSessionToken(token);
   } catch (error) {
     if (!(error instanceof AuthConfigurationError)) {
+      log.error("authentication.failed", error);
       throw error;
     }
 
+    log.error("authentication.configuration_missing", error, {
+      status: 503,
+    });
     return new Response(
       "Admin login is not configured. Set ADMIN_PIN and SESSION_SECRET.",
       { status: 503 },
@@ -38,9 +44,21 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   if (authenticated) {
-    return next();
+    log.info("authentication.succeeded", {
+      requestType: isProtectedApi ? "api" : "page",
+    });
+    const response = await next();
+    log.info("request.completed", {
+      status: response.status,
+      durationMs: log.elapsedMs(),
+    });
+    return response;
   }
 
+  log.warn("authentication.rejected", {
+    requestType: isProtectedApi ? "api" : "page",
+    tokenPresent: Boolean(token),
+  });
   context.cookies.delete(adminSessionCookie.name, { path: "/" });
 
   if (isProtectedApi) {

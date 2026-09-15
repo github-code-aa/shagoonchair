@@ -1,37 +1,50 @@
 import type { APIRoute } from 'astro';
 import { initializeDatabase } from '../../../config/database';
+import {
+  addRequestId,
+  createRequestLogger,
+} from '../../../lib/server/logging';
 
 export const prerender = false;
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
+  const log = createRequestLogger('api.debug.database', request);
+  log.info('request.started');
+
   try {
-    console.log('Testing database connection...');
-    
     const db = await initializeDatabase();
-    console.log('Database client initialized successfully');
-    
-    // Test a simple query
     const result = await db.query('SELECT 1 as test');
-    console.log('Test query result:', result);
-    
-    return new Response(JSON.stringify({
-      success: true,
-      message: 'Database connection successful',
-      testResult: result
-    }), {
+
+    log.info('request.completed', {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      durationMs: log.elapsedMs(),
     });
+    return addRequestId(
+      new Response(JSON.stringify({
+        success: true,
+        message: 'Database connection successful',
+        testResult: result
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }),
+      log.requestId,
+    );
   } catch (error) {
-    console.error('Database test error:', error);
-    
-    return new Response(JSON.stringify({ 
-      success: false,
-      error: 'Database connection failed',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }), {
+    log.error('request.failed', error, {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      durationMs: log.elapsedMs(),
     });
+    return addRequestId(
+      new Response(JSON.stringify({
+        success: false,
+        error: 'Database connection failed',
+        requestId: log.requestId,
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }),
+      log.requestId,
+    );
   }
 };

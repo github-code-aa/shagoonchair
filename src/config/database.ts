@@ -1,4 +1,5 @@
 import { getServerSecret } from './server';
+import { logServerError, logServerInfo } from '../lib/server/logging';
 
 // Cloudflare D1 Database Configuration (supports both binding and REST API)
 export interface DatabaseConfig {
@@ -8,39 +9,41 @@ export interface DatabaseConfig {
   apiToken: string;
 }
 
-export const DB_CONFIG: DatabaseConfig = {
-  name: 'shagoonchairdb',
-  accountId: getServerSecret('CLOUDFLARE_ACCOUNT_ID'),
-  databaseId: getServerSecret('CLOUDFLARE_D1_DATABASE_ID'),
-  apiToken: getServerSecret('CLOUDFLARE_API_TOKEN')
-};
+function getDatabaseConfig(): DatabaseConfig {
+  return {
+    name: 'shagoonchairdb',
+    accountId: getServerSecret('CLOUDFLARE_ACCOUNT_ID'),
+    databaseId: getServerSecret('CLOUDFLARE_D1_DATABASE_ID'),
+    apiToken: getServerSecret('CLOUDFLARE_API_TOKEN')
+  };
+}
 
 // Validate configuration
 function validateConfig(config: DatabaseConfig): void {
-  console.log('Validating database configuration...');
-  console.log('Environment:', process.env.NODE_ENV || 'undefined');
-  console.log('Account ID length:', config.accountId?.length || 0);
-  console.log('Database ID length:', config.databaseId?.length || 0);
-  console.log('API Token length:', config.apiToken?.length || 0);
-  
-  // Security check for production
-  if (process.env.NODE_ENV === 'production' && process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') {
-    console.error('🚨 SECURITY WARNING: SSL certificate verification is disabled in production!');
-    console.error('🚨 This is a serious security risk and should be fixed immediately!');
-    throw new Error('SSL certificate verification must be enabled in production');
-  }
-  
   const missing = [];
   if (!config.accountId) missing.push('CLOUDFLARE_ACCOUNT_ID');
   if (!config.databaseId) missing.push('CLOUDFLARE_D1_DATABASE_ID');
   if (!config.apiToken) missing.push('CLOUDFLARE_API_TOKEN');
-  
+
+  logServerInfo('database.config', 'validation.completed', {
+    configured: missing.length === 0,
+    missingVariables: missing,
+  });
+
   if (missing.length > 0) {
-    console.error('Missing environment variables:', missing);
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
-  
-  console.log('Database config validated successfully');
+}
+
+function describeSql(sql: string): { operation: string; target: string } {
+  const normalized = sql.replace(/\s+/g, ' ').trim();
+  const operation = normalized.match(/^([A-Z]+)/i)?.[1]?.toUpperCase() || 'UNKNOWN';
+  const target =
+    normalized.match(
+      /\b(?:FROM|INTO|UPDATE|TABLE)\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z_][\w]*)/i,
+    )?.[1] || 'unknown';
+
+  return { operation, target };
 }
 
 // Database schema interfaces
@@ -130,13 +133,17 @@ export class D1DatabaseClient {
   }
 
   async query(sql: string, params: any[] = []): Promise<any> {
+    const queryId = crypto.randomUUID();
+    const startedAt = Date.now();
+    const description = describeSql(sql);
+
     try {
-      console.log('🔍 Making D1 API request...');
-      console.log('🔍 URL:', `${this.baseUrl}/query`);
-      console.log('🔍 SQL:', sql);
-      console.log('🔍 Params:', params);
-      
-      // Configure fetch for local development SSL issues
+      logServerInfo('database.query', 'request.started', {
+        queryId,
+        ...description,
+        parameterCount: params.length,
+      });
+
       const fetchOptions: RequestInit = {
         method: 'POST',
         headers: this.headers,
@@ -146,45 +153,66 @@ export class D1DatabaseClient {
         })
       };
 
-      // Handle SSL certificate issues in local development only
-      if (typeof process !== 'undefined' && 
-          (process.env.NODE_ENV === 'development' || 
-           process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0')) {
-        console.log('🔧 Local development mode - SSL certificate verification disabled');
-        console.log('⚠️  This should NEVER happen in production!');
-        
-        // Only disable SSL verification if explicitly allowed for local development
-        if (process.env.NODE_TLS_REJECT_UNAUTHORIZED !== '0') {
-          process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-        }
-      } else if (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') {
-        console.log('🔒 Production mode - SSL certificate verification enabled');
-        // Ensure SSL verification is enabled in production
-        delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-      }
-      
       const response = await fetch(`${this.baseUrl}/query`, fetchOptions);
 
-      console.log('📥 Response status:', response.status);
-      console.log('📥 Response statusText:', response.statusText);
+      logServerInfo('database.query', 'response.received', {
+        queryId,
+        ...description,
+        status: response.status,
+        ok: response.ok,
+        durationMs: Date.now() - startedAt,
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ D1 API Response:', errorText);
+        logServerError(
+          'database.query',
+          'response.failed',
+          new Error(`D1 API returned HTTP ${response.status}`),
+          {
+            queryId,
+            ...description,
+            status: response.status,
+            responseBody: errorText.slice(0, 2000),
+            durationMs: Date.now() - startedAt,
+          },
+        );
         throw new Error(`D1 API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const result = await response.json();
-      console.log('✅ D1 API Result:', result);
-      
+
       if (!result.success) {
-        console.error('❌ D1 Query Error:', result.errors);
+        logServerError(
+          'database.query',
+          'query.rejected',
+          new Error(result.errors?.[0]?.message || 'Unknown D1 query error'),
+          {
+            queryId,
+            ...description,
+            errors: result.errors,
+            durationMs: Date.now() - startedAt,
+          },
+        );
         throw new Error(`D1 query failed: ${result.errors?.[0]?.message || 'Unknown error'}`);
       }
 
-      return result.result[0]; // D1 returns an array, we want the first result
+      const queryResult = result.result[0];
+      logServerInfo('database.query', 'query.completed', {
+        queryId,
+        ...description,
+        rowCount: Array.isArray(queryResult?.results) ? queryResult.results.length : 0,
+        changedRows: queryResult?.meta?.changes,
+        durationMs: Date.now() - startedAt,
+      });
+
+      return queryResult; // D1 returns an array, we want the first result
     } catch (error) {
-      console.error('❌ D1 Database query error:', error);
+      logServerError('database.query', 'request.exception', error, {
+        queryId,
+        ...description,
+        durationMs: Date.now() - startedAt,
+      });
       throw error;
     }
   }
@@ -230,29 +258,42 @@ let initializationPromise: Promise<D1DatabaseClient> | null = null;
 export async function initializeDatabase(): Promise<D1DatabaseClient> {
   // Return cached client if already initialized
   if (dbClient) {
+    logServerInfo('database.init', 'cache.hit');
     return dbClient;
   }
   
   // Return existing initialization promise if in progress
   if (initializationPromise) {
+    logServerInfo('database.init', 'initialization.joined');
     return initializationPromise;
   }
   
   // Start new initialization
+  const startedAt = Date.now();
+  logServerInfo('database.init', 'initialization.started');
   initializationPromise = (async () => {
-    console.log('Initializing database client...');
-    validateConfig(DB_CONFIG);
-    const client = new D1DatabaseClient(DB_CONFIG);
-    
+    const config = getDatabaseConfig();
+    validateConfig(config);
+    const client = new D1DatabaseClient(config);
+
     // Initialize tables on first connection
     await initializeTables(client);
-    
+
     // Cache the client
     dbClient = client;
-    initializationPromise = null;
-    
+    logServerInfo('database.init', 'initialization.completed', {
+      durationMs: Date.now() - startedAt,
+    });
+
     return client;
-  })();
+  })().catch((error) => {
+    logServerError('database.init', 'initialization.failed', error, {
+      durationMs: Date.now() - startedAt,
+    });
+    throw error;
+  }).finally(() => {
+    initializationPromise = null;
+  });
   
   return initializationPromise;
 }

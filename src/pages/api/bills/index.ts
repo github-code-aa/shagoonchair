@@ -6,64 +6,98 @@ import {
   type D1DatabaseClient,
 } from "../../../config/database";
 import { calculateInvoiceTotals } from "../../../lib/billing/calculations";
+import {
+  addRequestId,
+  createRequestLogger,
+} from "../../../lib/server/logging";
 
 export const prerender = false;
 
 // This endpoint handles all bill-related operations using Cloudflare D1 REST API
 export const GET: APIRoute = async ({ request }) => {
-  try {
-    const url = new URL(request.url);
-    const action = url.searchParams.get("action") || "list"; // Default to 'list'
+  const log = createRequestLogger("api.bills.get", request);
+  const url = new URL(request.url);
+  const action = url.searchParams.get("action") || "list";
 
+  log.info("request.started", {
+    action,
+    page: url.searchParams.get("page") || "1",
+    limit: url.searchParams.get("limit") || "50",
+    hasSearch: url.searchParams.has("search"),
+    hasStartDate: url.searchParams.has("startDate"),
+    hasEndDate: url.searchParams.has("endDate"),
+    hasConditionalEtag: request.headers.has("if-none-match"),
+  });
+
+  try {
     // Initialize D1 database client
     const db = await initializeDatabase();
 
+    let response: Response;
     switch (action) {
       case "list":
-        return await getAllBills(db, url.searchParams, request);
+        response = await getAllBills(db, url.searchParams, request);
+        break;
 
-      case "get":
+      case "get": {
         const billId = url.searchParams.get("billId");
         if (!billId) {
-          return new Response(JSON.stringify({ error: "Bill ID required" }), {
+          response = new Response(JSON.stringify({ error: "Bill ID required" }), {
             status: 400,
             headers: { "Content-Type": "application/json" },
           });
+          break;
         }
-        return await getBill(db, billId);
+        response = await getBill(db, billId);
+        break;
+      }
 
       default:
-        return new Response(JSON.stringify({ error: "Invalid action" }), {
+        response = new Response(JSON.stringify({ error: "Invalid action" }), {
           status: 400,
           headers: { "Content-Type": "application/json" },
         });
     }
-  } catch (error) {
-    console.error("API Error:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+
+    log.info("request.completed", {
+      action,
+      status: response.status,
+      durationMs: log.elapsedMs(),
     });
+    return addRequestId(response, log.requestId);
+  } catch (error) {
+    log.error("request.failed", error, {
+      action,
+      durationMs: log.elapsedMs(),
+    });
+    return addRequestId(
+      new Response(
+        JSON.stringify({
+          error: "Internal server error",
+          requestId: log.requestId,
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      ),
+      log.requestId,
+    );
   }
 };
 
 export const POST: APIRoute = async ({ request }) => {
-  console.log("🔍 POST /api/bills - Starting request processing");
+  const log = createRequestLogger("api.bills.post", request);
+  log.info("request.started");
 
   try {
-    // Log request details
-    console.log("📥 Request method:", request.method);
-    console.log("📥 Request URL:", request.url);
-    console.log(
-      "📥 Request headers:",
-      Object.fromEntries(request.headers.entries()),
-    );
-
     // Check if request has body
     const contentType = request.headers.get("content-type");
     const contentLength = request.headers.get("content-length");
-    console.log("📥 Content-Type:", contentType);
-    console.log("📥 Content-Length:", contentLength);
+    log.info("request.metadata", {
+      contentType,
+      contentLength,
+    });
 
     if (!contentType || !contentType.includes("application/json")) {
       console.error(
@@ -99,11 +133,7 @@ export const POST: APIRoute = async ({ request }) => {
     let rawBody: string;
     try {
       rawBody = await request.text();
-      console.log("📋 Raw body length:", rawBody.length);
-      console.log(
-        "📋 Raw body preview:",
-        rawBody.substring(0, 200) + (rawBody.length > 200 ? "..." : ""),
-      );
+      log.info("body.read", { bodyLength: rawBody.length });
 
       if (!rawBody || rawBody.trim() === "") {
         console.error("❌ Empty body text");
@@ -136,14 +166,14 @@ export const POST: APIRoute = async ({ request }) => {
     let billData: Bill;
     try {
       billData = JSON.parse(rawBody);
-      console.log("✅ Successfully parsed JSON data");
-      console.log("📋 Received bill data keys:", Object.keys(billData));
-      console.log("📋 Customer name:", billData.customer_name);
-      console.log("📋 Customer name:", billData.customer_name);
-      console.log("📋 Items count:", billData.items?.length || 0);
+      log.info("body.parsed", {
+        receivedFields: Object.keys(billData),
+        itemCount: billData.items?.length || 0,
+      });
     } catch (parseError) {
-      console.error("❌ Failed to parse JSON:", parseError);
-      console.error("❌ Raw body that failed to parse:", rawBody);
+      log.error("body.invalid_json", parseError, {
+        bodyLength: rawBody.length,
+      });
       return new Response(
         JSON.stringify({
           error: "Invalid JSON format in request body",
@@ -151,7 +181,6 @@ export const POST: APIRoute = async ({ request }) => {
             parseError instanceof Error
               ? parseError.message
               : "Unknown parsing error",
-          rawBodyPreview: rawBody.substring(0, 100),
         }),
         {
           status: 400,
