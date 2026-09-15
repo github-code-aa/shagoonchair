@@ -28,8 +28,7 @@ export const GET: APIRoute = async () => {
     return new Response(JSON.stringify({ 
       success: false,
       error: 'Database connection failed',
-      details: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
