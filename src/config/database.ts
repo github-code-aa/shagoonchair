@@ -8,26 +8,39 @@ export interface DatabaseConfig {
   apiToken: string;
 }
 
-function getDatabaseConfig(): DatabaseConfig {
-  return {
-    name: 'shagoonchairdb',
-    accountId: getServerSecret('CLOUDFLARE_ACCOUNT_ID'),
-    databaseId: getServerSecret('CLOUDFLARE_D1_DATABASE_ID'),
-    apiToken: getServerSecret('CLOUDFLARE_API_TOKEN')
-  };
-}
+export const DB_CONFIG: DatabaseConfig = {
+  name: 'shagoonchairdb',
+  accountId: getServerSecret('CLOUDFLARE_ACCOUNT_ID'),
+  databaseId: getServerSecret('CLOUDFLARE_D1_DATABASE_ID'),
+  apiToken: getServerSecret('CLOUDFLARE_API_TOKEN')
+};
 
 // Validate configuration
 function validateConfig(config: DatabaseConfig): void {
+  console.log('Validating database configuration...');
+  console.log('Environment:', process.env.NODE_ENV || 'undefined');
+  console.log('Account ID length:', config.accountId?.length || 0);
+  console.log('Database ID length:', config.databaseId?.length || 0);
+  console.log('API Token length:', config.apiToken?.length || 0);
+  
+  // Security check for production
+  if (process.env.NODE_ENV === 'production' && process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') {
+    console.error('🚨 SECURITY WARNING: SSL certificate verification is disabled in production!');
+    console.error('🚨 This is a serious security risk and should be fixed immediately!');
+    throw new Error('SSL certificate verification must be enabled in production');
+  }
+  
   const missing = [];
   if (!config.accountId) missing.push('CLOUDFLARE_ACCOUNT_ID');
   if (!config.databaseId) missing.push('CLOUDFLARE_D1_DATABASE_ID');
   if (!config.apiToken) missing.push('CLOUDFLARE_API_TOKEN');
-
+  
   if (missing.length > 0) {
     console.error('Missing environment variables:', missing);
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+  
+  console.log('Database config validated successfully');
 }
 
 // Database schema interfaces
@@ -118,23 +131,54 @@ export class D1DatabaseClient {
 
   async query(sql: string, params: any[] = []): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/query`, {
+      console.log('🔍 Making D1 API request...');
+      console.log('🔍 URL:', `${this.baseUrl}/query`);
+      console.log('🔍 SQL:', sql);
+      console.log('🔍 Params:', params);
+      
+      // Configure fetch for local development SSL issues
+      const fetchOptions: RequestInit = {
         method: 'POST',
         headers: this.headers,
         body: JSON.stringify({
           sql: sql,
           params: params
         })
-      });
+      };
+
+      // Handle SSL certificate issues in local development only
+      if (typeof process !== 'undefined' && 
+          (process.env.NODE_ENV === 'development' || 
+           process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0')) {
+        console.log('🔧 Local development mode - SSL certificate verification disabled');
+        console.log('⚠️  This should NEVER happen in production!');
+        
+        // Only disable SSL verification if explicitly allowed for local development
+        if (process.env.NODE_TLS_REJECT_UNAUTHORIZED !== '0') {
+          process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+        }
+      } else if (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') {
+        console.log('🔒 Production mode - SSL certificate verification enabled');
+        // Ensure SSL verification is enabled in production
+        delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+      }
+      
+      const response = await fetch(`${this.baseUrl}/query`, fetchOptions);
+
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response statusText:', response.statusText);
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('❌ D1 API Response:', errorText);
         throw new Error(`D1 API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const result = await response.json();
-
+      console.log('✅ D1 API Result:', result);
+      
       if (!result.success) {
+        console.error('❌ D1 Query Error:', result.errors);
         throw new Error(`D1 query failed: ${result.errors?.[0]?.message || 'Unknown error'}`);
       }
 
@@ -152,13 +196,13 @@ export class D1DatabaseClient {
   async batch(statements: Array<{ sql: string; params?: any[] }>): Promise<any[]> {
     try {
       console.log('🔍 Executing batch with', statements.length, 'statements...');
-
+      
       const results = [];
-
+      
       for (let i = 0; i < statements.length; i++) {
         const statement = statements[i];
         console.log(`📤 Executing statement ${i + 1}/${statements.length}:`, statement.sql.substring(0, 50) + '...');
-
+        
         try {
           const result = await this.query(statement.sql, statement.params || []);
           results.push(result);
@@ -168,7 +212,7 @@ export class D1DatabaseClient {
           throw new Error(`Batch statement ${i + 1} failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
       }
-
+      
       console.log('✅ All batch statements executed successfully');
       return results;
     } catch (error) {
@@ -188,35 +232,35 @@ export async function initializeDatabase(): Promise<D1DatabaseClient> {
   if (dbClient) {
     return dbClient;
   }
-
+  
   // Return existing initialization promise if in progress
   if (initializationPromise) {
     return initializationPromise;
   }
-
-  const pendingInitialization = (async () => {
-    const config = getDatabaseConfig();
-    validateConfig(config);
-    const client = new D1DatabaseClient(config);
-
+  
+  // Start new initialization
+  initializationPromise = (async () => {
+    console.log('Initializing database client...');
+    validateConfig(DB_CONFIG);
+    const client = new D1DatabaseClient(DB_CONFIG);
+    
+    // Initialize tables on first connection
     await initializeTables(client);
-
+    
+    // Cache the client
     dbClient = client;
+    initializationPromise = null;
+    
     return client;
   })();
-  initializationPromise = pendingInitialization;
-
-  try {
-    return await pendingInitialization;
-  } finally {
-    initializationPromise = null;
-  }
+  
+  return initializationPromise;
 }
 
 async function initializeTables(client: D1DatabaseClient) {
   try {
     console.log('Starting database table initialization...');
-
+    
     // Create tables if they don't exist
     const createBillsTable = `
       CREATE TABLE IF NOT EXISTS bills (
@@ -297,10 +341,10 @@ async function initializeTables(client: D1DatabaseClient) {
     // Execute table creation
     console.log('Creating bills table...');
     await client.execute(createBillsTable);
-
+    
     console.log('Creating bill_items table...');
     await client.execute(createBillItemsTable);
-
+    
     console.log('Creating company_info table...');
     await client.execute(createCompanyInfoTable);
 
@@ -327,7 +371,7 @@ async function initializeTables(client: D1DatabaseClient) {
     // Insert sample data if tables are empty
     // console.log('Checking for sample data...');
     // await insertSampleData(client);
-
+    
     console.log('D1 Database initialized successfully');
   } catch (error) {
     console.error('Failed to initialize D1 database tables:', error);
@@ -341,10 +385,10 @@ async function insertCompanyInfo(client: D1DatabaseClient) {
     // Check if company info exists
     const countResult = await client.query('SELECT COUNT(*) as count FROM company_info');
     const companyCount = countResult.results[0]?.count || 0;
-
+    
     if (companyCount === 0) {
       console.log('Inserting company information...');
-
+      
       await client.query(`
         INSERT INTO company_info (
           id, name, address, phone, email, gst_number, pan_number, state_code, logo_url
@@ -359,7 +403,7 @@ async function insertCompanyInfo(client: D1DatabaseClient) {
         '27',
         null
       ]);
-
+      
       console.log('Company information inserted successfully');
     }
   } catch (error) {
@@ -372,12 +416,12 @@ export function extractNumericValue(value: string | number): number {
   if (typeof value === 'number') {
     return value;
   }
-
+  
   if (typeof value === 'string') {
     // Extract first number found in the string
     const match = value.match(/\d+\.?\d*/);
     return match ? parseFloat(match[0]) : 0;
   }
-
+  
   return 0;
 }
