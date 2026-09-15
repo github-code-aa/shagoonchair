@@ -1,27 +1,26 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import AdminLayout from "../layouts/AdminLayout.astro";
 import { AUTH_CONFIG } from "../config/auth.js";
 ---
 
-<Layout title="Invoice Management - Shagoon Chair">
+<AdminLayout title="Invoices">
   <main>
     <div class="page-header">
       <div class="header-left">
-        <h1>📋 Invoice Management</h1>
-        <p>Professional invoice system for Shagoon Seating Chair</p>
+        <h1>Invoices</h1>
+        <p>Search, review, export, and manage customer invoices.</p>
       </div>
       <div class="header-actions">
         <button onclick="refreshInvoices()" class="btn btn-info"
-          >🔄 Refresh</button
+          >Refresh</button
         >
         <a href="/bills/new" class="btn btn-primary">+ New Invoice</a>
-        <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
       </div>
     </div>
 
     <div class="filters-section">
       <div class="filters-card">
-        <h3>🔍 Filter & Search</h3>
+        <h3>Filter invoices</h3>
         <div class="filters-grid">
           <div class="filter-group">
             <label>Search:</label>
@@ -71,7 +70,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
 
     <div class="invoices-section">
       <div class="invoices-header">
-        <h2>📄 Invoices</h2>
+        <h2>Invoice register</h2>
       </div>
 
       <div id="invoicesContainer" class="invoices-grid">
@@ -84,10 +83,10 @@ import { AUTH_CONFIG } from "../config/auth.js";
         <!-- Error state -->
         <div id="errorState" class="error-container" style="display: none;">
           <div class="error-message">
-            <h4>⚠️ Error Loading Invoices</h4>
+            <h4>Unable to load invoices</h4>
             <p id="errorText">Failed to load invoices. Please try again.</p>
             <button onclick="loadInvoices()" class="btn btn-primary"
-              >🔄 Retry</button
+              >Retry</button
             >
           </div>
         </div>
@@ -136,11 +135,11 @@ import { AUTH_CONFIG } from "../config/auth.js";
     <div id="deleteModal" class="modal-overlay" style="display: none;">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>🗑️ Delete Invoice</h3>
+          <h3>Delete invoice</h3>
           <button class="modal-close" onclick="closeDeleteModal()">×</button>
         </div>
         <div class="modal-body">
-          <div class="warning-icon">⚠️</div>
+          <div class="warning-icon" aria-hidden="true">!</div>
           <p>
             Are you sure you want to delete invoice <strong
               id="deleteInvoiceNumber"></strong>?
@@ -192,7 +191,7 @@ import { AUTH_CONFIG } from "../config/auth.js";
       </div>
     </div>
   </main>
-</Layout>
+</AdminLayout>
 
 <style>
   .page-header {
@@ -1061,8 +1060,8 @@ import { AUTH_CONFIG } from "../config/auth.js";
     if (invoicesData.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">
-            📄 No invoices found
+          <td colspan="7" class="empty-table-cell">
+            No invoices match the current filters.
           </td>
         </tr>
       `;
@@ -1109,36 +1108,48 @@ import { AUTH_CONFIG } from "../config/auth.js";
       return `${day}-${month}-${year}`;
     }
 
-    const addCell = (text, className) => {
+    const addCell = (text, className, label) => {
       const cell = document.createElement("td");
       cell.className = className;
+      cell.dataset.label = label;
       cell.textContent = text;
       row.appendChild(cell);
     };
 
-    addCell(invoice.bill_number || `#${invoice.id}`, "table-invoice-number");
-    addCell(invoice.customer_name || "", "table-customer-name");
-    addCell(formattedDate, "table-invoice-date");
-    addCell(invoice.customer_phone || "", "table-phone");
-    addCell(formattedAmount, "table-amount");
-    addCell(`${itemCount} items`, "table-item-count");
+    addCell(invoice.bill_number || `#${invoice.id}`, "table-invoice-number", "Invoice");
+    addCell(invoice.customer_name || "", "table-customer-name", "Customer");
+    addCell(formattedDate, "table-invoice-date", "Date");
+    addCell(invoice.customer_phone || "", "table-phone", "Phone");
+    addCell(formattedAmount, "table-amount", "Amount");
+    addCell(`${itemCount} items`, "table-item-count", "Items");
 
     const actions = document.createElement("td");
     actions.className = "table-actions";
+    actions.dataset.label = "Actions";
 
     const viewLink = document.createElement("a");
     viewLink.href = `/invoice/${invoice.id}`;
     viewLink.className = "action-icon view-icon";
     viewLink.title = "View Invoice";
     viewLink.setAttribute("aria-label", `View invoice ${invoice.bill_number || invoice.id}`);
-    viewLink.textContent = "👁️";
+    viewLink.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+        <circle cx="12" cy="12" r="2.5"></circle>
+      </svg>
+    `;
 
     const editButton = document.createElement("button");
     editButton.type = "button";
     editButton.className = "action-icon edit-icon";
     editButton.title = "Edit Invoice";
     editButton.setAttribute("aria-label", `Edit invoice ${invoice.bill_number || invoice.id}`);
-    editButton.textContent = "✏️";
+    editButton.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m4 16-.75 4.75L8 20l10.5-10.5-4-4L4 16Z"></path>
+        <path d="m13.5 6.5 4 4"></path>
+      </svg>
+    `;
     editButton.addEventListener("click", () => window.editInvoice(invoice.id));
 
     const deleteButton = document.createElement("button");
@@ -1146,7 +1157,11 @@ import { AUTH_CONFIG } from "../config/auth.js";
     deleteButton.className = "action-icon delete-icon";
     deleteButton.title = "Delete Invoice";
     deleteButton.setAttribute("aria-label", `Delete invoice ${invoice.bill_number || invoice.id}`);
-    deleteButton.textContent = "🗑️";
+    deleteButton.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 7h16M9 7V4h6v3M6.5 7l.75 13h9.5l.75-13M10 11v5M14 11v5"></path>
+      </svg>
+    `;
     deleteButton.addEventListener("click", () =>
       window.deleteInvoice(invoice.id, invoice.bill_number || invoice.id),
     );

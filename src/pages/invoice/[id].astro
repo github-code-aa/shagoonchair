@@ -1,5 +1,5 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import AdminLayout from "../../layouts/AdminLayout.astro";
 import { AUTH_CONFIG } from "../../config/auth.js";
 
 // Get the ID from the URL parameter
@@ -18,19 +18,18 @@ const companyInfo = {
 };
 ---
 
-<Layout title="Invoice View - Shagoon Chair">
+<AdminLayout title="Invoice preview">
   <main>
     <!-- Print Controls (hidden when printing) -->
     <div class="invoice-controls no-print">
-      <h1>📄 Invoice View</h1>
+      <h1>Invoice preview</h1>
       <div class="button-group">
-        <button onclick="refreshInvoice()" class="btn btn-info">🔄 Refresh</button>
+        <button onclick="refreshInvoice()" class="btn btn-info">Refresh</button>
         <button onclick="downloadPDF()" class="btn btn-success"
-          >📄 Download PDF</button
+          >Download PDF</button
         >
 
         <a href="/bills" class="btn btn-outline">← Back to Bills</a>
-        <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
       </div>
     </div>
 
@@ -47,10 +46,10 @@ const companyInfo = {
       style="display: none;"
     >
       <div class="error-message">
-        <h4>⚠️ Error Loading Invoice</h4>
+        <h4>Unable to load invoice</h4>
         <p id="errorMessage">Failed to load invoice. Please try again.</p>
         <button onclick="loadInvoiceData()" class="btn btn-primary"
-          >🔄 Retry</button
+          >Retry</button
         >
       </div>
     </div>
@@ -222,7 +221,7 @@ const companyInfo = {
       </div>
     </div>
   </main>
-</Layout>
+</AdminLayout>
 
 <style>
 

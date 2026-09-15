@@ -1,0 +1,200 @@
+---
+import Layout from "./Layout.astro";
+import { AUTH_CONFIG } from "../config/auth.js";
+import "../styles/admin.css";
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+}
+
+const { title, eyebrow = "Billing workspace" } = Astro.props;
+const pathname = Astro.url.pathname;
+const invoicesActive =
+  pathname === "/bills" ||
+  pathname.startsWith("/bills/edit/") ||
+  pathname.startsWith("/invoice/");
+const createActive = pathname === "/bills/new";
+---
+
+<Layout
+  title={`${title} - Shagoon Seating Chair`}
+  description="Shagoon Seating Chair billing and invoice administration"
+>
+  <script is:inline>
+    try {
+      if (localStorage.getItem("shagoon-admin-sidebar") === "collapsed") {
+        document.documentElement.classList.add("admin-sidebar-collapsed");
+      }
+    } catch {
+      // The sidebar remains expanded when storage is unavailable.
+    }
+  </script>
+
+  <div class="admin-app">
+    <button
+      class="admin-backdrop"
+      id="adminBackdrop"
+      type="button"
+      aria-label="Close navigation"
+      hidden
+    ></button>
+
+    <aside class="admin-sidebar" id="adminSidebar" aria-label="Admin navigation">
+      <button
+        class="admin-collapse-button"
+        id="adminCollapseButton"
+        type="button"
+        aria-label="Collapse sidebar"
+        aria-pressed="false"
+        title="Collapse sidebar"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m14 7-5 5 5 5" />
+        </svg>
+      </button>
+
+      <div class="admin-brand">
+        <div class="admin-brand-mark" aria-hidden="true">S</div>
+        <div class="admin-brand-copy">
+          <strong>Shagoon</strong>
+          <span>Billing</span>
+        </div>
+      </div>
+
+      <nav class="admin-nav">
+        <p class="admin-nav-label">Workspace</p>
+        <a
+          href="/bills"
+          class:list={["admin-nav-link", { active: invoicesActive && !createActive }]}
+          aria-current={invoicesActive && !createActive ? "page" : undefined}
+          title="Invoices"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13ZM8 8h8M8 12h8M8 16h5" />
+          </svg>
+          <span>Invoices</span>
+        </a>
+        <a
+          href="/bills/new"
+          class:list={["admin-nav-link", { active: createActive }]}
+          aria-current={createActive ? "page" : undefined}
+          title="Create invoice"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>Create invoice</span>
+        </a>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <a href="/" class="admin-nav-link" title="Public website">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 11.5 12 4l9 7.5M5.5 10v10h13V10M9 20v-6h6v6" />
+          </svg>
+          <span>Public website</span>
+        </a>
+        <button
+          type="button"
+          class="admin-nav-link admin-logout"
+          id="adminLogout"
+          title="Sign out"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 5H5v14h5M14 8l4 4-4 4M8 12h10" />
+          </svg>
+          <span>Sign out</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="admin-workspace">
+      <header class="admin-topbar">
+        <button
+          class="admin-menu-button"
+          id="adminMenuButton"
+          type="button"
+          aria-label="Open navigation"
+          aria-controls="adminSidebar"
+          aria-expanded="false"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+        <div class="admin-topbar-copy">
+          <span>{eyebrow}</span>
+          <strong>{title}</strong>
+        </div>
+        <a href="/bills/new" class="admin-topbar-action">New invoice</a>
+      </header>
+
+      <div class="admin-content">
+        <slot />
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script define:vars={{ AUTH_CONFIG }}>
+  const sidebar = document.getElementById("adminSidebar");
+  const backdrop = document.getElementById("adminBackdrop");
+  const menuButton = document.getElementById("adminMenuButton");
+  const collapseButton = document.getElementById("adminCollapseButton");
+  const logoutButton = document.getElementById("adminLogout");
+
+  function setNavigationOpen(open) {
+    sidebar?.classList.toggle("is-open", open);
+    if (backdrop) backdrop.hidden = !open;
+    menuButton?.setAttribute("aria-expanded", String(open));
+    document.body.classList.toggle("admin-menu-open", open);
+  }
+
+  menuButton?.addEventListener("click", () => {
+    setNavigationOpen(!sidebar?.classList.contains("is-open"));
+  });
+  backdrop?.addEventListener("click", () => setNavigationOpen(false));
+
+  function setSidebarCollapsed(collapsed) {
+    document.documentElement.classList.toggle(
+      "admin-sidebar-collapsed",
+      collapsed,
+    );
+    collapseButton?.setAttribute("aria-pressed", String(collapsed));
+
+    const label = collapsed ? "Expand sidebar" : "Collapse sidebar";
+    collapseButton?.setAttribute("aria-label", label);
+    collapseButton?.setAttribute("title", label);
+
+    try {
+      localStorage.setItem(
+        "shagoon-admin-sidebar",
+        collapsed ? "collapsed" : "expanded",
+      );
+    } catch {
+      // The current state still works when storage is unavailable.
+    }
+  }
+
+  const sidebarInitiallyCollapsed = document.documentElement.classList.contains(
+    "admin-sidebar-collapsed",
+  );
+  setSidebarCollapsed(sidebarInitiallyCollapsed);
+
+  collapseButton?.addEventListener("click", () => {
+    setSidebarCollapsed(
+      !document.documentElement.classList.contains("admin-sidebar-collapsed"),
+    );
+  });
+
+  logoutButton?.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+    try {
+      await fetch(AUTH_CONFIG.API_PATHS.LOGOUT, { method: "POST" });
+    } finally {
+      sessionStorage.clear();
+      window.location.href = AUTH_CONFIG.REDIRECT_PATHS.LOGIN;
+    }
+  });
+</script>

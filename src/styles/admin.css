@@ -1,0 +1,1136 @@
+:root {
+  --admin-navy-950: #18222d;
+  --admin-navy-900: #22303d;
+  --admin-navy-800: #2c3e50;
+  --admin-ink: #202833;
+  --admin-muted: #66717f;
+  --admin-subtle: #8a94a1;
+  --admin-canvas: #f4f3ef;
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #faf9f6;
+  --admin-border: #e2e0d9;
+  --admin-border-strong: #cbc7bd;
+  --admin-accent: #b7662d;
+  --admin-accent-hover: #965024;
+  --admin-success: #34745a;
+  --admin-danger: #ad3f3f;
+  --admin-warning: #9a6a22;
+  --admin-focus: rgba(183, 102, 45, 0.2);
+  --admin-shadow: 0 1px 2px rgba(24, 34, 45, 0.05);
+  --admin-shadow-raised: 0 14px 36px rgba(24, 34, 45, 0.12);
+  --admin-radius-sm: 6px;
+  --admin-radius: 10px;
+  --admin-radius-lg: 14px;
+  --admin-sidebar-width: 248px;
+  --admin-sidebar-collapsed-width: 80px;
+}
+
+body:has(.admin-app) {
+  background: var(--admin-canvas);
+  color: var(--admin-ink);
+}
+
+body.admin-menu-open {
+  overflow: hidden;
+}
+
+.admin-app {
+  min-height: 100vh;
+  background: var(--admin-canvas);
+}
+
+.admin-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1000;
+  display: flex;
+  width: var(--admin-sidebar-width);
+  flex-direction: column;
+  padding: 24px 16px;
+  background: var(--admin-navy-950);
+  color: #fff;
+  transition: width 180ms ease, padding 180ms ease;
+}
+
+.admin-collapse-button {
+  position: absolute;
+  top: 28px;
+  right: -14px;
+  z-index: 2;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  background: var(--admin-navy-900);
+  color: #d7dde3;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(10, 16, 22, 0.24);
+  transition: background 150ms ease, transform 180ms ease;
+}
+
+.admin-collapse-button:hover {
+  background: #344555;
+  color: #fff;
+}
+
+.admin-collapse-button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px 28px;
+}
+
+.admin-brand-mark {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f2c39e;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.admin-brand strong,
+.admin-brand span {
+  display: block;
+}
+
+.admin-brand strong {
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.admin-brand span {
+  color: #aeb8c2;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-nav {
+  flex: 1;
+}
+
+.admin-nav-label {
+  margin: 0 10px 8px;
+  color: #7f8c98;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-nav-link {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  margin: 3px 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #b9c1c9;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.admin-nav-link:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
+.admin-nav-link.active {
+  background: rgba(183, 102, 45, 0.2);
+  color: #f6d5bb;
+}
+
+.admin-nav-link svg,
+.admin-menu-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.admin-sidebar-footer {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.admin-logout:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.admin-workspace {
+  min-width: 0;
+  min-height: 100vh;
+  margin-left: var(--admin-sidebar-width);
+  transition: margin-left 180ms ease;
+}
+
+.admin-sidebar-collapsed .admin-sidebar {
+  width: var(--admin-sidebar-collapsed-width);
+  padding-inline: 12px;
+}
+
+.admin-sidebar-collapsed .admin-workspace {
+  margin-left: var(--admin-sidebar-collapsed-width);
+}
+
+.admin-sidebar-collapsed .admin-collapse-button {
+  transform: rotate(180deg);
+}
+
+.admin-sidebar-collapsed .admin-brand {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.admin-sidebar-collapsed .admin-brand-copy,
+.admin-sidebar-collapsed .admin-nav-label,
+.admin-sidebar-collapsed .admin-nav-link span {
+  display: none;
+}
+
+.admin-sidebar-collapsed .admin-nav-link {
+  justify-content: center;
+  gap: 0;
+  padding-inline: 0;
+}
+
+.admin-sidebar-collapsed .admin-nav-link svg {
+  flex: 0 0 auto;
+}
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  gap: 16px;
+  padding: 12px clamp(20px, 3vw, 40px);
+  border-bottom: 1px solid var(--admin-border);
+  background: rgba(250, 249, 246, 0.94);
+  backdrop-filter: blur(14px);
+}
+
+.admin-topbar-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-topbar-copy span,
+.admin-topbar-copy strong {
+  display: block;
+}
+
+.admin-topbar-copy span {
+  color: var(--admin-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-topbar-copy strong {
+  overflow: hidden;
+  color: var(--admin-ink);
+  font-size: 16px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-menu-button {
+  display: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: var(--admin-surface);
+  color: var(--admin-ink);
+}
+
+.admin-topbar-action {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--admin-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-topbar-action:hover {
+  background: var(--admin-accent-hover);
+  color: #fff;
+}
+
+.admin-content {
+  width: min(100%, 1480px);
+  margin: 0 auto;
+  padding: 32px clamp(18px, 3vw, 40px) 56px;
+}
+
+.admin-content > main {
+  width: 100%;
+}
+
+.admin-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  border: 0;
+  background: rgba(16, 24, 32, 0.56);
+}
+
+/* Shared legacy-page normalization while pages are migrated component-by-component. */
+.admin-app .page-header,
+.admin-app .invoice-controls {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  margin: 0 0 24px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.admin-app .page-header h1,
+.admin-app .invoice-controls h1 {
+  margin: 0 !important;
+  color: var(--admin-ink) !important;
+  font-size: clamp(24px, 3vw, 32px) !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.025em;
+}
+
+.admin-app .header-left p {
+  max-width: 680px;
+  margin: 6px 0 0 !important;
+  color: var(--admin-muted) !important;
+  font-size: 14px !important;
+}
+
+.admin-app .header-actions,
+.admin-app .button-group,
+.admin-app .filter-actions,
+.admin-app .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px !important;
+}
+
+.admin-app .btn {
+  display: inline-flex !important;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 15px !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.2;
+  text-decoration: none;
+  transform: none !important;
+}
+
+.admin-app .btn-primary,
+.admin-app .btn-success {
+  border-color: var(--admin-accent) !important;
+  background: var(--admin-accent) !important;
+  color: #fff !important;
+}
+
+.admin-app .btn-primary:hover,
+.admin-app .btn-success:hover {
+  border-color: var(--admin-accent-hover) !important;
+  background: var(--admin-accent-hover) !important;
+}
+
+.admin-app .btn-info,
+.admin-app .btn-secondary,
+.admin-app .btn-outline {
+  border-color: var(--admin-border-strong) !important;
+  background: var(--admin-surface) !important;
+  color: var(--admin-ink) !important;
+}
+
+.admin-app .btn-info:hover,
+.admin-app .btn-secondary:hover,
+.admin-app .btn-outline:hover {
+  border-color: #a8a397 !important;
+  background: #f2f0ea !important;
+}
+
+.admin-app .btn-danger {
+  border-color: #e2b9b9 !important;
+  background: #fff8f8 !important;
+  color: var(--admin-danger) !important;
+}
+
+.admin-app .filters-card,
+.admin-app .invoices-section,
+.admin-app .invoice-form,
+.admin-app .form-section,
+.admin-app .loading-container,
+.admin-app .error-container {
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius-lg) !important;
+  background: var(--admin-surface) !important;
+  box-shadow: var(--admin-shadow) !important;
+}
+
+.admin-app .filters-section {
+  margin-bottom: 18px !important;
+}
+
+.admin-app .filters-card {
+  padding: 18px !important;
+}
+
+.admin-app .filters-card h3,
+.admin-app .invoices-header h2,
+.admin-app .form-section h2 {
+  margin: 0 0 18px !important;
+  padding: 0 0 12px !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  color: var(--admin-ink) !important;
+  font-size: 16px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.01em;
+}
+
+.admin-app .filters-grid {
+  grid-template-columns: minmax(260px, 1.5fr) minmax(300px, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 14px !important;
+}
+
+.admin-app .filter-group label,
+.admin-app .form-group label {
+  margin-bottom: 7px !important;
+  color: #4b5563 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+.admin-app .filter-group input,
+.admin-app .filter-group select,
+.admin-app .form-group input,
+.admin-app .form-group textarea,
+.admin-app .form-group select,
+.admin-app .item-row input,
+.admin-app .item-row select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px !important;
+  border: 1px solid var(--admin-border-strong) !important;
+  border-radius: 7px !important;
+  background: var(--admin-surface) !important;
+  box-shadow: none !important;
+  color: var(--admin-ink) !important;
+  font-family: inherit;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+.admin-app .form-group textarea {
+  min-height: 82px;
+  resize: vertical;
+}
+
+.admin-app input:focus,
+.admin-app textarea:focus,
+.admin-app select:focus,
+.admin-app button:focus-visible,
+.admin-app a:focus-visible {
+  outline: 3px solid var(--admin-focus) !important;
+  outline-offset: 1px;
+  border-color: var(--admin-accent) !important;
+}
+
+.admin-app .invoices-section {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.admin-app .invoices-header {
+  margin: 0 !important;
+  padding: 18px 20px 0 !important;
+  border: 0 !important;
+}
+
+.admin-app .invoices-header h2 {
+  margin-bottom: 0 !important;
+  padding-bottom: 16px !important;
+}
+
+.admin-app .invoices-grid {
+  display: block !important;
+  margin: 0 !important;
+}
+
+.admin-app .table-wrapper {
+  overflow-x: auto;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.admin-app .invoices-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-app .invoices-table th {
+  padding: 11px 14px !important;
+  border-block: 1px solid var(--admin-border) !important;
+  background: var(--admin-surface-soft) !important;
+  color: var(--admin-muted) !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.admin-app .invoices-table td {
+  padding: 14px !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  color: var(--admin-ink);
+  font-size: 13px !important;
+}
+
+.admin-app .invoices-table tbody tr:hover {
+  background: #fbfaf7 !important;
+}
+
+.admin-app .table-amount {
+  color: var(--admin-ink) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-app .table-phone {
+  color: var(--admin-muted) !important;
+  font-family: inherit !important;
+}
+
+.admin-app .table-actions {
+  justify-content: flex-end !important;
+  flex-wrap: nowrap !important;
+}
+
+.admin-app .empty-table-cell {
+  padding: 48px 20px !important;
+  color: var(--admin-muted) !important;
+  text-align: center !important;
+}
+
+.admin-app .action-icon {
+  width: 38px !important;
+  min-width: 38px;
+  height: 38px !important;
+  padding: 8px !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: 7px !important;
+  background: var(--admin-surface) !important;
+  color: var(--admin-muted) !important;
+  font-size: 12px !important;
+  font-weight: 600;
+  transform: none !important;
+}
+
+.admin-app .action-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.admin-app .action-icon:hover {
+  border-color: var(--admin-border-strong) !important;
+  background: var(--admin-surface-soft) !important;
+  color: var(--admin-ink) !important;
+}
+
+.admin-app .delete-icon:hover {
+  border-color: #e2b9b9 !important;
+  background: #fff8f8 !important;
+  color: var(--admin-danger) !important;
+}
+
+.admin-app .pagination {
+  justify-content: space-between !important;
+  margin: 0 !important;
+  padding: 16px 20px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.admin-app .page-info {
+  color: var(--admin-muted) !important;
+  font-size: 13px;
+}
+
+.admin-app .invoice-form {
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.admin-app .form-grid {
+  gap: 18px !important;
+}
+
+.admin-app .form-section {
+  margin-bottom: 18px !important;
+  padding: 22px !important;
+}
+
+.admin-app .form-row {
+  gap: 14px !important;
+}
+
+.admin-app .form-group {
+  margin-bottom: 14px !important;
+}
+
+.admin-app .items-container {
+  overflow: hidden;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius) !important;
+  background: var(--admin-surface);
+}
+
+.admin-app .items-header {
+  grid-template-columns: 54px minmax(240px, 2fr) minmax(110px, 0.8fr) minmax(110px, 0.8fr) minmax(120px, 0.9fr) 72px !important;
+  padding: 11px 14px !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  background: var(--admin-surface-soft) !important;
+  color: var(--admin-muted) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-app .item-row {
+  grid-template-columns: 54px minmax(240px, 2fr) minmax(110px, 0.8fr) minmax(110px, 0.8fr) minmax(120px, 0.9fr) 72px !important;
+  gap: 12px !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  border-radius: 0 !important;
+  background: var(--admin-surface) !important;
+}
+
+.admin-app .item-field {
+  display: block;
+  min-width: 0;
+}
+
+.admin-app .item-field-label {
+  display: none;
+}
+
+.admin-app .invoice-create-page .items-container {
+  overflow: visible !important;
+  border: 0 !important;
+  background: transparent;
+}
+
+.admin-app .invoice-create-page .items-container::after {
+  content: none !important;
+}
+
+.admin-app .invoice-create-page .items-header {
+  display: none !important;
+}
+
+.admin-app .invoice-create-page #itemsList {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.admin-app .invoice-create-page .item-row {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0, 1.7fr)
+    minmax(96px, 0.75fr)
+    minmax(86px, 0.65fr) !important;
+  gap: 10px !important;
+  align-items: end !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 14px !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius) !important;
+  background: var(--admin-surface) !important;
+}
+
+.admin-app .invoice-create-page .item-row .sr-no {
+  grid-column: 1 / -1;
+  justify-content: flex-start !important;
+}
+
+.admin-app .invoice-create-page .item-row .sr-no::before {
+  content: "Line item ";
+}
+
+.admin-app .invoice-create-page .item-field-description {
+  grid-column: 1;
+}
+
+.admin-app .invoice-create-page .item-field-rate {
+  grid-column: 2;
+}
+
+.admin-app .invoice-create-page .item-field-quantity {
+  grid-column: 3;
+}
+
+.admin-app .invoice-create-page .item-field-label {
+  display: block;
+  margin: 0 0 5px;
+  color: var(--admin-muted);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.admin-app .invoice-create-page .item-total {
+  grid-column: 1 / 3;
+  min-height: 42px;
+  justify-content: flex-start !important;
+  padding-inline: 12px !important;
+}
+
+.admin-app .invoice-create-page .remove-item {
+  grid-column: 3;
+}
+
+.admin-app .invoice-create-page #addItemBtn {
+  margin: 0 !important;
+}
+
+.admin-app .sr-no {
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--admin-muted) !important;
+  font-size: 13px !important;
+}
+
+.admin-app .item-total {
+  min-width: 0 !important;
+  padding: 8px !important;
+  border: 0 !important;
+  background: var(--admin-surface-soft) !important;
+  color: var(--admin-ink) !important;
+  font-size: 13px !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-app .remove-item {
+  min-width: 42px !important;
+  min-height: 42px;
+  padding: 8px !important;
+  border: 1px solid #e2b9b9 !important;
+  border-radius: 7px !important;
+  background: #fff8f8 !important;
+  box-shadow: none !important;
+  color: var(--admin-danger) !important;
+  transform: none !important;
+}
+
+.admin-app .calculation-summary {
+  padding: 16px !important;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px !important;
+  background: var(--admin-surface-soft) !important;
+}
+
+.admin-app .calc-row {
+  color: var(--admin-muted);
+  font-size: 13px !important;
+}
+
+.admin-app .calc-row span:last-child {
+  color: var(--admin-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-app .total-row {
+  border-top: 1px solid var(--admin-border-strong) !important;
+  color: var(--admin-ink);
+  font-size: 15px !important;
+}
+
+.admin-app .form-actions {
+  position: sticky;
+  bottom: 16px;
+  z-index: 20;
+  justify-content: flex-end !important;
+  margin-top: 24px !important;
+  padding: 14px !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius) !important;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--admin-shadow-raised);
+  backdrop-filter: blur(12px);
+}
+
+.admin-app .modal-overlay,
+.admin-app .message-box,
+.admin-app .loading-overlay {
+  background: rgba(24, 34, 45, 0.58) !important;
+  backdrop-filter: blur(5px);
+}
+
+.admin-app .modal-content,
+.admin-app .message-content,
+.admin-app .loading-content {
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius-lg) !important;
+  background: var(--admin-surface) !important;
+  box-shadow: var(--admin-shadow-raised) !important;
+}
+
+.admin-app .modal-header,
+.admin-app .message-header,
+.admin-app .modal-actions {
+  background: var(--admin-surface-soft) !important;
+  border-color: var(--admin-border) !important;
+}
+
+.admin-app .invoice-controls {
+  align-items: center !important;
+}
+
+.admin-app .invoice-wrapper {
+  border: 1px solid var(--admin-border);
+  border-radius: 3px !important;
+  box-shadow: 0 18px 50px rgba(24, 34, 45, 0.13) !important;
+}
+
+.admin-app .loading-container,
+.admin-app .error-container {
+  min-height: 280px !important;
+  padding: 32px !important;
+}
+
+.admin-app .spinner {
+  width: 34px !important;
+  height: 34px !important;
+  border-width: 3px !important;
+  border-color: #e7e3db !important;
+  border-top-color: var(--admin-accent) !important;
+}
+
+@media (max-width: 1024px) {
+  .admin-sidebar,
+  .admin-sidebar-collapsed .admin-sidebar {
+    width: var(--admin-sidebar-width);
+    padding: 24px 16px;
+    transform: translateX(-100%);
+    transition: transform 180ms ease;
+  }
+
+  .admin-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .admin-workspace,
+  .admin-sidebar-collapsed .admin-workspace {
+    margin-left: 0;
+  }
+
+  .admin-collapse-button {
+    display: none;
+  }
+
+  .admin-sidebar-collapsed .admin-brand {
+    justify-content: flex-start;
+    padding: 0 8px 28px;
+  }
+
+  .admin-sidebar-collapsed .admin-brand-copy,
+  .admin-sidebar-collapsed .admin-nav-label,
+  .admin-sidebar-collapsed .admin-nav-link span {
+    display: block;
+  }
+
+  .admin-sidebar-collapsed .admin-nav-link {
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+
+  .admin-menu-button {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-sidebar,
+  .admin-workspace,
+  .admin-collapse-button {
+    transition: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-topbar {
+    min-height: 64px;
+    padding: 10px 14px;
+  }
+
+  .admin-topbar-action {
+    display: none;
+  }
+
+  .admin-content {
+    padding: 22px 14px 40px;
+  }
+
+  .admin-app .page-header,
+  .admin-app .invoice-controls {
+    align-items: stretch !important;
+    gap: 14px !important;
+    text-align: left !important;
+  }
+
+  .admin-app .page-header h1,
+  .admin-app .invoice-controls h1 {
+    font-size: 25px !important;
+  }
+
+  .admin-app .header-actions,
+  .admin-app .button-group {
+    width: 100%;
+  }
+
+  .admin-app .header-actions > *,
+  .admin-app .button-group > * {
+    flex: 1 1 auto !important;
+    min-width: 0;
+  }
+
+  .admin-app .filters-grid,
+  .admin-app .form-grid,
+  .admin-app .form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-app .date-range-inputs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-app .filter-actions > * {
+    flex: 1 1 130px;
+  }
+
+  .admin-app .invoices-table,
+  .admin-app .invoices-table tbody,
+  .admin-app .invoices-table tr,
+  .admin-app .invoices-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-app .invoices-table thead {
+    display: none;
+  }
+
+  .admin-app .invoices-table tbody {
+    padding: 12px;
+  }
+
+  .admin-app .invoices-table tbody tr {
+    margin-bottom: 12px;
+    padding: 14px;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    background: var(--admin-surface);
+  }
+
+  .admin-app .invoices-table td {
+    display: grid;
+    grid-template-columns: 105px minmax(0, 1fr);
+    gap: 12px;
+    padding: 7px 0 !important;
+    border: 0 !important;
+    text-align: right;
+  }
+
+  .admin-app .invoices-table td::before {
+    content: attr(data-label);
+    color: var(--admin-muted);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .admin-app .table-actions {
+    display: flex !important;
+    justify-content: flex-end !important;
+    margin-top: 8px;
+    padding-top: 12px !important;
+    border-top: 1px solid var(--admin-border) !important;
+  }
+
+  .admin-app .table-actions::before {
+    display: none;
+  }
+
+  .admin-app .pagination {
+    gap: 10px !important;
+    padding: 14px;
+  }
+
+  .admin-app .pagination .btn {
+    flex: 1;
+  }
+
+  .admin-app .page-info {
+    white-space: nowrap;
+  }
+
+  .admin-app .form-section {
+    padding: 18px 14px !important;
+  }
+
+  .admin-app .items-container {
+    overflow: visible !important;
+    border: 0 !important;
+    background: transparent;
+  }
+
+  .admin-app .items-container::after {
+    content: none !important;
+  }
+
+  .admin-app .items-header {
+    display: none !important;
+  }
+
+  .admin-app .item-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    min-width: 0 !important;
+    margin-bottom: 12px !important;
+    padding: 14px !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: var(--admin-radius) !important;
+  }
+
+  .admin-app .item-row .sr-no,
+  .admin-app .item-row .item-description,
+  .admin-app .item-row .remove-item {
+    grid-column: 1 / -1;
+  }
+
+  .admin-app .item-row .sr-no {
+    justify-content: flex-start !important;
+  }
+
+  .admin-app .item-row .sr-no::before {
+    content: "Line item ";
+  }
+
+  .admin-app .item-row .item-total {
+    min-height: 42px;
+  }
+
+  .admin-app .invoice-create-page .item-row {
+    grid-template-columns:
+      minmax(0, 1.7fr)
+      minmax(68px, 0.8fr)
+      minmax(62px, 0.7fr) !important;
+  }
+
+  .admin-app .form-actions {
+    bottom: 8px;
+    flex-direction: row !important;
+  }
+
+  .admin-app .form-actions > * {
+    flex: 1;
+  }
+
+  .admin-app .invoice-wrapper {
+    width: 210mm !important;
+    transform: scale(calc((100vw - 28px) / 794));
+    transform-origin: top left;
+  }
+
+  .admin-app .invoice-wrapper:has(.invoice-document) {
+    margin-bottom: calc(-297mm * (1 - ((100vw - 28px) / 794)));
+  }
+}
+
+@media print {
+  .admin-sidebar,
+  .admin-topbar,
+  .admin-backdrop,
+  .admin-content .no-print {
+    display: none !important;
+  }
+
+  .admin-workspace {
+    margin: 0 !important;
+  }
+
+  .admin-content {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

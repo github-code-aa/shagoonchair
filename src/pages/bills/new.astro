@@ -1,5 +1,5 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import AdminLayout from "../../layouts/AdminLayout.astro";
 import { AUTH_CONFIG } from "../../config/auth.js";
 ---
 
@@ -32,13 +32,15 @@ import { AUTH_CONFIG } from "../../config/auth.js";
   })();
 </script>
 
-<Layout title="Create New Invoice - Shagoon Chair">
-  <main>
+<AdminLayout title="Create invoice">
+  <main class="invoice-create-page">
     <div class="page-header">
-      <h1>Create New Invoice</h1>
+      <div class="header-left">
+        <h1>Create invoice</h1>
+        <p>Enter customer, line item, tax, and payment information.</p>
+      </div>
       <div class="header-actions">
         <a href="/bills" class="btn btn-outline">← Back to Bills</a>
-        <button onclick="logout()" class="btn btn-danger">🚪 Logout</button>
       </div>
     </div>
 
@@ -46,7 +48,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
       <div class="form-grid">
         <!-- Invoice Details Section -->
         <section class="form-section">
-          <h2>📋 Invoice Details</h2>
+          <h2>Invoice details</h2>
           <div class="form-row">
             <div class="form-group">
               <label for="bill_number">Bill Number</label>
@@ -132,7 +134,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
 
         <!-- Customer Details Section -->
         <section class="form-section">
-          <h2>👤 Customer Details</h2>
+          <h2>Customer details</h2>
           <div class="form-row">
             <div class="form-group autocomplete-container">
               <label for="customer_name">Customer Name *</label>
@@ -200,12 +202,12 @@ import { AUTH_CONFIG } from "../../config/auth.js";
 
       <!-- Items Section -->
       <section class="form-section">
-        <h2>🛍️ Invoice Items</h2>
+        <h2>Line items</h2>
         <div class="items-container">
           <div class="items-header">
             <span>Sr. No</span>
             <span>Description</span>
-            <span>Unit Price (₹)</span>
+            <span>Rate (₹)</span>
             <span>Qty</span>
             <span>Amount (₹)</span>
             <span>Action</span>
@@ -222,7 +224,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
       <!-- Tax & Payment Section -->
       <div class="form-grid">
         <section class="form-section">
-          <h2>💰 Tax Calculation</h2>
+          <h2>Tax calculation</h2>
           <div class="form-row">
             <div class="form-group">
               <label for="cgst_percentage">CGST % *</label>
@@ -299,7 +301,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
         </section>
 
         <section class="form-section">
-          <h2>💳 Payment Details</h2>
+          <h2>Payment details</h2>
           <div class="form-group">
             <label for="payment_method">Payment Method *</label>
             <select id="payment_method" name="payment_method" required>
@@ -329,7 +331,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
 
       <!-- Bank Details Section -->
       <section class="form-section">
-        <h2>🏦 Bank Details</h2>
+        <h2>Bank details</h2>
         <div class="form-grid">
           <div class="form-group">
             <label for="bank_name">Bank Name</label>
@@ -381,7 +383,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
 
       <!-- Notes Section -->
       <section class="form-section">
-        <h2>📝 Additional Notes</h2>
+        <h2>Additional notes</h2>
         <div class="form-group">
           <label for="notes">Notes</label>
           <textarea
@@ -394,7 +396,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
 
             <!-- Terms and Conditions Section -->
       <section class="form-section">
-        <h2>📋 Terms and Conditions</h2>
+        <h2>Terms and conditions</h2>
         <div class="form-group">
           <label for="terms_and_conditions">Terms and Conditions</label>
           <textarea id="terms_and_conditions" name="terms_and_conditions" rows="6">• Price including Fabric/guts-Tax per Mtr. Party will have to give Two alternative.
@@ -409,9 +411,9 @@ import { AUTH_CONFIG } from "../../config/auth.js";
       <!-- Form Actions -->
       <div class="form-actions">
         <button type="submit" class="btn btn-primary" id="submitBtn"
-          >💰 Create Invoice</button
+          >Create invoice</button
         >
-        <button type="reset" class="btn btn-outline">🔄 Reset Form</button>
+        <button type="reset" class="btn btn-outline">Reset form</button>
       </div>
     </form>
 
@@ -445,7 +447,7 @@ import { AUTH_CONFIG } from "../../config/auth.js";
       </div>
     </div>
   </main>
-</Layout>
+</AdminLayout>
 
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
@@ -1279,99 +1281,26 @@ import { AUTH_CONFIG } from "../../config/auth.js";
       const itemRow = document.createElement("div");
       itemRow.className = "item-row";
       itemRow.dataset.itemId = itemCounter; // Add data attribute for tracking
-      itemRow.style.cssText = `
-      display: grid !important;
-      grid-template-columns: 80px 2fr 140px 100px 140px 100px !important;
-      gap: 15px !important;
-      padding: 15px 20px !important;
-      border-bottom: 1px solid #f1f3f4 !important;
-      align-items: center !important;
-      background: white !important;
-      transition: background-color 0.2s ease;
-    `;
 
       itemRow.innerHTML = `
-      <span class="sr-no" style="
-        font-weight: 600 !important;
-        font-size: 16px !important;
-        color: #3498db !important;
-        text-align: center !important;
-        background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%) !important;
-        padding: 8px !important;
-        border-radius: 6px !important;
-        border: 1px solid #e3f2fd !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      ">${itemCounter}</span>
-      <input type="text" name="items[${itemCounter}][product_description]" placeholder="Item description" required
-        class="item-description"
-        style="
-          padding: 12px !important;
-          border: 1px solid #dee2e6 !important;
-          border-radius: 6px !important;
-          font-size: 14px !important;
-          font-weight: 500 !important;
-          transition: all 0.3s ease !important;
-          background: white !important;
-          color: #495057 !important;
-          width: 100% !important;
-          box-sizing: border-box !important;
-        ">
-      <input type="number" name="items[${itemCounter}][unit_price]" placeholder="450.00" required step="0.01"
-        class="item-unit-price"
-        style="
-          padding: 12px !important;
-          border: 1px solid #dee2e6 !important;
-          border-radius: 6px !important;
-          font-size: 14px !important;
-          font-weight: 500 !important;
-          transition: all 0.3s ease !important;
-          background: white !important;
-          color: #495057 !important;
-          width: 100% !important;
-          box-sizing: border-box !important;
-        ">
-      <input type="text" name="items[${itemCounter}][quantity]" placeholder="e.g., 2, 1 PC, 5 units" required
-        class="item-quantity"
-        style="
-          padding: 12px !important;
-          border: 1px solid #dee2e6 !important;
-          border-radius: 6px !important;
-          font-size: 14px !important;
-          font-weight: 500 !important;
-          transition: all 0.3s ease !important;
-          background: white !important;
-          color: #495057 !important;
-          width: 100% !important;
-          box-sizing: border-box !important;
-        ">
-      <span class="item-total" style="
-        font-weight: 600 !important;
-        font-size: 15px !important;
-        color: #27ae60 !important;
-        text-align: center !important;
-        padding: 12px 8px !important;
-        background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%) !important;
-        border-radius: 6px !important;
-        border: 1px solid #d4edda !important;
-        min-width: 100px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      ">₹0.00</span>
-      <button type="button" class="remove-item" style="
-        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
-        color: white !important;
-        border: none !important;
-        padding: 10px 12px !important;
-        border-radius: 6px !important;
-        cursor: pointer !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2) !important;
-      ">✕</button>
+      <span class="sr-no">${itemCounter}</span>
+      <label class="item-field item-field-description">
+        <span class="item-field-label">Description</span>
+        <input type="text" name="items[${itemCounter}][product_description]" placeholder="Description" required
+          class="item-description">
+      </label>
+      <label class="item-field item-field-rate">
+        <span class="item-field-label">Rate</span>
+        <input type="number" name="items[${itemCounter}][unit_price]" placeholder="Rate" required step="0.01"
+          class="item-unit-price">
+      </label>
+      <label class="item-field item-field-quantity">
+        <span class="item-field-label">Qty</span>
+        <input type="text" name="items[${itemCounter}][quantity]" placeholder="Qty" required
+          class="item-quantity">
+      </label>
+      <span class="item-total">₹0.00</span>
+      <button type="button" class="remove-item" aria-label="Remove line item">Remove</button>
     `;
 
       itemsList.appendChild(itemRow);
