@@ -1,3 +1,5 @@
+import { getServerSecret } from './server';
+
 // Cloudflare D1 Database Configuration (supports both binding and REST API)
 export interface DatabaseConfig {
   name: string;
@@ -8,9 +10,9 @@ export interface DatabaseConfig {
 
 export const DB_CONFIG: DatabaseConfig = {
   name: 'shagoonchairdb',
-  accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '78ba55673298a7f5bda678055519beb9',
-  databaseId: process.env.CLOUDFLARE_D1_DATABASE_ID || 'b215f72f-a4f6-497d-a68f-2d92d373b524',
-  apiToken: process.env.CLOUDFLARE_API_TOKEN || '8ecRNZiD_rtS2W_zYdNeXm9gxWIwfr-Ttv6Zg0Fb'
+  accountId: getServerSecret('CLOUDFLARE_ACCOUNT_ID'),
+  databaseId: getServerSecret('CLOUDFLARE_D1_DATABASE_ID'),
+  apiToken: getServerSecret('CLOUDFLARE_API_TOKEN')
 };
 
 // Validate configuration

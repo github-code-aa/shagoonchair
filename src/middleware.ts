@@ -25,7 +25,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   let authenticated = false;
 
   try {
-    authenticated = await isValidSessionToken(token, context.locals);
+    authenticated = await isValidSessionToken(token);
   } catch (error) {
     if (!(error instanceof AuthConfigurationError)) {
       throw error;

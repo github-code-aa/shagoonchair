@@ -8,19 +8,19 @@ import {
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies, locals }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
     const body = await request.json();
     const pin = typeof body?.pin === "string" ? body.pin.trim() : "";
 
-    if (!/^\d{6}$/.test(pin) || !(await verifyAdminPin(pin, locals))) {
+    if (!/^\d{6}$/.test(pin) || !(await verifyAdminPin(pin))) {
       return new Response(JSON.stringify({ error: "Invalid PIN" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    const token = await createSessionToken(locals);
+    const token = await createSessionToken();
     cookies.set(adminSessionCookie.name, token, {
       ...adminSessionCookie.options,
       maxAge: adminSessionCookie.maxAge,

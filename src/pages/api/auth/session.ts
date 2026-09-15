@@ -7,10 +7,10 @@ import {
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ cookies, locals }) => {
+export const GET: APIRoute = async ({ cookies }) => {
   try {
     const token = cookies.get(adminSessionCookie.name)?.value;
-    const authenticated = await isValidSessionToken(token, locals);
+    const authenticated = await isValidSessionToken(token);
 
     return new Response(JSON.stringify({ authenticated }), {
       status: 200,
